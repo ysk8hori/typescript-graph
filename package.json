@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "run": "node dist",
     "build": "rm -r ./dist && tsc",
     "lint:fix": "eslint --fix src",
     "prettier": "prettier --write ./src",
@@ -14,7 +15,7 @@
   "author": "ysk8hori",
   "license": "ISC",
   "dependencies": {
-    "typescript": "^4.9.4"
+    "commander": "^9.5.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
@@ -24,5 +25,8 @@
     "eslint-config-prettier": "^8.6.0",
     "prettier": "^2.8.1",
     "vitest": "^0.26.3"
+  },
+  "peerDependencies": {
+    "typescript": "^4.9.4"
   }
 }

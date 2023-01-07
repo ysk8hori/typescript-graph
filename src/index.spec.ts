@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
-import { hello } from './hello';
+import { main } from '.';
 
 test('hello test', () => {
-  expect(hello()).toEqual('hello');
+  expect(main('')).toEqual('hello');
 });
