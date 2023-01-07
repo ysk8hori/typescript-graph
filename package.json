@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "rm -r ./dist && tsc",
+    "lint:fix": "eslint --fix src",
+    "prettier": "prettier --write ./src",
+    "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -15,6 +18,11 @@
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.48.0",
+    "@typescript-eslint/parser": "^5.48.0",
+    "eslint": "^8.31.0",
+    "eslint-config-prettier": "^8.6.0",
+    "prettier": "^2.8.1",
     "vitest": "^0.26.3"
   }
 }
