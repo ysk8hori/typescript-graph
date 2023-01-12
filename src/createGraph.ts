@@ -3,9 +3,9 @@ import { Node, Relation } from './models';
 
 export function createGraph(
   sourceFiles: string[],
-  options: ts.CompilerOptions,
+  compilerOptions: ts.CompilerOptions,
 ): { nodes: Node[]; relations: Relation[] } {
-  const program = ts.createProgram(sourceFiles, options);
+  const program = ts.createProgram(sourceFiles, compilerOptions);
   const nodes: Node[] = [];
   const relations: Relation[] = [];
 
@@ -14,8 +14,8 @@ export function createGraph(
     .filter(sourceFile => !sourceFile.fileName.includes('node_modules'))
     .forEach(sourceFile => {
       const fileName = removeSlash(
-        options.rootDir
-          ? sourceFile.fileName.replace(options.rootDir + '/', '')
+        compilerOptions.rootDir
+          ? sourceFile.fileName.replace(compilerOptions.rootDir + '/', '')
           : sourceFile.fileName,
       );
       nodes.push({ fileName });
@@ -24,11 +24,15 @@ export function createGraph(
         const moduleNameText = node.moduleSpecifier.getText(sourceFile);
         const moduleName = moduleNameText.slice(1, moduleNameText.length - 1); // import 文のクォート及びダブルクォートを除去
         const moduleFileFullName =
-          ts.resolveModuleName(moduleName, sourceFile.fileName, options, ts.sys)
-            .resolvedModule?.resolvedFileName ?? '';
+          ts.resolveModuleName(
+            moduleName,
+            sourceFile.fileName,
+            compilerOptions,
+            ts.sys,
+          ).resolvedModule?.resolvedFileName ?? '';
         const moduleFileName = removeSlash(
-          options.rootDir
-            ? moduleFileFullName.replace(options.rootDir, '')
+          compilerOptions.rootDir
+            ? moduleFileFullName.replace(compilerOptions.rootDir, '')
             : moduleFileFullName,
         );
         if (!moduleFileName) return;

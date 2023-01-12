@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "run": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts",
-    "run:sample": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/typescript-graph-old",
+    "run:sample": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/typescript-graph-old/src/components",
     "build": "rm -r ./dist && tsc",
     "lint:fix": "eslint --fix src",
     "prettier": "prettier --write ./src",
