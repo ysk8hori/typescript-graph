@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run": "node dist",
+    "run": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts",
+    "run:sample": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/typescript-graph-old",
     "build": "rm -r ./dist && tsc",
     "lint:fix": "eslint --fix src",
     "prettier": "prettier --write ./src",
@@ -24,6 +25,7 @@
     "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.6.0",
     "prettier": "^2.8.1",
+    "ts-node": "^10.9.1",
     "vitest": "^0.26.3"
   },
   "peerDependencies": {
