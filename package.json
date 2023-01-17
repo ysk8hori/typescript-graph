@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "run:neo4j": "ts-node -O '{\"module\": \"commonjs\"}' ./src/neo4jfy.ts",
     "run": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts",
     "run:sample": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/typescript-graph-old/src/components",
     "build": "rm -r ./dist && tsc",
@@ -16,7 +17,8 @@
   "author": "ysk8hori",
   "license": "ISC",
   "dependencies": {
-    "commander": "^9.5.0"
+    "commander": "^9.5.0",
+    "neo4j-driver": "^5.4.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
