@@ -9,19 +9,19 @@ export default function mermaidify(graph: {
   const indent = '    ';
   lines = lines.concat(
     graph.nodes
-      .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.fileName) }))
-      .map(node => `${indent}${node.mermaidId}["${node.fileName}"]`),
+      .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
+      .map(node => `${indent}${node.mermaidId}["${node.path}"]`),
   );
   lines = lines.concat(
     graph.relations
       .map(relation => ({
         from: {
           ...relation.from,
-          mermaidId: fileNameToMermaidId(relation.from.fileName),
+          mermaidId: fileNameToMermaidId(relation.from.path),
         },
         to: {
           ...relation.to,
-          mermaidId: fileNameToMermaidId(relation.to.fileName),
+          mermaidId: fileNameToMermaidId(relation.to.path),
         },
       }))
       .map(
