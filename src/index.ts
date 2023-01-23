@@ -9,12 +9,17 @@ import { clearDatabase, neo4jfy } from './neo4jfy';
 
 const program = new Command();
 // TODO filter オプションを追加して、指定した filter に該当するもののみをターゲットにする
-program.option('-d, --dir <char>').option('-f --filter <char>');
+program
+  .option('-d, --dir <char>')
+  .option('-f --filter <char>')
+  .option('--neo4j');
 program.parse();
 const opt = program.opts();
 
-export async function main(dir: string, filter?: string) {
-  await clearDatabase();
+export async function main(dir: string, commandOptions: typeof opt) {
+  if (commandOptions.neo4j) {
+    await clearDatabase();
+  }
   const configPath = ts.findConfigFile(dir, ts.sys.fileExists);
   if (!configPath) {
     throw new Error('Could not find a valid "tsconfig.json".');
@@ -33,11 +38,14 @@ export async function main(dir: string, filter?: string) {
   );
   options.rootDir = rootDir;
 
-  const graph = createGraph(fileNames, options, filter);
+  const graph = createGraph(fileNames, options, commandOptions.filter);
   const mermaid = mermaidify(graph);
   output('dir', mermaid);
-  await neo4jfy(graph);
+
+  if (commandOptions.neo4j) {
+    await neo4jfy(graph);
+  }
 }
 
 const dir = path.resolve(opt.dir ?? './');
-main(dir, opt.filter);
+main(dir, opt);

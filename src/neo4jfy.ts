@@ -1,18 +1,17 @@
 import neo4j from 'neo4j-driver';
 import { Node, Relation } from './models';
 
-const driver = neo4j.driver('neo4j://localhost:7687');
-
 export async function neo4jfy(graph: { nodes: Node[]; relations: Relation[] }) {
+  const driver = neo4j.driver('neo4j://localhost:7687');
   const session = driver.session();
   try {
     await session.executeWrite(async tx => {
       const writeResult = graph.relations.map(rel =>
         tx.run(
           `
-            MERGE (from:File {name:$fromName, path:$from})
-            MERGE (to:File {name:$toName, path:$to})
-            MERGE (from)-[:DEPENDS_ON {importedModule: $importedModule}]->(to)
+          MERGE (from:File {name:$fromName, path:$from})
+          MERGE (to:File {name:$toName, path:$to})
+          MERGE (from)-[:DEPENDS_ON {importedModule: $importedModule}]->(to)
           `,
           {
             fromName: rel.from.fileName,
@@ -32,6 +31,7 @@ export async function neo4jfy(graph: { nodes: Node[]; relations: Relation[] }) {
 }
 
 export async function clearDatabase() {
+  const driver = neo4j.driver('neo4j://localhost:7687');
   const session = driver.session();
   try {
     await session.executeWrite(tx => tx.run(`MATCH (m) DETACH DELETE m`));
