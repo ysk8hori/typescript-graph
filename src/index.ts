@@ -5,13 +5,16 @@ import path from 'path';
 import * as ts from 'typescript';
 import { createGraph } from './createGraph';
 import mermaidify, { output } from './mermaidify';
+import { clearDatabase, neo4jfy } from './neo4jfy';
 
 const program = new Command();
-program.option('-d, --dir <char>');
+// TODO filter オプションを追加して、指定した filter に該当するもののみをターゲットにする
+program.option('-d, --dir <char>').option('-f --filter <char>');
 program.parse();
 const opt = program.opts();
 
-export function main(dir: string) {
+export async function main(dir: string, filter?: string) {
+  await clearDatabase();
   const configPath = ts.findConfigFile(dir, ts.sys.fileExists);
   if (!configPath) {
     throw new Error('Could not find a valid "tsconfig.json".');
@@ -30,10 +33,11 @@ export function main(dir: string) {
   );
   options.rootDir = rootDir;
 
-  const graph = createGraph(fileNames, options);
+  const graph = createGraph(fileNames, options, filter);
   const mermaid = mermaidify(graph);
   output('dir', mermaid);
+  await neo4jfy(graph);
 }
 
 const dir = path.resolve(opt.dir ?? './');
-main(dir);
+main(dir, opt.filter);

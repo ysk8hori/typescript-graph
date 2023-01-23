@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run:neo4j": "ts-node -O '{\"module\": \"commonjs\"}' ./src/neo4jfy.ts",
     "run": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts",
-    "run:sample": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/typescript-graph-old/src/components",
+    "run:sample": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --filter fillAllLonelyLogic",
     "build": "rm -r ./dist && tsc",
     "lint:fix": "eslint --fix src",
     "prettier": "prettier --write ./src",
