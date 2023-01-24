@@ -45,7 +45,7 @@ export async function main(dir: string, commandOptions: typeof opt) {
     commandOptions.exclude ?? [],
   );
   const mermaid = mermaidify(graph);
-  output('dir', mermaid);
+  output('typescript-graph', mermaid);
 
   if (commandOptions.neo4j) {
     await neo4jfy(graph);
