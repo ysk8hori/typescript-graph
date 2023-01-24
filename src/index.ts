@@ -8,10 +8,10 @@ import mermaidify, { output } from './mermaidify';
 import { clearDatabase, neo4jfy } from './neo4jfy';
 
 const program = new Command();
-// TODO filter オプションを追加して、指定した filter に該当するもののみをターゲットにする
 program
   .option('-d, --dir <char>')
-  .option('-f --filter <char>')
+  .option('--include <char...>')
+  .option('--exclude <char...>')
   .option('--neo4j');
 program.parse();
 const opt = program.opts();
@@ -38,7 +38,12 @@ export async function main(dir: string, commandOptions: typeof opt) {
   );
   options.rootDir = rootDir;
 
-  const graph = createGraph(fileNames, options, commandOptions.filter);
+  const graph = createGraph(
+    fileNames,
+    options,
+    commandOptions.include ?? [],
+    commandOptions.exclude ?? [],
+  );
   const mermaid = mermaidify(graph);
   output('dir', mermaid);
 

@@ -5,7 +5,8 @@ import { Node, Relation } from './models';
 export function createGraph(
   sourceFiles: string[],
   compilerOptions: ts.CompilerOptions,
-  filter?: string,
+  include: string[],
+  exclude: string[],
 ): { nodes: Node[]; relations: Relation[] } {
   const program = ts.createProgram(sourceFiles, compilerOptions);
   let nodes: Node[] = [];
@@ -56,10 +57,34 @@ export function createGraph(
         });
       });
     });
-  if (filter) {
-    nodes = nodes.filter(node => node.path.includes(filter));
+  if (include.length !== 0) {
+    nodes = nodes.filter(node =>
+      include.some(word =>
+        node.path.toLowerCase().includes(word.toLowerCase()),
+      ),
+    );
+    relations = relations.filter(({ from, to }) =>
+      include.some(
+        word =>
+          from.path.toLowerCase().includes(word.toLowerCase()) ||
+          to.path.toLowerCase().includes(word.toLowerCase()),
+      ),
+    );
+  }
+  if (exclude.length !== 0) {
+    nodes = nodes.filter(
+      node =>
+        !exclude.some(word =>
+          node.path.toLowerCase().includes(word.toLowerCase()),
+        ),
+    );
     relations = relations.filter(
-      ({ from, to }) => from.path.includes(filter) || to.path.includes(filter),
+      ({ from, to }) =>
+        !exclude.some(
+          word =>
+            from.path.toLowerCase().includes(word.toLowerCase()) ||
+            to.path.toLowerCase().includes(word.toLowerCase()),
+        ),
     );
   }
   return { nodes, relations };
