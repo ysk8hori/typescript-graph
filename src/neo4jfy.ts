@@ -37,6 +37,7 @@ export async function clearDatabase() {
     await session.executeWrite(tx => tx.run(`MATCH (m) DETACH DELETE m`));
   } finally {
     await session.close();
+    await driver.close();
   }
 }
 
