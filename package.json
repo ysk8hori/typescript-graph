@@ -1,8 +1,20 @@
 {
-  "name": "typescript-graph",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@ysk8hori/typescript-graph",
+  "version": "0.0.1",
+  "description": "A CLI to visualize the dependencies between files in the TypeScript codebase.",
   "main": "index.js",
+  "bin": {
+    "tsg": "./bin/tsg.js"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "keywords": [
+    "TypeScript",
+    "dependencies",
+    "dependencies graph"
+  ],
   "scripts": {
     "run": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts",
     "run:sample": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include fillAllLonelyLogic --exclude node_modules error",
