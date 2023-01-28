@@ -1,14 +1,22 @@
-import { writeFileSync } from 'fs';
+import { createWriteStream } from 'fs';
 import path from 'path';
-import { isSameNode, Node, Relation } from './models';
+import { Graph, isSameNode, Node, Relation } from './models';
 
-export default function mermaidify(graph: {
+type DirAndNodesTree = {
+  currentDir: string;
   nodes: Node[];
-  relations: Relation[];
-}): string[] {
-  let lines = ['flowchart LR'];
-  const indent = '    ';
+  children: DirAndNodesTree[];
+};
 
+export default async function mermaidify(markdownTitle: string, graph: Graph) {
+  const dirAndNodesTree = createDirAndNodesTree(graph);
+  await writeMarkdown(markdownTitle, dirAndNodesTree, graph.relations);
+}
+
+/**
+ * ディレクトリツリーの形を再現する。
+ */
+function createDirAndNodesTree(graph: Graph) {
   const allNodes = [
     ...graph.nodes,
     ...graph.relations.map(({ from, to }) => [from, to]).flat(),
@@ -65,12 +73,6 @@ export default function mermaidify(graph: {
     nodes: allNodes.filter(node => getDirectoryPath(node.path) === currentDir),
   }));
 
-  type DirAndNodesTree = {
-    currentDir: string;
-    nodes: Node[];
-    children: DirAndNodesTree[];
-  };
-
   function isChild(parentDirHierarchy: string[], candidate: string[]) {
     if (parentDirHierarchy.length !== candidate.length - 1) return false;
     return parentDirHierarchy.every(
@@ -109,26 +111,45 @@ export default function mermaidify(graph: {
     .filter(dirAndNode => dirAndNode.dirHierarchy.length === 1)
     .map(createDirAndNodesRecursive)
     .flat();
+  return dirAndNodesTree;
+}
 
-  function addGraph(tree: DirAndNodesTree) {
-    lines.push(
-      `${indent}subgraph ${fileNameToMermaidId(tree.currentDir)}["${
-        tree.currentDir
-      }"]`,
-    );
-    lines = lines.concat(
+async function writeMarkdown(
+  title: string,
+  dirAndNodesTree: DirAndNodesTree[],
+  relations: Relation[],
+) {
+  return new Promise((resolve, reject) => {
+    const ws = createWriteStream(`./${title}.md`);
+    ws.on('finish', resolve);
+    ws.on('error', reject);
+    ws.write('# typescript graph on mermaid\n');
+    ws.write('\n');
+    ws.write('```mermaid\n');
+    ws.write('flowchart LR');
+    ws.write('\n');
+    const indent = '    ';
+    function addGraph(tree: DirAndNodesTree) {
+      ws.write(
+        `${indent}subgraph ${fileNameToMermaidId(tree.currentDir)}["${
+          tree.currentDir
+        }"]`,
+      );
+      ws.write('\n');
       tree.nodes
         .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
-        .map(node => `${indent}${indent}${node.mermaidId}["${node.fileName}"]`),
-    );
-    tree.children.forEach(addGraph);
-    lines.push(`${indent}end`);
-  }
+        .forEach(node => {
+          ws.write(`${indent}${indent}${node.mermaidId}["${node.fileName}"]`);
+          ws.write('\n');
+        });
+      tree.children.forEach(addGraph);
+      ws.write(`${indent}end`);
+      ws.write('\n');
+    }
 
-  dirAndNodesTree.forEach(addGraph);
+    dirAndNodesTree.forEach(addGraph);
 
-  lines = lines.concat(
-    graph.relations
+    relations
       .map(relation => ({
         from: {
           ...relation.from,
@@ -139,23 +160,14 @@ export default function mermaidify(graph: {
           mermaidId: fileNameToMermaidId(relation.to.path),
         },
       }))
-      .map(
-        relation => `    ${relation.from.mermaidId}-->${relation.to.mermaidId}`,
-      ),
-  );
-  return lines;
+      .forEach(relation => {
+        ws.write(`    ${relation.from.mermaidId}-->${relation.to.mermaidId}`);
+        ws.write('\n');
+      });
+    ws.end('```\n');
+  });
 }
 
-export function output(title: string, mermaidLines: string[]) {
-  const hoge = `# typescript graph on mermaid
-  
-\`\`\`mermaid
-${mermaidLines.join('\n')}
-\`\`\`
-`;
-  writeFileSync(`./${title}.md`, hoge);
-}
-
-export function fileNameToMermaidId(fileName: string): string {
+function fileNameToMermaidId(fileName: string): string {
   return fileName.split(/@|\[|\]/).join('__');
 }

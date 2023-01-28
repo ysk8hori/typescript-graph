@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import path from 'path';
 import * as ts from 'typescript';
 import { createGraph } from './createGraph';
-import mermaidify, { output } from './mermaidify';
+import mermaidify from './mermaidify';
 import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
 
@@ -63,8 +63,7 @@ export async function main(dir: string, commandOptions: typeof opt) {
     commandOptions.include ?? [],
     commandOptions.exclude ?? [],
   );
-  const mermaid = mermaidify(graph);
-  output(commandOptions.md ?? 'typescript-graph', mermaid);
+  await mermaidify(commandOptions.md ?? 'typescript-graph', graph);
 
   if (commandOptions.neo4j) {
     await neo4jfy(graph);

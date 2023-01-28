@@ -1,13 +1,13 @@
 import path from 'path';
 import * as ts from 'typescript';
-import { Node, Relation } from './models';
+import { Graph, Node, Relation } from './models';
 
 export function createGraph(
   sourceFiles: string[],
   compilerOptions: ts.CompilerOptions,
   include: string[],
   exclude: string[],
-): { nodes: Node[]; relations: Relation[] } {
+): Graph {
   const program = ts.createProgram(sourceFiles, compilerOptions);
   let nodes: Node[] = [];
   let relations: Relation[] = [];
