@@ -69,5 +69,6 @@ Run the `tsg -h` for help
   --include <char...>  specify multiple strings to be included in the path or filename of a file to be included in the output
   --exclude <char...>  specify multiple strings in the path or filename of file to exclude from output
   --neo4j              output to neo4j on localhost:7687
+  --clear-db           clear neo4j database before output
   -h, --help           display help for command
 ```
