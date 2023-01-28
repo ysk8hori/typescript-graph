@@ -24,18 +24,19 @@ program
   )
   .option(
     '--include <char...>',
-    'specify multiple strings to be included in the path or filename of a file to be included in the output',
+    'specify multiple strings to be included in the path or filename to be included in the output',
   )
   .option(
     '--exclude <char...>',
-    'specify multiple strings in the path or filename of file to exclude from output',
+    'specify multiple strings in the path or filename to exclude from output',
   )
-  .option('--neo4j', 'output to neo4j on localhost:7687');
+  .option('--neo4j', 'output to neo4j on localhost:7687')
+  .option('--clear-db', 'clear neo4j database before output');
 program.parse();
 const opt = program.opts();
 
 export async function main(dir: string, commandOptions: typeof opt) {
-  if (commandOptions.neo4j) {
+  if (commandOptions.neo4j && commandOptions.clearDb) {
     await clearDatabase();
   }
   const configPath = ts.findConfigFile(dir, ts.sys.fileExists);
