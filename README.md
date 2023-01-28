@@ -66,8 +66,8 @@ Run the `tsg -h` for help
   -V, --version        output the version number
   --md <char>          Specify the name of the markdown file to be output. Default is typescript-graph.md.
   -d, --dir <char>     Specify the TypeScript code base to be analyzed. if tsconfig.json is not found, specify the directory where tsconfig.json is located.
-  --include <char...>  specify multiple strings to be included in the path or filename of a file to be included in the output
-  --exclude <char...>  specify multiple strings in the path or filename of file to exclude from output
+  --include <char...>  specify multiple strings to be included in the path or filename to be included in the output
+  --exclude <char...>  specify multiple strings in the path or filename to exclude from output
   --neo4j              output to neo4j on localhost:7687
   --clear-db           clear neo4j database before output
   -h, --help           display help for command
