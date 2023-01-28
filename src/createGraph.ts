@@ -2,6 +2,18 @@ import path from 'path';
 import * as ts from 'typescript';
 import { Graph, Node, Relation } from './models';
 
+/**
+ * File(Node) とその依存関係 (Relation) を解析して返す。
+ *
+ * 返却する Node には Relation の from と to の全てのファイルが含まれており重複はない。
+ * また、include と exclude を反映した結果を返す。
+ *
+ * @param sourceFiles
+ * @param compilerOptions
+ * @param include
+ * @param exclude
+ * @returns
+ */
 export function createGraph(
   sourceFiles: string[],
   compilerOptions: ts.CompilerOptions,

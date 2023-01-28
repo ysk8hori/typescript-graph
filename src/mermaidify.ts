@@ -17,16 +17,6 @@ export default async function mermaidify(markdownTitle: string, graph: Graph) {
  * ディレクトリツリーの形を再現する。
  */
 function createDirAndNodesTree(graph: Graph) {
-  const allNodes = [
-    ...graph.nodes,
-    ...graph.relations.map(({ from, to }) => [from, to]).flat(),
-  ].reduce((pre, current) => {
-    // 重複除去
-    if (pre.some(node => isSameNode(node, current))) return pre;
-    pre.push(current);
-    return pre;
-  }, new Array<Node>());
-
   function getDirectoryPath(filePath: string) {
     const array = filePath.split('/');
     if (array.includes('node_modules')) {
@@ -39,7 +29,7 @@ function createDirAndNodesTree(graph: Graph) {
     }
   }
 
-  const allDir = allNodes
+  const allDir = graph.nodes
     .map(({ path }) => getDirectoryPath(path))
     .map(dirPath => {
       const dirArray = dirPath.split('/');
@@ -70,7 +60,9 @@ function createDirAndNodesTree(graph: Graph) {
   const dirAndNodes: DirAndNodes[] = allDir.map(currentDir => ({
     currentDir,
     dirHierarchy: currentDir.split('/'),
-    nodes: allNodes.filter(node => getDirectoryPath(node.path) === currentDir),
+    nodes: graph.nodes.filter(
+      node => getDirectoryPath(node.path) === currentDir,
+    ),
   }));
 
   function isChild(parentDirHierarchy: string[], candidate: string[]) {
