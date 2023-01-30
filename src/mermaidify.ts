@@ -129,14 +129,18 @@ async function writeMarkdown(
     ws.write('flowchart LR');
     ws.write('\n');
     const indent = '    ';
-    function addGraph(tree: DirAndNodesTree, indentNumber = 0) {
+    function addGraph(
+      tree: DirAndNodesTree,
+      indentNumber = 0,
+      parent?: string,
+    ) {
       let _indent = indent;
       for (let i = 0; i < indentNumber; i++) {
         _indent = _indent + indent;
       }
       ws.write(
         `${_indent}subgraph ${fileNameToMermaidId(tree.currentDir)}["${
-          tree.currentDir
+          parent ? tree.currentDir.replace(parent, '') : tree.currentDir
         }"]`,
       );
       ws.write('\n');
@@ -146,7 +150,9 @@ async function writeMarkdown(
           ws.write(`${_indent}${indent}${node.mermaidId}["${node.fileName}"]`);
           ws.write('\n');
         });
-      tree.children.forEach(tree => addGraph(tree, indentNumber + 1));
+      tree.children.forEach(child =>
+        addGraph(child, indentNumber + 1, tree.currentDir),
+      );
       ws.write(`${_indent}end`);
       ws.write('\n');
     }
