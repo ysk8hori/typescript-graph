@@ -1,24 +1,34 @@
 import path from 'path';
 import * as ts from 'typescript';
-import { Graph, Node, Relation } from './models';
+import { Graph, isSameNode, Node, Relation } from './models';
 
-export function createGraph(
-  sourceFiles: string[],
-  compilerOptions: ts.CompilerOptions,
-  include: string[],
-  exclude: string[],
-): Graph {
-  const program = ts.createProgram(sourceFiles, compilerOptions);
-  let nodes: Node[] = [];
-  let relations: Relation[] = [];
+export function createGraph(dir: string): Graph {
+  const configPath = ts.findConfigFile(dir, ts.sys.fileExists);
+  if (!configPath) {
+    throw new Error('Could not find a valid "tsconfig.json".');
+  }
+  const { config } = ts.readConfigFile(configPath, ts.sys.readFile);
+  const splitedConfigPath = configPath.split('/');
+  const rootDir = splitedConfigPath
+    .slice(0, splitedConfigPath.length - 1)
+    .join('/');
+  const { options, fileNames } = ts.parseJsonConfigFileContent(
+    config,
+    ts.sys,
+    rootDir,
+  );
+  options.rootDir = rootDir;
+  const program = ts.createProgram(fileNames, options);
+  const nodes: Node[] = [];
+  const relations: Relation[] = [];
 
   program
     .getSourceFiles()
     .filter(sourceFile => !sourceFile.fileName.includes('node_modules'))
     .forEach(sourceFile => {
       const filePath = removeSlash(
-        compilerOptions.rootDir
-          ? sourceFile.fileName.replace(compilerOptions.rootDir + '/', '')
+        options.rootDir
+          ? sourceFile.fileName.replace(options.rootDir + '/', '')
           : sourceFile.fileName,
       );
       const fileName = getName(filePath);
@@ -31,15 +41,11 @@ export function createGraph(
         const moduleNameText = node.moduleSpecifier.getText(sourceFile);
         const moduleName = moduleNameText.slice(1, moduleNameText.length - 1); // import 文のクォート及びダブルクォートを除去
         const moduleFileFullName =
-          ts.resolveModuleName(
-            moduleName,
-            sourceFile.fileName,
-            compilerOptions,
-            ts.sys,
-          ).resolvedModule?.resolvedFileName ?? '';
+          ts.resolveModuleName(moduleName, sourceFile.fileName, options, ts.sys)
+            .resolvedModule?.resolvedFileName ?? '';
         const moduleFilePath = removeSlash(
-          compilerOptions.rootDir
-            ? moduleFileFullName.replace(compilerOptions.rootDir, '')
+          options.rootDir
+            ? moduleFileFullName.replace(options.rootDir, '')
             : moduleFileFullName,
         );
         if (!moduleFilePath) return;
@@ -57,36 +63,7 @@ export function createGraph(
         });
       });
     });
-  if (include.length !== 0) {
-    nodes = nodes.filter(node =>
-      include.some(word =>
-        node.path.toLowerCase().includes(word.toLowerCase()),
-      ),
-    );
-    relations = relations.filter(({ from, to }) =>
-      include.some(
-        word =>
-          from.path.toLowerCase().includes(word.toLowerCase()) ||
-          to.path.toLowerCase().includes(word.toLowerCase()),
-      ),
-    );
-  }
-  if (exclude.length !== 0) {
-    nodes = nodes.filter(
-      node =>
-        !exclude.some(word =>
-          node.path.toLowerCase().includes(word.toLowerCase()),
-        ),
-    );
-    relations = relations.filter(
-      ({ from, to }) =>
-        !exclude.some(
-          word =>
-            from.path.toLowerCase().includes(word.toLowerCase()) ||
-            to.path.toLowerCase().includes(word.toLowerCase()),
-        ),
-    );
-  }
+
   return { nodes, relations };
 }
 
@@ -114,4 +91,56 @@ function findNode(nodes: Node[], filePath: string): Node | undefined {
 
 function removeSlash(pathName: string): string {
   return pathName.startsWith('/') ? pathName.replace('/', '') : pathName;
+}
+
+export function filter(
+  { nodes, relations }: Graph,
+  include: string[] | undefined,
+  exclude: string[] | undefined,
+) {
+  let tmpNodes = nodes;
+  let tmpRelations = relations;
+  if (include && include.length !== 0) {
+    tmpNodes = tmpNodes.filter(node =>
+      include.some(word =>
+        node.path.toLowerCase().includes(word.toLowerCase()),
+      ),
+    );
+    tmpRelations = tmpRelations.filter(({ from, to }) =>
+      include.some(
+        word =>
+          from.path.toLowerCase().includes(word.toLowerCase()) ||
+          to.path.toLowerCase().includes(word.toLowerCase()),
+      ),
+    );
+  }
+  if (exclude && exclude.length !== 0) {
+    tmpNodes = tmpNodes.filter(
+      node =>
+        !exclude.some(word =>
+          node.path.toLowerCase().includes(word.toLowerCase()),
+        ),
+    );
+    tmpRelations = tmpRelations.filter(
+      ({ from, to }) =>
+        !exclude.some(
+          word =>
+            from.path.toLowerCase().includes(word.toLowerCase()) ||
+            to.path.toLowerCase().includes(word.toLowerCase()),
+        ),
+    );
+  }
+
+  /** nodes もフィルタリングした影響で「relations にあるが nodes にない」が発生しているためマージする */
+  const allNodes = [
+    ...tmpNodes,
+    ...tmpRelations.map(({ from, to }) => [from, to]).flat(),
+  ].reduce((pre, current) => {
+    // 重複除去
+    if (pre.some(node => isSameNode(node, current))) return pre;
+    pre.push(current);
+    return pre;
+  }, new Array<Node>());
+
+  return { nodes: allNodes, relations: tmpRelations };
 }

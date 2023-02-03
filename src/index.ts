@@ -2,8 +2,7 @@
 
 import { Command } from 'commander';
 import path from 'path';
-import * as ts from 'typescript';
-import { createGraph } from './createGraph';
+import { createGraph, filter } from './createGraph';
 import mermaidify from './mermaidify';
 import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
@@ -39,30 +38,13 @@ export async function main(dir: string, commandOptions: typeof opt) {
   if (commandOptions.neo4j && commandOptions.clearDb) {
     await clearDatabase();
   }
-  const configPath = ts.findConfigFile(dir, ts.sys.fileExists);
-  if (!configPath) {
-    throw new Error('Could not find a valid "tsconfig.json".');
-  }
-  console.log(configPath);
-  const { config } = ts.readConfigFile(configPath, ts.sys.readFile);
-  const splitedConfigPath = configPath.split('/');
-  const rootDir = splitedConfigPath
-    .slice(0, splitedConfigPath.length - 1)
-    .join('/');
-  console.log(rootDir);
-  const { options, fileNames } = ts.parseJsonConfigFileContent(
-    config,
-    ts.sys,
-    rootDir,
-  );
-  options.rootDir = rootDir;
 
-  const graph = createGraph(
-    fileNames,
-    options,
-    commandOptions.include ?? [],
-    commandOptions.exclude ?? [],
+  const graph = filter(
+    createGraph(dir),
+    commandOptions.include,
+    commandOptions.exclude,
   );
+
   await mermaidify(commandOptions.md ?? 'typescript-graph', graph);
 
   if (commandOptions.neo4j) {
