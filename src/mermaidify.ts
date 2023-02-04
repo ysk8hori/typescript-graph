@@ -10,6 +10,7 @@ type DirAndNodesTree = {
 type Options = { link?: boolean; rootDir: string };
 
 const indent = '    ';
+const CLASSNAME_DIR = 'dir';
 
 export default async function mermaidify(
   markdownTitle: string,
@@ -126,7 +127,8 @@ async function writeMarkdown(
     ws.write('# typescript graph on mermaid\n');
     ws.write('\n');
     ws.write('```mermaid\n');
-    ws.write('flowchart LR');
+    ws.write('flowchart\n');
+    ws.write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999`);
     ws.write('\n');
 
     writeFileNodesWithSubgraph(ws, dirAndNodesTree);
@@ -186,7 +188,11 @@ function addGraph(
   tree.nodes
     .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
     .forEach(node => {
-      ws.write(`${_indent}${indent}${node.mermaidId}["${node.fileName}"]`);
+      ws.write(
+        `${_indent}${indent}${node.mermaidId}["${node.name}"]${
+          node.isDirectory ? `:::${CLASSNAME_DIR}` : ''
+        }`,
+      );
       ws.write('\n');
     });
   tree.children.forEach(child =>

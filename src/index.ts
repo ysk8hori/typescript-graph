@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import path from 'path';
-import { createGraph, filter } from './createGraph';
+import { abstraction, createGraph, filter } from './createGraph';
 import mermaidify from './mermaidify';
 import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
@@ -27,12 +27,13 @@ program
   )
   .option(
     '--include <char...>',
-    'specify multiple strings to be included in the path or filename to be included in the output',
+    'Specify paths and file names to be included in the graph',
   )
   .option(
     '--exclude <char...>',
-    'specify multiple strings in the path or filename to exclude from output',
+    'Specify the paths and file names to be excluded from the graph',
   )
+  .option('--ab <char...>', 'Specify the path to abstract')
   .option('--neo4j', 'output to neo4j on localhost:7687')
   .option('--clear-db', 'clear neo4j database before output');
 program.parse();
@@ -45,11 +46,13 @@ export async function main(dir: string, commandOptions: typeof opt) {
 
   const { graph: fullGraph, meta } = createGraph(dir);
 
-  const graph = filter(
+  const filteredGraph = filter(
     fullGraph,
     commandOptions.include,
     commandOptions.exclude,
   );
+
+  const graph = abstraction(filteredGraph, commandOptions.ab);
 
   await mermaidify(commandOptions.md ?? 'typescript-graph', graph, {
     link: commandOptions.mermaidLink,

@@ -19,7 +19,9 @@
   "scripts": {
     "run": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts",
     "run:sample": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include fillAllLonelyLogic --exclude node_modules error",
-    "run:sample:link": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include fillAllLonelyLogic --exclude node_modules error --mermaid-link",
+    "run:sample:ab": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include core/logic --exclude node_modules test error valueobject types utils entity --ab business story create analyze infiniteAnalyze",
+    "run:sample:link": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include fillAllLonelyLogic --exclude node_modules test error --mermaid-link",
+    "run:sample:README": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace --include src/components/atoms/ConfigMenu --exclude test stories node_modules",
     "build": "rm -r ./dist && tsc",
     "lint:fix": "eslint --fix src",
     "prettier": "prettier --write ./src",
