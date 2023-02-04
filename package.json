@@ -1,6 +1,6 @@
 {
   "name": "@ysk8hori/typescript-graph",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A CLI to visualize the dependencies between files in the TypeScript codebase.",
   "main": "index.js",
   "homepage": "https://github.com/ysk8hori/typescript-graph",
