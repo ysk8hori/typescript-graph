@@ -1,4 +1,4 @@
-import { createWriteStream } from 'fs';
+import { createWriteStream, WriteStream } from 'fs';
 import path from 'path';
 import { Graph, Node, Relation } from './models';
 
@@ -128,56 +128,65 @@ async function writeMarkdown(
     ws.write('```mermaid\n');
     ws.write('flowchart LR');
     ws.write('\n');
-    const indent = '    ';
-    function addGraph(
-      tree: DirAndNodesTree,
-      indentNumber = 0,
-      parent?: string,
-    ) {
-      let _indent = indent;
-      for (let i = 0; i < indentNumber; i++) {
-        _indent = _indent + indent;
-      }
-      ws.write(
-        `${_indent}subgraph ${fileNameToMermaidId(tree.currentDir)}["${
-          parent ? tree.currentDir.replace(parent, '') : tree.currentDir
-        }"]`,
-      );
-      ws.write('\n');
-      tree.nodes
-        .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
-        .forEach(node => {
-          ws.write(`${_indent}${indent}${node.mermaidId}["${node.fileName}"]`);
-          ws.write('\n');
-        });
-      tree.children.forEach(child =>
-        addGraph(child, indentNumber + 1, tree.currentDir),
-      );
-      ws.write(`${_indent}end`);
-      ws.write('\n');
-    }
 
-    dirAndNodesTree.forEach(tree => addGraph(tree));
+    writeFileNodesWithSubgraph(ws, dirAndNodesTree);
 
-    relations
-      .map(relation => ({
-        from: {
-          ...relation.from,
-          mermaidId: fileNameToMermaidId(relation.from.path),
-        },
-        to: {
-          ...relation.to,
-          mermaidId: fileNameToMermaidId(relation.to.path),
-        },
-      }))
-      .forEach(relation => {
-        ws.write(`    ${relation.from.mermaidId}-->${relation.to.mermaidId}`);
-        ws.write('\n');
-      });
-    ws.end('```\n');
+    writeRelations(ws, relations);
   });
+}
+
+function writeRelations(ws: WriteStream, relations: Relation[]) {
+  relations
+    .map(relation => ({
+      from: {
+        ...relation.from,
+        mermaidId: fileNameToMermaidId(relation.from.path),
+      },
+      to: {
+        ...relation.to,
+        mermaidId: fileNameToMermaidId(relation.to.path),
+      },
+    }))
+    .forEach(relation => {
+      ws.write(`    ${relation.from.mermaidId}-->${relation.to.mermaidId}`);
+      ws.write('\n');
+    });
+  ws.end('```\n');
 }
 
 function fileNameToMermaidId(fileName: string): string {
   return fileName.split(/@|\[|\]/).join('__');
+}
+
+function writeFileNodesWithSubgraph(ws: WriteStream, trees: DirAndNodesTree[]) {
+  trees.forEach(tree => addGraph(ws, tree));
+}
+
+function addGraph(
+  ws: WriteStream,
+  tree: DirAndNodesTree,
+  indentNumber = 0,
+  parent?: string,
+) {
+  let _indent = indent;
+  for (let i = 0; i < indentNumber; i++) {
+    _indent = _indent + indent;
+  }
+  ws.write(
+    `${_indent}subgraph ${fileNameToMermaidId(tree.currentDir)}["${
+      parent ? tree.currentDir.replace(parent, '') : tree.currentDir
+    }"]`,
+  );
+  ws.write('\n');
+  tree.nodes
+    .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
+    .forEach(node => {
+      ws.write(`${_indent}${indent}${node.mermaidId}["${node.fileName}"]`);
+      ws.write('\n');
+    });
+  tree.children.forEach(child =>
+    addGraph(ws, child, indentNumber + 1, tree.currentDir),
+  );
+  ws.write(`${_indent}end`);
+  ws.write('\n');
 }
