@@ -7,10 +7,17 @@ type DirAndNodesTree = {
   nodes: Node[];
   children: DirAndNodesTree[];
 };
+type Options = { link?: boolean };
 
-export default async function mermaidify(markdownTitle: string, graph: Graph) {
+const indent = '    ';
+
+export default async function mermaidify(
+  markdownTitle: string,
+  graph: Graph,
+  options: Options,
+) {
   const dirAndNodesTree = createDirAndNodesTree(graph);
-  await writeMarkdown(markdownTitle, dirAndNodesTree, graph.relations);
+  await writeMarkdown(markdownTitle, dirAndNodesTree, graph.relations, options);
 }
 
 /**
@@ -110,6 +117,7 @@ async function writeMarkdown(
   title: string,
   dirAndNodesTree: DirAndNodesTree[],
   relations: Relation[],
+  options: Options,
 ) {
   return new Promise((resolve, reject) => {
     const ws = createWriteStream(`./${title}.md`);
