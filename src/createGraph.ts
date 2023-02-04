@@ -1,8 +1,8 @@
 import path from 'path';
 import * as ts from 'typescript';
-import { Graph, isSameNode, Node, Relation } from './models';
+import { Graph, isSameNode, Meta, Node, Relation } from './models';
 
-export function createGraph(dir: string): Graph {
+export function createGraph(dir: string): { graph: Graph; meta: Meta } {
   const configPath = ts.findConfigFile(dir, ts.sys.fileExists);
   if (!configPath) {
     throw new Error('Could not find a valid "tsconfig.json".');
@@ -64,7 +64,7 @@ export function createGraph(dir: string): Graph {
       });
     });
 
-  return { nodes, relations };
+  return { graph: { nodes, relations }, meta: { rootDir } };
 }
 
 function getName(filePath: string) {

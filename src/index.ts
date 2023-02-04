@@ -43,14 +43,17 @@ export async function main(dir: string, commandOptions: typeof opt) {
     await clearDatabase();
   }
 
+  const { graph: fullGraph, meta } = createGraph(dir);
+
   const graph = filter(
-    createGraph(dir),
+    fullGraph,
     commandOptions.include,
     commandOptions.exclude,
   );
 
   await mermaidify(commandOptions.md ?? 'typescript-graph', graph, {
     link: commandOptions.mermaidLink,
+    rootDir: meta.rootDir,
   });
 
   if (commandOptions.neo4j) {

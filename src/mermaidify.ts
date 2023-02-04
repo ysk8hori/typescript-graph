@@ -7,7 +7,7 @@ type DirAndNodesTree = {
   nodes: Node[];
   children: DirAndNodesTree[];
 };
-type Options = { link?: boolean };
+type Options = { link?: boolean; rootDir: string };
 
 const indent = '    ';
 
@@ -132,6 +132,12 @@ async function writeMarkdown(
     writeFileNodesWithSubgraph(ws, dirAndNodesTree);
 
     writeRelations(ws, relations);
+
+    if (options.link) {
+      writeFileLink(ws, dirAndNodesTree, options.rootDir);
+    }
+
+    ws.end('```\n');
   });
 }
 
@@ -151,7 +157,6 @@ function writeRelations(ws: WriteStream, relations: Relation[]) {
       ws.write(`    ${relation.from.mermaidId}-->${relation.to.mermaidId}`);
       ws.write('\n');
     });
-  ws.end('```\n');
 }
 
 function fileNameToMermaidId(fileName: string): string {
@@ -189,4 +194,30 @@ function addGraph(
   );
   ws.write(`${_indent}end`);
   ws.write('\n');
+}
+function writeFileLink(
+  ws: WriteStream,
+  trees: DirAndNodesTree[],
+  rootDir: string,
+) {
+  trees.forEach(tree => addLink(ws, tree, rootDir));
+}
+
+function addLink(
+  ws: WriteStream,
+  tree: DirAndNodesTree,
+  rootDir: string,
+): void {
+  tree.nodes
+    .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
+    .forEach(node => {
+      ws.write(
+        `${indent}click ${node.mermaidId} href "vscode://file/${path.join(
+          rootDir,
+          node.path,
+        )}" _blank`,
+      );
+      ws.write('\n');
+    });
+  tree.children.forEach(child => addLink(ws, child, rootDir));
 }

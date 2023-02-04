@@ -18,6 +18,7 @@
   "scripts": {
     "run": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts",
     "run:sample": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include fillAllLonelyLogic --exclude node_modules error",
+    "run:sample:link": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include fillAllLonelyLogic --exclude node_modules error --mermaid-link",
     "build": "rm -r ./dist && tsc",
     "lint:fix": "eslint --fix src",
     "prettier": "prettier --write ./src",
