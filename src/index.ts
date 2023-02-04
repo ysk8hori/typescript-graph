@@ -18,6 +18,10 @@ program
     'Specify the name of the markdown file to be output. Default is typescript-graph.md.',
   )
   .option(
+    '--mermaid-link',
+    'Generates a link on node to open that file in VSCode.',
+  )
+  .option(
     '-d, --dir <char>',
     'Specify the TypeScript code base to be analyzed. if tsconfig.json is not found, specify the directory where tsconfig.json is located.',
   )
@@ -39,13 +43,18 @@ export async function main(dir: string, commandOptions: typeof opt) {
     await clearDatabase();
   }
 
+  const { graph: fullGraph, meta } = createGraph(dir);
+
   const graph = filter(
-    createGraph(dir),
+    fullGraph,
     commandOptions.include,
     commandOptions.exclude,
   );
 
-  await mermaidify(commandOptions.md ?? 'typescript-graph', graph);
+  await mermaidify(commandOptions.md ?? 'typescript-graph', graph, {
+    link: commandOptions.mermaidLink,
+    rootDir: meta.rootDir,
+  });
 
   if (commandOptions.neo4j) {
     await neo4jfy(graph);

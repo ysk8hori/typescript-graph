@@ -1,8 +1,9 @@
 {
   "name": "@ysk8hori/typescript-graph",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A CLI to visualize the dependencies between files in the TypeScript codebase.",
   "main": "index.js",
+  "homepage": "https://github.com/ysk8hori/typescript-graph",
   "bin": {
     "tsg": "./bin/tsg.js"
   },
@@ -18,6 +19,7 @@
   "scripts": {
     "run": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts",
     "run:sample": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include fillAllLonelyLogic --exclude node_modules error",
+    "run:sample:link": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include fillAllLonelyLogic --exclude node_modules error --mermaid-link",
     "build": "rm -r ./dist && tsc",
     "lint:fix": "eslint --fix src",
     "prettier": "prettier --write ./src",
