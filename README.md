@@ -9,34 +9,35 @@ tsg --include src/components/atoms/ConfigMenu --exclude test stories node_module
 ```
 
 ```mermaid
-flowchart TB
+flowchart
+    classDef dir fill:#0000,stroke:#999
     subgraph src["src"]
         src/atoms.ts["atoms.ts"]
-    subgraph src/components/atoms["src/components/atoms"]
-        src/components/atoms/Button.tsx["Button.tsx"]
-    subgraph src/components/atoms/ConfigMenu["src/components/atoms/ConfigMenu"]
-        src/components/atoms/ConfigMenu/index.tsx["index.tsx"]
-    subgraph src/components/atoms/ConfigMenu/MenuStack["src/components/atoms/ConfigMenu/MenuStack"]
-        src/components/atoms/ConfigMenu/MenuStack/MenuStack.tsx["MenuStack.tsx"]
-        src/components/atoms/ConfigMenu/MenuStack/index.ts["index.ts"]
-    end
-    subgraph src/components/atoms/ConfigMenu/MenuButton["src/components/atoms/ConfigMenu/MenuButton"]
-        src/components/atoms/ConfigMenu/MenuButton/MenuButton.tsx["MenuButton.tsx"]
-        src/components/atoms/ConfigMenu/MenuButton/index.ts["index.ts"]
-    end
-    end
-    end
-    subgraph src/pages["src/pages"]
-    subgraph src/pages/GameContainer["src/pages/GameContainer"]
-        src/pages/GameContainer/GameContainer.tsx["GameContainer.tsx"]
-    end
-    subgraph src/pages/GenerateGameContainer["src/pages/GenerateGameContainer"]
-        src/pages/GenerateGameContainer/GenerateGameContainer.tsx["GenerateGameContainer.tsx"]
-    end
-    subgraph src/pages/StartMenu["src/pages/StartMenu"]
-        src/pages/StartMenu/StartMenu.tsx["StartMenu.tsx"]
-    end
-    end
+        subgraph src/components/atoms["/components/atoms"]
+            src/components/atoms/Button.tsx["Button.tsx"]
+            subgraph src/components/atoms/ConfigMenu["/ConfigMenu"]
+                src/components/atoms/ConfigMenu/index.tsx["index.tsx"]
+                subgraph src/components/atoms/ConfigMenu/MenuStack["/MenuStack"]
+                    src/components/atoms/ConfigMenu/MenuStack/MenuStack.tsx["MenuStack.tsx"]
+                    src/components/atoms/ConfigMenu/MenuStack/index.ts["index.ts"]
+                end
+                subgraph src/components/atoms/ConfigMenu/MenuButton["/MenuButton"]
+                    src/components/atoms/ConfigMenu/MenuButton/MenuButton.tsx["MenuButton.tsx"]
+                    src/components/atoms/ConfigMenu/MenuButton/index.ts["index.ts"]
+                end
+            end
+        end
+        subgraph src/pages["/pages"]
+            subgraph src/pages/GameContainer["/GameContainer"]
+                src/pages/GameContainer/GameContainer.tsx["GameContainer.tsx"]
+            end
+            subgraph src/pages/GenerateGameContainer["/GenerateGameContainer"]
+                src/pages/GenerateGameContainer/GenerateGameContainer.tsx["GenerateGameContainer.tsx"]
+            end
+            subgraph src/pages/StartMenu["/StartMenu"]
+                src/pages/StartMenu/StartMenu.tsx["StartMenu.tsx"]
+            end
+        end
     end
     src/components/atoms/ConfigMenu/MenuStack/MenuStack.tsx-->src/atoms.ts
     src/components/atoms/ConfigMenu/MenuStack/MenuStack.tsx-->src/components/atoms/Button.tsx
@@ -67,8 +68,9 @@ Run the `tsg -h` for help
   --md <char>          Specify the name of the markdown file to be output. Default is typescript-graph.md.
   --mermaid-link       Generates a link on node to open that file in VSCode.
   -d, --dir <char>     Specify the TypeScript code base to be analyzed. if tsconfig.json is not found, specify the directory where tsconfig.json is located.
-  --include <char...>  specify multiple strings to be included in the path or filename to be included in the output
-  --exclude <char...>  specify multiple strings in the path or filename to exclude from output
+  --include <char...>  Specify paths and file names to be included in the graph
+  --exclude <char...>  Specify the paths and file names to be excluded from the graph
+  --ab <char...>       Specify the path to abstract
   --neo4j              output to neo4j on localhost:7687
   --clear-db           clear neo4j database before output
   -h, --help           display help for command

@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "run": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts",
+    "run:help": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -h",
     "run:sample": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include fillAllLonelyLogic --exclude node_modules error",
     "run:sample:ab": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include core/logic --exclude node_modules test error valueobject types utils entity --ab business story create analyze infiniteAnalyze",
     "run:sample:link": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace-generator/src/core/logic --include fillAllLonelyLogic --exclude node_modules test error --mermaid-link",
