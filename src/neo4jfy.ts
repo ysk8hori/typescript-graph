@@ -14,9 +14,9 @@ export async function neo4jfy(graph: { nodes: Node[]; relations: Relation[] }) {
           MERGE (from)-[:DEPENDS_ON {importedModule: $importedModule}]->(to)
           `,
           {
-            fromName: rel.from.fileName,
+            fromName: rel.from.name,
             from: rel.from.path,
-            toName: rel.to.fileName,
+            toName: rel.to.name,
             to: rel.to.path,
             importedModule: rel.fullText,
           },
