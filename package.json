@@ -28,7 +28,8 @@
     "prettier": "prettier --write ./src",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepare": "npm run build"
   },
   "author": "ysk8hori",
   "license": "ISC",
