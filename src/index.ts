@@ -6,6 +6,7 @@ import { abstraction, createGraph, filter } from './createGraph';
 import mermaidify from './mermaidify';
 import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
+import { OptionValues } from './models';
 
 const program = new Command();
 program
@@ -37,9 +38,13 @@ program
   .option('--neo4j', 'output to neo4j on localhost:7687')
   .option('--clear-db', 'clear neo4j database before output');
 program.parse();
-const opt = program.opts();
 
-export async function main(dir: string, commandOptions: typeof opt) {
+const opt = program.opts<Partial<OptionValues>>();
+
+export async function main(
+  dir: string,
+  commandOptions: typeof opt & { executedScript: string },
+) {
   if (commandOptions.neo4j && commandOptions.clearDb) {
     await clearDatabase();
   }
@@ -57,6 +62,7 @@ export async function main(dir: string, commandOptions: typeof opt) {
   await mermaidify(commandOptions.md ?? 'typescript-graph', graph, {
     link: commandOptions.mermaidLink,
     rootDir: meta.rootDir,
+    executedScript: commandOptions.executedScript,
   });
 
   if (commandOptions.neo4j) {
@@ -65,4 +71,5 @@ export async function main(dir: string, commandOptions: typeof opt) {
 }
 
 const dir = path.resolve(opt.dir ?? './');
-main(dir, opt);
+const executedScript = `tsg ${process.argv.slice(2).join(' ')}`;
+main(dir, { ...opt, executedScript });

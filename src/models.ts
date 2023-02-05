@@ -1,3 +1,14 @@
+export type OptionValues = {
+  md: string;
+  mermaidLink: boolean;
+  dir: string;
+  include: string[];
+  exclude: string[];
+  ab: string[];
+  neo4j: boolean;
+  clearDb: boolean;
+};
+
 type FileName = string;
 type DirName = string;
 type FilePath = string;
