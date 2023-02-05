@@ -7,7 +7,7 @@ type DirAndNodesTree = {
   nodes: Node[];
   children: DirAndNodesTree[];
 };
-type Options = { link?: boolean; rootDir: string };
+type Options = { link?: boolean; rootDir: string; executedScript: string };
 
 const indent = '    ';
 const CLASSNAME_DIR = 'dir';
@@ -125,6 +125,10 @@ async function writeMarkdown(
     ws.on('finish', resolve);
     ws.on('error', reject);
     ws.write('# typescript graph on mermaid\n');
+    ws.write('\n');
+    ws.write('```bash\n');
+    ws.write(`${options.executedScript}\n`);
+    ws.write('```\n');
     ws.write('\n');
     ws.write('```mermaid\n');
     ws.write('flowchart\n');
