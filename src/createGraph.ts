@@ -216,10 +216,6 @@ export function abstraction(
         from: abstractionNode(original.from, absDirArrArr),
         to: abstractionNode(original.to, absDirArrArr),
       }))
-      .map(rel => {
-        console.log(rel);
-        return rel;
-      })
       .filter(relation => !isSameNode(relation.from, relation.to)),
   );
 
