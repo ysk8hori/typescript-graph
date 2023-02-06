@@ -35,6 +35,8 @@ program
     'Specify the paths and file names to be excluded from the graph',
   )
   .option('--ab <char...>', 'Specify the path to abstract')
+  .option('--LR', 'Specify Flowchart orientation Left-to-Right')
+  .option('--TB', 'Specify Flowchart orientation Top-to-Bottom')
   .option('--neo4j', 'output to neo4j on localhost:7687')
   .option('--clear-db', 'clear neo4j database before output');
 program.parse();
@@ -60,7 +62,7 @@ export async function main(
   const graph = abstraction(filteredGraph, commandOptions.ab);
 
   await mermaidify(commandOptions.md ?? 'typescript-graph', graph, {
-    link: commandOptions.mermaidLink,
+    ...commandOptions,
     rootDir: meta.rootDir,
     executedScript: commandOptions.executedScript,
   });
@@ -72,4 +74,5 @@ export async function main(
 
 const dir = path.resolve(opt.dir ?? './');
 const executedScript = `tsg ${process.argv.slice(2).join(' ')}`;
+console.log(opt);
 main(dir, { ...opt, executedScript });

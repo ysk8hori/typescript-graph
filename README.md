@@ -63,14 +63,17 @@ or global install.
 
 Run the `tsg -h` for help
 
-```
+```Options:
   -V, --version        output the version number
   --md <char>          Specify the name of the markdown file to be output. Default is typescript-graph.md.
   --mermaid-link       Generates a link on node to open that file in VSCode.
-  -d, --dir <char>     Specify the TypeScript code base to be analyzed. if tsconfig.json is not found, specify the directory where tsconfig.json is located.
+  -d, --dir <char>     Specify the TypeScript code base to be analyzed. if tsconfig.json is not found, specify the
+                       directory where tsconfig.json is located.
   --include <char...>  Specify paths and file names to be included in the graph
   --exclude <char...>  Specify the paths and file names to be excluded from the graph
   --ab <char...>       Specify the path to abstract
+  --LR                 Specify Flowchart orientation Left-to-Right
+  --TB                 Specify Flowchart orientation Top-to-Bottom
   --neo4j              output to neo4j on localhost:7687
   --clear-db           clear neo4j database before output
   -h, --help           display help for command

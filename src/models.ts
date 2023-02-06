@@ -7,6 +7,8 @@ export type OptionValues = {
   ab: string[];
   neo4j: boolean;
   clearDb: boolean;
+  LR: boolean;
+  TB: boolean;
 };
 
 type FileName = string;
