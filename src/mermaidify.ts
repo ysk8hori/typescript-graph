@@ -124,7 +124,8 @@ async function writeMarkdown(
   options: Options,
 ) {
   return new Promise((resolve, reject) => {
-    const ws = createWriteStream(`./${title}.md`);
+    const filename = title.endsWith('.md') ? title : `./${title}.md`;
+    const ws = createWriteStream(filename);
     ws.on('finish', resolve);
     ws.on('error', reject);
     ws.write('# typescript graph on mermaid\n');
@@ -154,7 +155,7 @@ async function writeMarkdown(
 
     ws.end('```\n');
 
-    console.log(`./${title}.md`);
+    console.log(filename);
   });
 }
 
