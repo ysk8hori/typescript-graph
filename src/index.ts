@@ -74,5 +74,4 @@ export async function main(
 
 const dir = path.resolve(opt.dir ?? './');
 const executedScript = `tsg ${process.argv.slice(2).join(' ')}`;
-console.log(opt);
 main(dir, { ...opt, executedScript });

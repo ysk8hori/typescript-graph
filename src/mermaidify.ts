@@ -153,6 +153,8 @@ async function writeMarkdown(
     }
 
     ws.end('```\n');
+
+    console.log(`./${title}.md`);
   });
 }
 
