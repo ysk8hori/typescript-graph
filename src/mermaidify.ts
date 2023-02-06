@@ -1,13 +1,16 @@
 import { createWriteStream, WriteStream } from 'fs';
 import path from 'path';
-import { Graph, Node, Relation } from './models';
+import { Graph, Node, OptionValues, Relation } from './models';
 
 type DirAndNodesTree = {
   currentDir: string;
   nodes: Node[];
   children: DirAndNodesTree[];
 };
-type Options = { link?: boolean; rootDir: string; executedScript: string };
+type Options = Partial<OptionValues> & {
+  rootDir: string;
+  executedScript: string;
+};
 
 const indent = '    ';
 const CLASSNAME_DIR = 'dir';
@@ -131,7 +134,13 @@ async function writeMarkdown(
     ws.write('```\n');
     ws.write('\n');
     ws.write('```mermaid\n');
-    ws.write('flowchart\n');
+    if (options.LR) {
+      ws.write(`flowchart LR\n`);
+    } else if (options.TB) {
+      ws.write(`flowchart TB\n`);
+    } else {
+      ws.write(`flowchart\n`);
+    }
     ws.write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999`);
     ws.write('\n');
 
@@ -139,7 +148,7 @@ async function writeMarkdown(
 
     writeRelations(ws, relations);
 
-    if (options.link) {
+    if (options.mermaidLink) {
       writeFileLink(ws, dirAndNodesTree, options.rootDir);
     }
 
