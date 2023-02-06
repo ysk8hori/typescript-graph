@@ -34,7 +34,7 @@ program
     '--exclude <char...>',
     'Specify the paths and file names to be excluded from the graph',
   )
-  .option('--ab <char...>', 'Specify the path to abstract')
+  .option('--abstraction <char...>', 'Specify the path to abstract')
   .option('--LR', 'Specify Flowchart orientation Left-to-Right')
   .option('--TB', 'Specify Flowchart orientation Top-to-Bottom')
   .option('--neo4j', 'output to neo4j on localhost:7687')
@@ -59,7 +59,7 @@ export async function main(
     commandOptions.exclude,
   );
 
-  const graph = abstraction(filteredGraph, commandOptions.ab);
+  const graph = abstraction(filteredGraph, commandOptions.abstraction);
 
   await mermaidify(commandOptions.md ?? 'typescript-graph', graph, {
     ...commandOptions,

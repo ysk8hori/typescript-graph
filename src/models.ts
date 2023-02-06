@@ -4,7 +4,7 @@ export type OptionValues = {
   dir: string;
   include: string[];
   exclude: string[];
-  ab: string[];
+  abstraction: string[];
   neo4j: boolean;
   clearDb: boolean;
   LR: boolean;
