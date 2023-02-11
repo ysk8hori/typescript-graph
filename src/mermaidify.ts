@@ -178,7 +178,11 @@ function writeRelations(ws: WriteStream, relations: Relation[]) {
 }
 
 function fileNameToMermaidId(fileName: string): string {
-  return fileName.split(/@|\[|\]/).join('__');
+  return fileName
+    .split(/@|\[|\]/)
+    .join('__')
+    .split('/graph/')
+    .join('/_graph_/');
 }
 
 function writeFileNodesWithSubgraph(ws: WriteStream, trees: DirAndNodesTree[]) {
