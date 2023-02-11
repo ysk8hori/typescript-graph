@@ -23,14 +23,16 @@
     "run:sample:include": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config",
     "run:sample:exclude": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils",
     "run:sample:abstraction": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions",
-    "run:sample:link": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts --mermaid-link",
+    "run:sample:link": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --mermaid-link",
     "run:sample:README": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace --include src/components/atoms/ConfigMenu --exclude test stories node_modules",
-    "build": "rm -r ./dist && tsc",
+    "build": "tsc",
+    "build:re": "rm -r ./dist && tsc",
     "lint:fix": "eslint --fix src",
     "prettier": "prettier --write ./src",
     "type-check": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "vitest run src",
+    "test:watch": "vitest src",
+    "test:integration": "vitest run ./integration",
     "prepublishOnly": "npm run test & npm run build"
   },
   "author": "ysk8hori",
@@ -47,7 +49,8 @@
     "eslint-config-prettier": "^8.6.0",
     "prettier": "^2.8.1",
     "ts-node": "^10.9.1",
-    "vitest": "^0.26.3"
+    "vitest": "^0.26.3",
+    "zx": "^7.1.1"
   },
   "peerDependencies": {
     "typescript": "^4.9.4"

@@ -1,0 +1,260 @@
+import { beforeAll, expect, test } from 'vitest';
+import { $ } from 'zx';
+import fs from 'fs';
+import path from 'path';
+
+const dir = '__tmp__';
+const filename = 'test.md';
+const filepath = path.join(dir, filename);
+
+beforeAll(() => {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+});
+
+test('run:sample', async () => {
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --md ${filepath}`;
+
+  const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
+  expect(file).toMatchInlineSnapshot(`
+    "# typescript graph on mermaid
+
+    \`\`\`bash
+    tsg -d ./dummy_project --md __tmp__/test.md
+    \`\`\`
+
+    \`\`\`mermaid
+    flowchart
+        classDef dir fill:#0000,stroke:#999
+        subgraph src[\\"src\\"]
+            src/utils.ts[\\"utils.ts\\"]
+            src/config.ts[\\"config.ts\\"]
+            src/main.ts[\\"main.ts\\"]
+            subgraph src/includeFiles[\\"/includeFiles\\"]
+                src/includeFiles/b.ts[\\"b.ts\\"]
+                src/includeFiles/c.ts[\\"c.ts\\"]
+                src/includeFiles/a.ts[\\"a.ts\\"]
+                subgraph src/includeFiles/children[\\"/children\\"]
+                    src/includeFiles/children/childA.ts[\\"childA.ts\\"]
+                end
+                subgraph src/includeFiles/excludeFiles[\\"/excludeFiles\\"]
+                    src/includeFiles/excludeFiles/g.ts[\\"g.ts\\"]
+                    src/includeFiles/excludeFiles/i.ts[\\"i.ts\\"]
+                    src/includeFiles/excludeFiles/h.ts[\\"h.ts\\"]
+                end
+                subgraph src/includeFiles/abstractions[\\"/abstractions\\"]
+                    src/includeFiles/abstractions/j.ts[\\"j.ts\\"]
+                    src/includeFiles/abstractions/l.ts[\\"l.ts\\"]
+                    src/includeFiles/abstractions/k.ts[\\"k.ts\\"]
+                    subgraph src/includeFiles/abstractions/children[\\"/children\\"]
+                        src/includeFiles/abstractions/children/childA.ts[\\"childA.ts\\"]
+                    end
+                end
+            end
+            subgraph src/otherFiles[\\"/otherFiles\\"]
+                src/otherFiles/d.ts[\\"d.ts\\"]
+                src/otherFiles/f.ts[\\"f.ts\\"]
+                src/otherFiles/e.ts[\\"e.ts\\"]
+                subgraph src/otherFiles/children[\\"/children\\"]
+                    src/otherFiles/children/childA.ts[\\"childA.ts\\"]
+                end
+            end
+        end
+        src/includeFiles/b.ts-->src/utils.ts
+        src/includeFiles/b.ts-->src/config.ts
+        src/includeFiles/c.ts-->src/utils.ts
+        src/includeFiles/c.ts-->src/includeFiles/b.ts
+        src/config.ts-->src/utils.ts
+        src/config.ts-->src/includeFiles/c.ts
+        src/includeFiles/children/childA.ts-->src/utils.ts
+        src/includeFiles/excludeFiles/g.ts-->src/includeFiles/children/childA.ts
+        src/includeFiles/excludeFiles/g.ts-->src/utils.ts
+        src/includeFiles/excludeFiles/i.ts-->src/utils.ts
+        src/includeFiles/excludeFiles/h.ts-->src/includeFiles/excludeFiles/i.ts
+        src/includeFiles/excludeFiles/h.ts-->src/utils.ts
+        src/includeFiles/excludeFiles/h.ts-->src/config.ts
+        src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/g.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/h.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/i.ts
+        src/includeFiles/a.ts-->src/utils.ts
+        src/otherFiles/children/childA.ts-->src/utils.ts
+        src/otherFiles/d.ts-->src/otherFiles/children/childA.ts
+        src/otherFiles/d.ts-->src/utils.ts
+        src/otherFiles/f.ts-->src/utils.ts
+        src/otherFiles/e.ts-->src/otherFiles/f.ts
+        src/otherFiles/e.ts-->src/utils.ts
+        src/otherFiles/e.ts-->src/config.ts
+        src/includeFiles/abstractions/j.ts-->src/utils.ts
+        src/includeFiles/abstractions/j.ts-->src/includeFiles/abstractions/children/childA.ts
+        src/includeFiles/abstractions/l.ts-->src/utils.ts
+        src/includeFiles/abstractions/k.ts-->src/includeFiles/abstractions/l.ts
+        src/includeFiles/abstractions/k.ts-->src/utils.ts
+        src/main.ts-->src/includeFiles/a.ts
+        src/main.ts-->src/includeFiles/b.ts
+        src/main.ts-->src/otherFiles/d.ts
+        src/main.ts-->src/otherFiles/e.ts
+        src/main.ts-->src/includeFiles/abstractions/j.ts
+        src/main.ts-->src/includeFiles/abstractions/k.ts
+        src/main.ts-->src/utils.ts
+    \`\`\`
+    "
+  `);
+});
+
+test('run:sample:include', async () => {
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --md ${filepath}`;
+
+  const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
+  expect(file).toMatchInlineSnapshot(`
+    "# typescript graph on mermaid
+
+    \`\`\`bash
+    tsg -d ./dummy_project --include includeFiles config --md __tmp__/test.md
+    \`\`\`
+
+    \`\`\`mermaid
+    flowchart
+        classDef dir fill:#0000,stroke:#999
+        subgraph src[\\"src\\"]
+            src/config.ts[\\"config.ts\\"]
+            src/utils.ts[\\"utils.ts\\"]
+            src/main.ts[\\"main.ts\\"]
+            subgraph src/includeFiles[\\"/includeFiles\\"]
+                src/includeFiles/b.ts[\\"b.ts\\"]
+                src/includeFiles/c.ts[\\"c.ts\\"]
+                src/includeFiles/a.ts[\\"a.ts\\"]
+                subgraph src/includeFiles/children[\\"/children\\"]
+                    src/includeFiles/children/childA.ts[\\"childA.ts\\"]
+                end
+                subgraph src/includeFiles/excludeFiles[\\"/excludeFiles\\"]
+                    src/includeFiles/excludeFiles/g.ts[\\"g.ts\\"]
+                    src/includeFiles/excludeFiles/i.ts[\\"i.ts\\"]
+                    src/includeFiles/excludeFiles/h.ts[\\"h.ts\\"]
+                end
+                subgraph src/includeFiles/abstractions[\\"/abstractions\\"]
+                    src/includeFiles/abstractions/j.ts[\\"j.ts\\"]
+                    src/includeFiles/abstractions/l.ts[\\"l.ts\\"]
+                    src/includeFiles/abstractions/k.ts[\\"k.ts\\"]
+                    subgraph src/includeFiles/abstractions/children[\\"/children\\"]
+                        src/includeFiles/abstractions/children/childA.ts[\\"childA.ts\\"]
+                    end
+                end
+            end
+            subgraph src/otherFiles[\\"/otherFiles\\"]
+                src/otherFiles/e.ts[\\"e.ts\\"]
+            end
+        end
+        src/includeFiles/b.ts-->src/utils.ts
+        src/includeFiles/b.ts-->src/config.ts
+        src/includeFiles/c.ts-->src/utils.ts
+        src/includeFiles/c.ts-->src/includeFiles/b.ts
+        src/config.ts-->src/utils.ts
+        src/config.ts-->src/includeFiles/c.ts
+        src/includeFiles/children/childA.ts-->src/utils.ts
+        src/includeFiles/excludeFiles/g.ts-->src/includeFiles/children/childA.ts
+        src/includeFiles/excludeFiles/g.ts-->src/utils.ts
+        src/includeFiles/excludeFiles/i.ts-->src/utils.ts
+        src/includeFiles/excludeFiles/h.ts-->src/includeFiles/excludeFiles/i.ts
+        src/includeFiles/excludeFiles/h.ts-->src/utils.ts
+        src/includeFiles/excludeFiles/h.ts-->src/config.ts
+        src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/g.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/h.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/i.ts
+        src/includeFiles/a.ts-->src/utils.ts
+        src/otherFiles/e.ts-->src/config.ts
+        src/includeFiles/abstractions/j.ts-->src/utils.ts
+        src/includeFiles/abstractions/j.ts-->src/includeFiles/abstractions/children/childA.ts
+        src/includeFiles/abstractions/l.ts-->src/utils.ts
+        src/includeFiles/abstractions/k.ts-->src/includeFiles/abstractions/l.ts
+        src/includeFiles/abstractions/k.ts-->src/utils.ts
+        src/main.ts-->src/includeFiles/a.ts
+        src/main.ts-->src/includeFiles/b.ts
+        src/main.ts-->src/includeFiles/abstractions/j.ts
+        src/main.ts-->src/includeFiles/abstractions/k.ts
+    \`\`\`
+    "
+  `);
+});
+
+test('run:sample:exclude', async () => {
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles --exclude excludeFiles utils config --md ${filepath}`;
+
+  const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
+  expect(file).toMatchInlineSnapshot(`
+    "# typescript graph on mermaid
+
+    \`\`\`bash
+    tsg -d ./dummy_project --include includeFiles --exclude excludeFiles utils config --md __tmp__/test.md
+    \`\`\`
+
+    \`\`\`mermaid
+    flowchart
+        classDef dir fill:#0000,stroke:#999
+        subgraph src[\\"src\\"]
+            src/main.ts[\\"main.ts\\"]
+            subgraph src/includeFiles[\\"/includeFiles\\"]
+                src/includeFiles/b.ts[\\"b.ts\\"]
+                src/includeFiles/c.ts[\\"c.ts\\"]
+                src/includeFiles/a.ts[\\"a.ts\\"]
+                subgraph src/includeFiles/children[\\"/children\\"]
+                    src/includeFiles/children/childA.ts[\\"childA.ts\\"]
+                end
+                subgraph src/includeFiles/abstractions[\\"/abstractions\\"]
+                    src/includeFiles/abstractions/j.ts[\\"j.ts\\"]
+                    src/includeFiles/abstractions/l.ts[\\"l.ts\\"]
+                    src/includeFiles/abstractions/k.ts[\\"k.ts\\"]
+                    subgraph src/includeFiles/abstractions/children[\\"/children\\"]
+                        src/includeFiles/abstractions/children/childA.ts[\\"childA.ts\\"]
+                    end
+                end
+            end
+        end
+        src/includeFiles/c.ts-->src/includeFiles/b.ts
+        src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
+        src/includeFiles/abstractions/j.ts-->src/includeFiles/abstractions/children/childA.ts
+        src/includeFiles/abstractions/k.ts-->src/includeFiles/abstractions/l.ts
+        src/main.ts-->src/includeFiles/a.ts
+        src/main.ts-->src/includeFiles/b.ts
+        src/main.ts-->src/includeFiles/abstractions/j.ts
+        src/main.ts-->src/includeFiles/abstractions/k.ts
+    \`\`\`
+    "
+  `);
+});
+
+test('run:sample:abstraction', async () => {
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles --exclude excludeFiles utils config --abstraction abstractions --md ${filepath}`;
+
+  const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
+  expect(file).toMatchInlineSnapshot(`
+    "# typescript graph on mermaid
+
+    \`\`\`bash
+    tsg -d ./dummy_project --include includeFiles --exclude excludeFiles utils config --abstraction abstractions --md __tmp__/test.md
+    \`\`\`
+
+    \`\`\`mermaid
+    flowchart
+        classDef dir fill:#0000,stroke:#999
+        subgraph src[\\"src\\"]
+            src/main.ts[\\"main.ts\\"]
+            subgraph src/includeFiles[\\"/includeFiles\\"]
+                src/includeFiles/b.ts[\\"b.ts\\"]
+                src/includeFiles/c.ts[\\"c.ts\\"]
+                src/includeFiles/a.ts[\\"a.ts\\"]
+                src/includeFiles/abstractions[\\"/abstractions\\"]:::dir
+                subgraph src/includeFiles/children[\\"/children\\"]
+                    src/includeFiles/children/childA.ts[\\"childA.ts\\"]
+                end
+            end
+        end
+        src/includeFiles/c.ts-->src/includeFiles/b.ts
+        src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
+        src/main.ts-->src/includeFiles/a.ts
+        src/main.ts-->src/includeFiles/b.ts
+        src/main.ts-->src/includeFiles/abstractions
+    \`\`\`
+    "
+  `);
+});
