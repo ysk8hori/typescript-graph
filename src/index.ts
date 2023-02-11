@@ -2,7 +2,9 @@
 
 import { Command } from 'commander';
 import path from 'path';
-import { abstraction, createGraph, filter } from './graph/createGraph';
+import { createGraph } from './graph/createGraph';
+import { filterGraph } from './graph/filterGraph';
+import { abstraction } from './graph/abstraction';
 import mermaidify from './mermaidify';
 import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
@@ -57,7 +59,7 @@ export async function main(
 
   const { graph: fullGraph, meta } = createGraph(dir);
 
-  const filteredGraph = filter(
+  const filteredGraph = filterGraph(
     fullGraph,
     commandOptions.include,
     commandOptions.exclude,

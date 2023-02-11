@@ -1,6 +1,5 @@
 import { expect, test } from 'vitest';
-import { abstractionPath } from './createGraph';
-import { Node } from '../models';
+import { abstractionPath } from './abstraction';
 
 test('/src/components/atoms/Button.tsx atoms = /src/components/atoms', () => {
   expect(
