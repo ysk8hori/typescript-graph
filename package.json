@@ -38,7 +38,7 @@
   "author": "ysk8hori",
   "license": "ISC",
   "dependencies": {
-    "commander": "^9.5.0",
+    "commander": "^10.0.0",
     "neo4j-driver": "^5.4.0"
   },
   "devDependencies": {
