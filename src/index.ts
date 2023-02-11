@@ -15,6 +15,10 @@ program
   .version(packagejson.version);
 program
   .option(
+    '--mode <char>',
+    'Specify the mode "dir" or "file". Default is "file".',
+  )
+  .option(
     '--md <char>',
     'Specify the name of the markdown file to be output. Default is typescript-graph.md.',
   )

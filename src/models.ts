@@ -1,4 +1,5 @@
 export type OptionValues = {
+  mode: 'dir' | 'file';
   md: string;
   mermaidLink: boolean;
   dir: string;
