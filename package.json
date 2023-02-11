@@ -29,8 +29,9 @@
     "lint:fix": "eslint --fix src",
     "prettier": "prettier --write ./src",
     "type-check": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "vitest run src",
+    "test:watch": "vitest src",
+    "test:integration": "vitest run ./integration",
     "prepublishOnly": "npm run test & npm run build"
   },
   "author": "ysk8hori",
