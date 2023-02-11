@@ -7,7 +7,7 @@ import {
   Meta,
   Node,
   Relation,
-} from './models';
+} from '../models';
 
 export function createGraph(dir: string): { graph: Graph; meta: Meta } {
   const configPath = ts.findConfigFile(dir, ts.sys.fileExists);

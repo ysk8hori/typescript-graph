@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import path from 'path';
-import { abstraction, createGraph, filter } from './createGraph';
+import { abstraction, createGraph, filter } from './graph/createGraph';
 import mermaidify from './mermaidify';
 import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
