@@ -34,6 +34,9 @@ function createDirAndNodesTree(graph: Graph) {
       // node_modules より深いディレクトリ階層の情報は捨てる
       // node_modules 内の node の name はパッケージ名のようなものになっているのでそれで良い
       return 'node_modules';
+    } else if (array.length === 1) {
+      // トップレベルのファイルの場合
+      return undefined;
     } else {
       // 末尾のファイル名は不要
       return path.join(...array.slice(0, array.length - 1));
@@ -43,6 +46,7 @@ function createDirAndNodesTree(graph: Graph) {
   const allDir = graph.nodes
     .map(({ path }) => getDirectoryPath(path))
     .map(dirPath => {
+      if (!dirPath) return undefined;
       const dirArray = dirPath.split('/');
       return dirArray.reduce((prev, current) => {
         const prevValue = prev.at(-1);
@@ -56,6 +60,7 @@ function createDirAndNodesTree(graph: Graph) {
     })
     .flat()
     .reduce((pre, current) => {
+      if (!current) return pre;
       // 重複除去
       if (pre.some(filePath => filePath === current)) return pre;
       pre.push(current);
@@ -179,10 +184,13 @@ function writeRelations(ws: WriteStream, relations: Relation[]) {
 
 function fileNameToMermaidId(fileName: string): string {
   return fileName
-    .split(/@|\[|\]|-/)
+    .split(/@|\[|\]|-|>|<|{|}|\(|\)|=|&|\|~|,|"|%|\^|\*|_/)
     .join('//')
     .split('/graph/')
     .join('/_graph_/');
+}
+function fileNameToMermaidName(fileName: string): string {
+  return fileName.split(/"/).join('//');
 }
 
 function writeFileNodesWithSubgraph(ws: WriteStream, trees: DirAndNodesTree[]) {
@@ -200,18 +208,20 @@ function addGraph(
     _indent = _indent + indent;
   }
   ws.write(
-    `${_indent}subgraph ${fileNameToMermaidId(tree.currentDir)}["${
-      parent ? tree.currentDir.replace(parent, '') : tree.currentDir
-    }"]`,
+    `${_indent}subgraph ${fileNameToMermaidId(
+      tree.currentDir,
+    )}["${fileNameToMermaidName(
+      parent ? tree.currentDir.replace(parent, '') : tree.currentDir,
+    )}"]`,
   );
   ws.write('\n');
   tree.nodes
     .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
     .forEach(node => {
       ws.write(
-        `${_indent}${indent}${node.mermaidId}["${node.name}"]${
-          node.isDirectory ? `:::${CLASSNAME_DIR}` : ''
-        }`,
+        `${_indent}${indent}${node.mermaidId}["${fileNameToMermaidName(
+          node.name,
+        )}"]${node.isDirectory ? `:::${CLASSNAME_DIR}` : ''}`,
       );
       ws.write('\n');
     });

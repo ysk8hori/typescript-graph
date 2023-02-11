@@ -55,6 +55,8 @@ test('run:sample', async () => {
                 src/otherFiles/f.ts[\\"f.ts\\"]
                 src/otherFiles/e.ts[\\"e.ts\\"]
                 subgraph src/otherFiles/children[\\"/children\\"]
+                    src/otherFiles/children/:id.json[\\":id.json\\"]
+                    src/otherFiles/children///id//.json[\\"{id}.json\\"]
                     src/otherFiles/children/childA.ts[\\"childA.ts\\"]
                 end
             end
@@ -78,6 +80,8 @@ test('run:sample', async () => {
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/i.ts
         src/includeFiles/a.ts-->src/utils.ts
         src/otherFiles/children/childA.ts-->src/utils.ts
+        src/otherFiles/children/childA.ts-->src/otherFiles/children/:id.json
+        src/otherFiles/children/childA.ts-->src/otherFiles/children///id//.json
         src/otherFiles/d.ts-->src/otherFiles/children/childA.ts
         src/otherFiles/d.ts-->src/utils.ts
         src/otherFiles/f.ts-->src/utils.ts
@@ -86,6 +90,7 @@ test('run:sample', async () => {
         src/otherFiles/e.ts-->src/config.ts
         src/includeFiles/abstractions/j.ts-->src/utils.ts
         src/includeFiles/abstractions/j.ts-->src/includeFiles/abstractions/children/childA.ts
+        src/includeFiles/abstractions/j.ts-->data.json
         src/includeFiles/abstractions/l.ts-->src/utils.ts
         src/includeFiles/abstractions/k.ts-->src/includeFiles/abstractions/l.ts
         src/includeFiles/abstractions/k.ts-->src/utils.ts
@@ -165,6 +170,7 @@ test('run:sample:include', async () => {
         src/otherFiles/e.ts-->src/config.ts
         src/includeFiles/abstractions/j.ts-->src/utils.ts
         src/includeFiles/abstractions/j.ts-->src/includeFiles/abstractions/children/childA.ts
+        src/includeFiles/abstractions/j.ts-->data.json
         src/includeFiles/abstractions/l.ts-->src/utils.ts
         src/includeFiles/abstractions/k.ts-->src/includeFiles/abstractions/l.ts
         src/includeFiles/abstractions/k.ts-->src/utils.ts
@@ -213,6 +219,7 @@ test('run:sample:exclude', async () => {
         src/includeFiles/c.ts-->src/includeFiles/b.ts
         src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
         src/includeFiles/abstractions/j.ts-->src/includeFiles/abstractions/children/childA.ts
+        src/includeFiles/abstractions/j.ts-->data.json
         src/includeFiles/abstractions/k.ts-->src/includeFiles/abstractions/l.ts
         src/main.ts-->src/includeFiles/a.ts
         src/main.ts-->src/includeFiles/b.ts
@@ -251,6 +258,7 @@ test('run:sample:abstraction', async () => {
         end
         src/includeFiles/c.ts-->src/includeFiles/b.ts
         src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
+        src/includeFiles/abstractions-->data.json
         src/main.ts-->src/includeFiles/a.ts
         src/main.ts-->src/includeFiles/b.ts
         src/main.ts-->src/includeFiles/abstractions
