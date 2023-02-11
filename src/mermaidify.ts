@@ -179,8 +179,8 @@ function writeRelations(ws: WriteStream, relations: Relation[]) {
 
 function fileNameToMermaidId(fileName: string): string {
   return fileName
-    .split(/@|\[|\]/)
-    .join('__')
+    .split(/@|\[|\]|-/)
+    .join('//')
     .split('/graph/')
     .join('/_graph_/');
 }
