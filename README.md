@@ -80,7 +80,7 @@ Run the `tsg -h` for help
 
 ## usage
 
-tsg コマンドを、解析したいプロジェクトの配下で実行してください。
+Run `tsg` on the project you want to analyze.
 
 ```bash
 tsg
@@ -162,16 +162,16 @@ flowchart
     src/main.ts-->src/utils.ts
 ```
 
-👆 のようにファイルの依存関係が出力されます。
+👆 and outputs file dependencies.
 
-ごちゃごちゃして理解しにくいですね。  
-そして、大きなリポジトリの場合は、マーメイドが表示可能なデータの上限を超えるかもしれません。
+It is cluttered and confusing.
+Also, for large repositories, Mermaid may exceed the maximum amount of data that can be displayed.
 
-その場合は、グラフに含めるディレクトリを絞り込む必要があります。
+In that case, you need to narrow down the directories to include in the graph.
 
 ### `--include`
 
-グラフに含めるディレクトリやファイルを絞り込むには `--include` オプションを使います。
+Use the `--include` option to narrow down the directories and files to include in the graph.
 
 ```bash
 tsg --include includeFiles config
@@ -239,13 +239,13 @@ flowchart
     src/main.ts-->src/includeFiles/abstractions/k.ts
 ```
 
-👆 のように `--include` で指定したディレクトリの依存関係が出力されます。
-ただし、 `--include` で指定したディレクトリ配下のファイルから依存しているファイルは表示されたままになります。
-もし興味のないディレクトリやファイルがあれば `--exclude` で除外しましょう。
+The dependencies of the directory specified by `--include` will be output as shown in 👆.
+However, files that depend on files under the directory specified by `--include` will remain visible.
+If there are directories or files you are not interested in, use `--exclude` to exclude them.
 
 ### `--exclude`
 
-グラフから除外したいディレクトリやファイルは、 `--exclude` オプションで除外します。
+Directories and files to be excluded from the graph are excluded with the `--exclude` option.
 
 ```bash
 tsg --include includeFiles config --exclude excludeFiles utils
@@ -290,14 +290,14 @@ flowchart
     src/main.ts-->src/includeFiles/abstractions/k.ts
 ```
 
-`--exclude` で指定したディレクトリが依存関係グラフから除外されました。
+The directories specified with `--exclude` were excluded from the dependency graph.
 
-おっと、 `src/includeFiles/b.ts`, `src/includeFiles/c.ts`, `src/config.ts` は循環参照になっていました。すぐにチームに報告してリファクタリングしましょう。でも、 `src/includeFiles/abstractions` はこの問題と関係がないので、できれば詳細を見せたくありません。 `--abstraction` で `src/includeFiles/abstractions` の詳細を隠すことができます。
+Oops, `src/includeFiles/b.ts`, `src/includeFiles/c.ts` and `src/config.ts` were circular references. Report this immediately to your team for refactoring. However, `src/includeFiles/abstractions` has nothing to do with this issue, so we don't want to show them the details if possible. You can hide the details of `src/includeFiles/abstractions` with `--abstraction`.
 
 ### `--abstraction`
 
-ディレクトリの中のファイルには関心はないけど、そのディレクトリとの依存関係はグラフに残したい場合があります。
-その場合は `--abstraction` でディレクトリを抽象化しましょう。
+Sometimes you may not be interested in the files in a directory, but wish to keep the dependencies on that directory in the graph.
+In such cases, use `--abstraction` to abstract the directory.
 
 ```bash
 tsg --include includeFiles config --exclude excludeFiles utils --abstraction abstractions
@@ -332,16 +332,16 @@ flowchart
     src/main.ts-->src/includeFiles/abstractions
 ```
 
-これで、チームと問題の共有がしやすくなりました 👍
+This makes it easier to share problems within the team👍.
 
-## その他のオプション
+## Other Options
 
 ### --mermaid-link
 
-マーメイドのノードに、VSCode で開くためのリンクを付加します。マーメイドには以下のように click イベントが出力されます。
+Add a link to the Mermaid node to open it in VSCode; Mermaid will output a click event as follows
 
 ```
     click src/createGraph.ts href "vscode://file//your/path/typescript-graph/src/createGraph.ts" _blank
 ```
 
-ただし、これはうまく動作しません。クリックイベントの定義も、URL も正しいですが、VSCode のマーメイドのプレビューでは動作しませんでした。いつか動作することを期待して実装した機能です 🤣
+However, this does not work. The click event definition is correct, and the URL is correct, but it does not work in VSCode's Mermaid Preview. This is a feature I implemented in hopes that it will work someday🤣.
