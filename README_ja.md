@@ -1,8 +1,8 @@
 # TypeScript graph
 
-A CLI to visualize the dependencies between files in the TypeScript codebase.
+TypeScript のコードベースにおけるファイル間の依存関係を可視化するための CLI です。
 
-For example, the following command in the base directory of https://github.com/ysk8hori/numberplace will produce the following results:
+例えば、https://github.com/ysk8hori/numberplace のベースディレクトリで以下のコマンドを実行すると、以下のような結果が得られます。
 
 ```bash
 tsg --include src/components/atoms/ConfigMenu --exclude test stories node_modules
@@ -57,11 +57,11 @@ flowchart
 npm install --save-dev @ysk8hori/typescript-graph
 ```
 
-or global install.
+または global install をしてください。
 
 ## Options
 
-Run the `tsg -h` for help
+`tsg -h` でヘルプを表示します。
 
 ```Options:
   -V, --version            output the version number
@@ -78,9 +78,9 @@ Run the `tsg -h` for help
   -h, --help               display help for command
 ```
 
-## usage
+## 使い方
 
-tsg コマンドを、解析したいプロジェクトの配下で実行してください。
+解析したいプロジェクトで `tsg` を実行します。
 
 ```bash
 tsg
@@ -162,16 +162,16 @@ flowchart
     src/main.ts-->src/utils.ts
 ```
 
-👆 のようにファイルの依存関係が出力されます。
+👆 で、ファイルの依存関係を出力しています。
 
-ごちゃごちゃして理解しにくいですね。  
-そして、大きなリポジトリの場合は、マーメイドが表示可能なデータの上限を超えるかもしれません。
+これではごちゃごちゃして分かりにくいです。
+また、大規模なリポジトリの場合、マーメイドは表示可能なデータの最大量を超えてしまうことがあります。
 
-その場合は、グラフに含めるディレクトリを絞り込む必要があります。
+その場合、グラフに含めるディレクトリを絞り込む必要があります。
 
 ### `--include`
 
-グラフに含めるディレクトリやファイルを絞り込むには `--include` オプションを使います。
+グラフに含めるディレクトリやファイルを絞り込むには、 `--include` オプションを使用します。
 
 ```bash
 tsg --include includeFiles config
@@ -239,13 +239,13 @@ flowchart
     src/main.ts-->src/includeFiles/abstractions/k.ts
 ```
 
-👆 のように `--include` で指定したディレクトリの依存関係が出力されます。
-ただし、 `--include` で指定したディレクトリ配下のファイルから依存しているファイルは表示されたままになります。
-もし興味のないディレクトリやファイルがあれば `--exclude` で除外しましょう。
+👆 のように `--include` で指定されたディレクトリの依存関係のみが、出力されるようになります。
+ただし、 `--include` で指定したディレクトリ配下のファイルの依存先は表示されたままになります。
+もし、興味のないディレクトリやファイルがある場合は、 `--exclude` を使って除外してください。
 
 ### `--exclude`
 
-グラフから除外したいディレクトリやファイルは、 `--exclude` オプションで除外します。
+グラフから除外するディレクトリやファイルは `--exclude` オプションで除外します。
 
 ```bash
 tsg --include includeFiles config --exclude excludeFiles utils
@@ -290,14 +290,14 @@ flowchart
     src/main.ts-->src/includeFiles/abstractions/k.ts
 ```
 
-`--exclude` で指定したディレクトリが依存関係グラフから除外されました。
+`--exclude` で指定されたディレクトリは依存関係グラフから除外されました。
 
-おっと、 `src/includeFiles/b.ts`, `src/includeFiles/c.ts`, `src/config.ts` は循環参照になっていました。すぐにチームに報告してリファクタリングしましょう。でも、 `src/includeFiles/abstractions` はこの問題と関係がないので、できれば詳細を見せたくありません。 `--abstraction` で `src/includeFiles/abstractions` の詳細を隠すことができます。
+おっと、`src/includeFiles/b.ts` と `src/includeFiles/c.ts` と `src/config.ts` が循環参照になっていました。これをすぐにチームに報告してリファクタリングしましょう。しかし、`src/includeFiles/abstractions` はこの問題とは関係ないので、できれば詳細を見せたくないのです。`src/includeFiles/abstractions` の詳細は、 `--abstraction` で隠すことができます。
 
 ### `--abstraction`
 
-ディレクトリの中のファイルには関心はないけど、そのディレクトリとの依存関係はグラフに残したい場合があります。
-その場合は `--abstraction` でディレクトリを抽象化しましょう。
+ディレクトリ内のファイルには興味がなくても、そのディレクトリへの依存関係はグラフに残しておきたい場合があります。
+そのような場合は、 `--abstraction` を使用して、ディレクトリを抽象化します。
 
 ```bash
 tsg --include includeFiles config --exclude excludeFiles utils --abstraction abstractions
@@ -338,10 +338,10 @@ flowchart
 
 ### --mermaid-link
 
-マーメイドのノードに、VSCode で開くためのリンクを付加します。マーメイドには以下のように click イベントが出力されます。
+VSCode で開くために、Mermaid ノードにリンクを追加します。Mermaid は以下のようにクリックイベントを出力します。
 
 ```
     click src/createGraph.ts href "vscode://file//your/path/typescript-graph/src/createGraph.ts" _blank
 ```
 
-ただし、これはうまく動作しません。クリックイベントの定義も、URL も正しいですが、VSCode のマーメイドのプレビューでは動作しませんでした。いつか動作することを期待して実装した機能です 🤣
+しかし、これは動作しません。クリックイベントの定義は正しいし、URL も正しいのですが、VSCode のマーメイドプレビューでは動作しないのです。これは、いつか動作することを期待して実装した機能です 🤣
