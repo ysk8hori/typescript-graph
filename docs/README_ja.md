@@ -1,5 +1,10 @@
 # TypeScript graph
 
+<p align="center">
+  <a href="/docs/README_en.md">English</a> •
+  <a href="/docs/README_ja.md">日本語 (Japanese)</a> 
+</p>
+
 TypeScript のコードベースにおけるファイル間の依存関係を可視化するための CLI です。
 
 例えば、https://github.com/ysk8hori/numberplace のベースディレクトリで以下のコマンドを実行すると、以下のような結果が得られます。
