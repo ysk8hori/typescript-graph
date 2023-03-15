@@ -14,6 +14,7 @@ type Options = Partial<OptionValues> & {
 
 const indent = '    ';
 const CLASSNAME_DIR = 'dir';
+const CLASSNAME_HIGHLIGHT = 'highlight';
 
 export default async function mermaidify(
   markdownTitle: string,
@@ -147,8 +148,12 @@ async function writeMarkdown(
     } else {
       ws.write(`flowchart\n`);
     }
-    ws.write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999`);
-    ws.write('\n');
+    if (options.abstraction)
+      ws.write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999\n`);
+    if (options.highlight)
+      ws.write(
+        `${indent}classDef ${CLASSNAME_HIGHLIGHT} fill:yellow,color:black\n`,
+      );
 
     writeFileNodesWithSubgraph(ws, dirAndNodesTree);
 
@@ -221,7 +226,13 @@ function addGraph(
       ws.write(
         `${_indent}${indent}${node.mermaidId}["${fileNameToMermaidName(
           node.name,
-        )}"]${node.isDirectory ? `:::${CLASSNAME_DIR}` : ''}`,
+        )}"]${
+          node.highlight
+            ? `:::${CLASSNAME_HIGHLIGHT}`
+            : node.isDirectory
+            ? `:::${CLASSNAME_DIR}`
+            : ''
+        }`,
       );
       ws.write('\n');
     });
