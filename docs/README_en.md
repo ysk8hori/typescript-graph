@@ -75,6 +75,7 @@ Run the `tsg -h` for help
   -d, --dir <char>         Specify the TypeScript code base to be analyzed. if tsconfig.json is not found, specify the directory where tsconfig.json is located.
   --include <char...>      Specify paths and file names to be included in the graph
   --exclude <char...>      Specify the paths and file names to be excluded from the graph
+  --highlight <char...>    Specify the path and file name to highlight
   --abstraction <char...>  Specify the path to abstract
   --LR                     Specify Flowchart orientation Left-to-Right
   --TB                     Specify Flowchart orientation Top-to-Bottom
@@ -338,6 +339,49 @@ flowchart
 ```
 
 This makes it easier to share problems within the team👍.
+
+However, I would like to emphasize what I would like to see emphasized 🤔.
+
+### `--highlight`
+
+Use `--highlight` to highlight nodes that need attention.
+
+```bash
+tsg --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --LR
+```
+
+```mermaid
+flowchart LR
+    classDef dir fill:#0000,stroke:#999
+    classDef highlight fill:yellow,color:black
+    subgraph src["src"]
+        src/config.ts["config.ts"]:::highlight
+        src/main.ts["main.ts"]
+        subgraph src/includeFiles["/includeFiles"]
+            src/includeFiles/b.ts["b.ts"]:::highlight
+            src/includeFiles/c.ts["c.ts"]
+            src/includeFiles/a.ts["a.ts"]
+            src/includeFiles/abstractions["/abstractions"]:::dir
+            subgraph src/includeFiles/children["/children"]
+                src/includeFiles/children/childA.ts["childA.ts"]
+            end
+        end
+        subgraph src/otherFiles["/otherFiles"]
+            src/otherFiles/e.ts["e.ts"]
+        end
+    end
+    src/includeFiles/b.ts-->src/config.ts
+    src/includeFiles/c.ts-->src/includeFiles/b.ts
+    src/config.ts-->src/includeFiles/c.ts
+    src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
+    src/otherFiles/e.ts-->src/config.ts
+    src/includeFiles/abstractions-->data.json
+    src/main.ts-->src/includeFiles/a.ts
+    src/main.ts-->src/includeFiles/b.ts
+    src/main.ts-->src/includeFiles/abstractions
+```
+
+It makes it easier to share problems within the team. 👍
 
 ## Other Options
 
