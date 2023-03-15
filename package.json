@@ -1,6 +1,6 @@
 {
   "name": "@ysk8hori/typescript-graph",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "A CLI to visualize the dependencies between files in the TypeScript codebase.",
   "main": "index.js",
   "homepage": "https://github.com/ysk8hori/typescript-graph",
@@ -23,6 +23,7 @@
     "run:sample:include": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --LR",
     "run:sample:exclude": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --LR",
     "run:sample:abstraction": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --LR",
+    "run:sample:highlight": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --LR --highlight config.ts b.ts",
     "run:sample:link": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --mermaid-link",
     "run:sample:README": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace --include src/components/atoms/ConfigMenu --exclude test stories node_modules",
     "build": "tsc",
@@ -38,6 +39,7 @@
   "author": "ysk8hori",
   "license": "ISC",
   "dependencies": {
+    "@ysk8hori/simple-functional-ts": "^0.0.5",
     "commander": "^10.0.0",
     "neo4j-driver": "^5.4.0"
   },

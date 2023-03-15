@@ -5,6 +5,7 @@ export type OptionValues = {
   include: string[];
   exclude: string[];
   abstraction: string[];
+  highlight: string[];
   neo4j: boolean;
   clearDb: boolean;
   LR: boolean;
@@ -18,6 +19,7 @@ export type Node = {
   path: FilePath;
   name: FileName | DirName;
   isDirectory?: boolean;
+  highlight?: boolean;
 };
 export type Relation = { from: Node; to: Node; fullText: string };
 export type Graph = { nodes: Node[]; relations: Relation[] };

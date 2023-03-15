@@ -2,9 +2,9 @@ import { Graph } from '../models';
 import { extractUniqueNodes } from './utils';
 
 export function filterGraph(
-  { nodes, relations }: Graph,
   include: string[] | undefined,
   exclude: string[] | undefined,
+  { nodes, relations }: Graph,
 ) {
   let tmpNodes = nodes;
   let tmpRelations = relations;

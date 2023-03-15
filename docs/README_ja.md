@@ -76,6 +76,7 @@ npm install --save-dev @ysk8hori/typescript-graph
   --include <char...>      Specify paths and file names to be included in the graph
   --exclude <char...>      Specify the paths and file names to be excluded from the graph
   --abstraction <char...>  Specify the path to abstract
+  --highlight <char...>    Specify the path and file name to highlight
   --LR                     Specify Flowchart orientation Left-to-Right
   --TB                     Specify Flowchart orientation Top-to-Bottom
   --neo4j                  output to neo4j on localhost:7687
@@ -338,6 +339,49 @@ flowchart
 ```
 
 これで、チームと問題の共有がしやすくなりました 👍
+
+でも、注目してほしい箇所を強調したいですね 🤔
+
+### `--highlight`
+
+注意が必要なノードを強調表示するには、`--highlight` を使用します。
+
+```bash
+tsg --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --LR
+```
+
+```mermaid
+flowchart LR
+    classDef dir fill:#0000,stroke:#999
+    classDef highlight fill:yellow,color:black
+    subgraph src["src"]
+        src/config.ts["config.ts"]:::highlight
+        src/main.ts["main.ts"]
+        subgraph src/includeFiles["/includeFiles"]
+            src/includeFiles/b.ts["b.ts"]:::highlight
+            src/includeFiles/c.ts["c.ts"]
+            src/includeFiles/a.ts["a.ts"]
+            src/includeFiles/abstractions["/abstractions"]:::dir
+            subgraph src/includeFiles/children["/children"]
+                src/includeFiles/children/childA.ts["childA.ts"]
+            end
+        end
+        subgraph src/otherFiles["/otherFiles"]
+            src/otherFiles/e.ts["e.ts"]
+        end
+    end
+    src/includeFiles/b.ts-->src/config.ts
+    src/includeFiles/c.ts-->src/includeFiles/b.ts
+    src/config.ts-->src/includeFiles/c.ts
+    src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
+    src/otherFiles/e.ts-->src/config.ts
+    src/includeFiles/abstractions-->data.json
+    src/main.ts-->src/includeFiles/a.ts
+    src/main.ts-->src/includeFiles/b.ts
+    src/main.ts-->src/includeFiles/abstractions
+```
+
+さらにチームと問題の共有がしやすくなりました 👍
 
 ## その他のオプション
 

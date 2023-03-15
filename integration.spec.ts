@@ -24,7 +24,6 @@ test('run:sample', async () => {
 
     \`\`\`mermaid
     flowchart
-        classDef dir fill:#0000,stroke:#999
         subgraph src[\\"src\\"]
             src/utils.ts[\\"utils.ts\\"]
             src/config.ts[\\"config.ts\\"]
@@ -119,7 +118,6 @@ test('run:sample:include', async () => {
 
     \`\`\`mermaid
     flowchart
-        classDef dir fill:#0000,stroke:#999
         subgraph src[\\"src\\"]
             src/config.ts[\\"config.ts\\"]
             src/utils.ts[\\"utils.ts\\"]
@@ -196,7 +194,6 @@ test('run:sample:exclude', async () => {
 
     \`\`\`mermaid
     flowchart
-        classDef dir fill:#0000,stroke:#999
         subgraph src[\\"src\\"]
             src/main.ts[\\"main.ts\\"]
             subgraph src/includeFiles[\\"/includeFiles\\"]
@@ -248,6 +245,44 @@ test('run:sample:abstraction', async () => {
             src/main.ts[\\"main.ts\\"]
             subgraph src/includeFiles[\\"/includeFiles\\"]
                 src/includeFiles/b.ts[\\"b.ts\\"]
+                src/includeFiles/c.ts[\\"c.ts\\"]
+                src/includeFiles/a.ts[\\"a.ts\\"]
+                src/includeFiles/abstractions[\\"/abstractions\\"]:::dir
+                subgraph src/includeFiles/children[\\"/children\\"]
+                    src/includeFiles/children/childA.ts[\\"childA.ts\\"]
+                end
+            end
+        end
+        src/includeFiles/c.ts-->src/includeFiles/b.ts
+        src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
+        src/includeFiles/abstractions-->data.json
+        src/main.ts-->src/includeFiles/a.ts
+        src/main.ts-->src/includeFiles/b.ts
+        src/main.ts-->src/includeFiles/abstractions
+    \`\`\`
+    "
+  `);
+});
+
+test('run:sample:highlight', async () => {
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles --exclude excludeFiles utils config --abstraction abstractions --highlight config.ts b.ts --md ${filepath}`;
+
+  const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
+  expect(file).toMatchInlineSnapshot(`
+    "# typescript graph on mermaid
+
+    \`\`\`bash
+    tsg -d ./dummy_project --include includeFiles --exclude excludeFiles utils config --abstraction abstractions --highlight config.ts b.ts --md __tmp__/test.md
+    \`\`\`
+
+    \`\`\`mermaid
+    flowchart
+        classDef dir fill:#0000,stroke:#999
+        classDef highlight fill:yellow,color:black
+        subgraph src[\\"src\\"]
+            src/main.ts[\\"main.ts\\"]
+            subgraph src/includeFiles[\\"/includeFiles\\"]
+                src/includeFiles/b.ts[\\"b.ts\\"]:::highlight
                 src/includeFiles/c.ts[\\"c.ts\\"]
                 src/includeFiles/a.ts[\\"a.ts\\"]
                 src/includeFiles/abstractions[\\"/abstractions\\"]:::dir
