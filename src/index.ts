@@ -5,10 +5,12 @@ import path from 'path';
 import { createGraph } from './graph/createGraph';
 import { filterGraph } from './graph/filterGraph';
 import { abstraction } from './graph/abstraction';
+import { highlight } from './graph/highlight';
 import mermaidify from './mermaidify';
 import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
 import { OptionValues } from './models';
+import { curry, pipe } from '@ysk8hori/simple-functional-ts';
 
 const program = new Command();
 program
@@ -37,6 +39,10 @@ program
     'Specify the paths and file names to be excluded from the graph',
   )
   .option('--abstraction <char...>', 'Specify the path to abstract')
+  .option(
+    '--highlight <char...>',
+    'Specify the path and file name to highlight',
+  )
   .option('--LR', 'Specify Flowchart orientation Left-to-Right')
   .option('--TB', 'Specify Flowchart orientation Top-to-Bottom')
   .option('--neo4j', 'output to neo4j on localhost:7687')
@@ -55,13 +61,11 @@ export async function main(
 
   const { graph: fullGraph, meta } = createGraph(dir);
 
-  const filteredGraph = filterGraph(
-    fullGraph,
-    commandOptions.include,
-    commandOptions.exclude,
-  );
-
-  const graph = abstraction(filteredGraph, commandOptions.abstraction);
+  const graph = pipe(
+    curry(filterGraph)(commandOptions.include)(commandOptions.exclude),
+    curry(abstraction)(commandOptions.abstraction),
+    curry(highlight)(commandOptions.highlight),
+  )(fullGraph);
 
   await mermaidify(commandOptions.md ?? 'typescript-graph', graph, {
     ...commandOptions,

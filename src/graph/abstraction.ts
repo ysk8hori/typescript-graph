@@ -31,8 +31,8 @@ import { extractUniqueNodes } from './utils';
  * @returns
  */
 export function abstraction(
-  graph: Graph,
   absArray: string[] | undefined,
+  graph: Graph,
 ): Graph {
   if (!absArray || absArray.length === 0) return graph;
   const absDirArrArr = absArray

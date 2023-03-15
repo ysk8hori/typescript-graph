@@ -25,6 +25,7 @@
     "run:sample:abstraction": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --LR",
     "run:sample:link": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --mermaid-link",
     "run:sample:README": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace --include src/components/atoms/ConfigMenu --exclude test stories node_modules",
+    "run:sample:README:highlight": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace --include src/components/atoms/ConfigMenu --exclude test stories node_modules --highlight MenuStack",
     "build": "tsc",
     "build:re": "rm -r ./dist && tsc",
     "lint:fix": "eslint --fix src",
@@ -38,6 +39,7 @@
   "author": "ysk8hori",
   "license": "ISC",
   "dependencies": {
+    "@ysk8hori/simple-functional-ts": "^0.0.5",
     "commander": "^10.0.0",
     "neo4j-driver": "^5.4.0"
   },
