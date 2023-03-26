@@ -192,7 +192,8 @@ function fileNameToMermaidId(fileName: string): string {
     .split(/@|\[|\]|-|>|<|{|}|\(|\)|=|&|\|~|,|"|%|\^|\*|_/)
     .join('//')
     .replaceAll('/graph/', '/_graph_/')
-    .replaceAll('style', 'style_');
+    .replaceAll('style', 'style_')
+    .replaceAll('class', 'class_');
 }
 function fileNameToMermaidName(fileName: string): string {
   return fileName.split(/"/).join('//');
