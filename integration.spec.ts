@@ -39,6 +39,12 @@ test('run:sample', async () => {
                     src/includeFiles/excludeFiles/g.ts[\\"g.ts\\"]
                     src/includeFiles/excludeFiles/i.ts[\\"i.ts\\"]
                     src/includeFiles/excludeFiles/h.ts[\\"h.ts\\"]
+                    subgraph src/includeFiles/excludeFiles/style_[\\"/style\\"]
+                        src/includeFiles/excludeFiles/style_/style_.ts[\\"style.ts\\"]
+                    end
+                    subgraph src/includeFiles/excludeFiles/class_[\\"/class\\"]
+                        src/includeFiles/excludeFiles/class_/class_A.ts[\\"classA.ts\\"]
+                    end
                 end
                 subgraph src/includeFiles/abstractions[\\"/abstractions\\"]
                     src/includeFiles/abstractions/j.ts[\\"j.ts\\"]
@@ -77,6 +83,8 @@ test('run:sample', async () => {
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/g.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/h.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/i.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/style_/style_.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/class_/class_A.ts
         src/includeFiles/a.ts-->src/utils.ts
         src/otherFiles/children/childA.ts-->src/utils.ts
         src/otherFiles/children/childA.ts-->src/otherFiles/children/:id.json
@@ -133,6 +141,12 @@ test('run:sample:include', async () => {
                     src/includeFiles/excludeFiles/g.ts[\\"g.ts\\"]
                     src/includeFiles/excludeFiles/i.ts[\\"i.ts\\"]
                     src/includeFiles/excludeFiles/h.ts[\\"h.ts\\"]
+                    subgraph src/includeFiles/excludeFiles/style_[\\"/style\\"]
+                        src/includeFiles/excludeFiles/style_/style_.ts[\\"style.ts\\"]
+                    end
+                    subgraph src/includeFiles/excludeFiles/class_[\\"/class\\"]
+                        src/includeFiles/excludeFiles/class_/class_A.ts[\\"classA.ts\\"]
+                    end
                 end
                 subgraph src/includeFiles/abstractions[\\"/abstractions\\"]
                     src/includeFiles/abstractions/j.ts[\\"j.ts\\"]
@@ -164,6 +178,8 @@ test('run:sample:include', async () => {
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/g.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/h.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/i.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/style_/style_.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/class_/class_A.ts
         src/includeFiles/a.ts-->src/utils.ts
         src/otherFiles/e.ts-->src/config.ts
         src/includeFiles/abstractions/j.ts-->src/utils.ts
