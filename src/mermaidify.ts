@@ -1,6 +1,7 @@
-import { createWriteStream, WriteStream } from 'fs';
+import { createWriteStream } from 'fs';
 import path from 'path';
 import { Graph, Node, OptionValues, Relation } from './models';
+import WriteStreamWrapper from './WriteStreamWrapper';
 
 type DirAndNodesTree = {
   currentDir: string;
@@ -131,9 +132,10 @@ async function writeMarkdown(
 ) {
   return new Promise((resolve, reject) => {
     const filename = title.endsWith('.md') ? title : `./${title}.md`;
-    const ws = createWriteStream(filename);
-    ws.on('finish', resolve);
-    ws.on('error', reject);
+    const _ws = createWriteStream(filename);
+    _ws.on('finish', resolve);
+    _ws.on('error', reject);
+    const ws = new WriteStreamWrapper(_ws);
     ws.write('# typescript graph on mermaid\n');
     ws.write('\n');
     ws.write('```bash\n');
@@ -163,13 +165,14 @@ async function writeMarkdown(
       writeFileLink(ws, dirAndNodesTree, options.rootDir);
     }
 
-    ws.end('```\n');
+    ws.write('```\n');
+    _ws.end();
 
     console.log(filename);
   });
 }
 
-function writeRelations(ws: WriteStream, relations: Relation[]) {
+function writeRelations(ws: WriteStreamWrapper, relations: Relation[]) {
   relations
     .map(relation => ({
       from: {
@@ -199,12 +202,15 @@ function fileNameToMermaidName(fileName: string): string {
   return fileName.split(/"/).join('//');
 }
 
-function writeFileNodesWithSubgraph(ws: WriteStream, trees: DirAndNodesTree[]) {
+function writeFileNodesWithSubgraph(
+  ws: WriteStreamWrapper,
+  trees: DirAndNodesTree[],
+) {
   trees.forEach(tree => addGraph(ws, tree));
 }
 
 function addGraph(
-  ws: WriteStream,
+  ws: WriteStreamWrapper,
   tree: DirAndNodesTree,
   indentNumber = 0,
   parent?: string,
@@ -244,7 +250,7 @@ function addGraph(
   ws.write('\n');
 }
 function writeFileLink(
-  ws: WriteStream,
+  ws: WriteStreamWrapper,
   trees: DirAndNodesTree[],
   rootDir: string,
 ) {
@@ -252,7 +258,7 @@ function writeFileLink(
 }
 
 function addLink(
-  ws: WriteStream,
+  ws: WriteStreamWrapper,
   tree: DirAndNodesTree,
   rootDir: string,
 ): void {
