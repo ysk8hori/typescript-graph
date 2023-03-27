@@ -1,5 +1,6 @@
 import { danger, message, warn } from 'danger';
 import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
 
 //  なぜ変更したのかの説明を含めると、どんなPRも小さくはありません
 if (danger.github.pr.body.length < 10) {
@@ -7,7 +8,6 @@ if (danger.github.pr.body.length < 10) {
 }
 
 const fileName = './typescript-graph.md';
-const out = execSync(`npx tsg --md "${fileName}"`);
-console.log(out);
-message(out.toString(), fileName);
-message('foo', './README.md');
+execSync(`npx tsg --md "${fileName}"`);
+const graphString = readFileSync(fileName, 'utf8');
+message(graphString);
