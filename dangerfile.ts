@@ -7,6 +7,6 @@ if (danger.github.pr.body.length < 10) {
 }
 
 const fileName = './typescript-graph.md';
-execSync(`tsg --md "${fileName}"`);
+execSync(`npx tsg --md "${fileName}"`);
 
 markdown('hoge', fileName);
