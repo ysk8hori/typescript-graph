@@ -10,3 +10,4 @@ const fileName = './typescript-graph.md';
 const out = execSync(`npx tsg --md "${fileName}"`);
 console.log(out);
 message(out.toString(), fileName);
+message('foo', './README.md');
