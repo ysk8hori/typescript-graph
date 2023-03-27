@@ -17,7 +17,7 @@ const indent = '    ';
 const CLASSNAME_DIR = 'dir';
 const CLASSNAME_HIGHLIGHT = 'highlight';
 
-export default async function mermaidify(
+export async function writeMarkdownFile(
   markdownTitle: string,
   graph: Graph,
   options: Options,
@@ -40,7 +40,7 @@ export default async function mermaidify(
     ws.write('```\n');
     ws.write('\n');
     ws.write('```mermaid\n');
-    writeMarkdown(ws, dirAndNodesTree, graph.relations, options);
+    mermaidify(ws, dirAndNodesTree, graph.relations, options);
     ws.write('```\n');
     _ws.end();
 
@@ -146,7 +146,7 @@ function createDirAndNodesTree(graph: Graph) {
   return dirAndNodesTree;
 }
 
-async function writeMarkdown(
+async function mermaidify(
   ws: WriteStreamWrapper,
   dirAndNodesTree: DirAndNodesTree[],
   relations: Relation[],
