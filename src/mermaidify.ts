@@ -23,7 +23,29 @@ export default async function mermaidify(
   options: Options,
 ) {
   const dirAndNodesTree = createDirAndNodesTree(graph);
-  await writeMarkdown(markdownTitle, dirAndNodesTree, graph.relations, options);
+
+  return new Promise((resolve, reject) => {
+    const filename = markdownTitle.endsWith('.md')
+      ? markdownTitle
+      : `./${markdownTitle}.md`;
+    const _ws = createWriteStream(filename);
+    _ws.on('finish', resolve);
+    _ws.on('error', reject);
+    const ws = new WriteStreamWrapper(_ws);
+
+    ws.write('# typescript graph on mermaid\n');
+    ws.write('\n');
+    ws.write('```bash\n');
+    ws.write(`${options.executedScript}\n`);
+    ws.write('```\n');
+    ws.write('\n');
+    ws.write('```mermaid\n');
+    writeMarkdown(ws, dirAndNodesTree, graph.relations, options);
+    ws.write('```\n');
+    _ws.end();
+
+    console.log(filename);
+  });
 }
 
 /**
@@ -125,51 +147,32 @@ function createDirAndNodesTree(graph: Graph) {
 }
 
 async function writeMarkdown(
-  title: string,
+  ws: WriteStreamWrapper,
   dirAndNodesTree: DirAndNodesTree[],
   relations: Relation[],
   options: Options,
 ) {
-  return new Promise((resolve, reject) => {
-    const filename = title.endsWith('.md') ? title : `./${title}.md`;
-    const _ws = createWriteStream(filename);
-    _ws.on('finish', resolve);
-    _ws.on('error', reject);
-    const ws = new WriteStreamWrapper(_ws);
-    ws.write('# typescript graph on mermaid\n');
-    ws.write('\n');
-    ws.write('```bash\n');
-    ws.write(`${options.executedScript}\n`);
-    ws.write('```\n');
-    ws.write('\n');
-    ws.write('```mermaid\n');
-    if (options.LR) {
-      ws.write(`flowchart LR\n`);
-    } else if (options.TB) {
-      ws.write(`flowchart TB\n`);
-    } else {
-      ws.write(`flowchart\n`);
-    }
-    if (options.abstraction)
-      ws.write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999\n`);
-    if (options.highlight)
-      ws.write(
-        `${indent}classDef ${CLASSNAME_HIGHLIGHT} fill:yellow,color:black\n`,
-      );
+  if (options.LR) {
+    ws.write(`flowchart LR\n`);
+  } else if (options.TB) {
+    ws.write(`flowchart TB\n`);
+  } else {
+    ws.write(`flowchart\n`);
+  }
+  if (options.abstraction)
+    ws.write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999\n`);
+  if (options.highlight)
+    ws.write(
+      `${indent}classDef ${CLASSNAME_HIGHLIGHT} fill:yellow,color:black\n`,
+    );
 
-    writeFileNodesWithSubgraph(ws, dirAndNodesTree);
+  writeFileNodesWithSubgraph(ws, dirAndNodesTree);
 
-    writeRelations(ws, relations);
+  writeRelations(ws, relations);
 
-    if (options.mermaidLink) {
-      writeFileLink(ws, dirAndNodesTree, options.rootDir);
-    }
-
-    ws.write('```\n');
-    _ws.end();
-
-    console.log(filename);
-  });
+  if (options.mermaidLink) {
+    writeFileLink(ws, dirAndNodesTree, options.rootDir);
+  }
 }
 
 function writeRelations(ws: WriteStreamWrapper, relations: Relation[]) {
