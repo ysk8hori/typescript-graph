@@ -1,5 +1,5 @@
 import { danger, markdown, warn } from 'danger';
-import { $ } from 'zx';
+import { execSync } from 'child_process';
 
 //  なぜ変更したのかの説明を含めると、どんなPRも小さくはありません
 if (danger.github.pr.body.length < 10) {
@@ -7,6 +7,6 @@ if (danger.github.pr.body.length < 10) {
 }
 
 const fileName = './typescript-graph.md';
-await $`tsg --md "${fileName}"`;
+execSync(`tsg --md "${fileName}"`);
 
 markdown('hoge', fileName);
