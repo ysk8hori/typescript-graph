@@ -6,7 +6,7 @@ import { createGraph } from './graph/createGraph';
 import { filterGraph } from './graph/filterGraph';
 import { abstraction } from './graph/abstraction';
 import { highlight } from './graph/highlight';
-import { writeMarkdownFile } from './mermaidify';
+import { writeMarkdownFile } from './writeMarkdownFile';
 import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
 import { OptionValues } from './models';

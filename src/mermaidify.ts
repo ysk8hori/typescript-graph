@@ -17,41 +17,10 @@ const indent = '    ';
 const CLASSNAME_DIR = 'dir';
 const CLASSNAME_HIGHLIGHT = 'highlight';
 
-export async function writeMarkdownFile(
-  markdownTitle: string,
-  graph: Graph,
-  options: Options,
-) {
-  const dirAndNodesTree = createDirAndNodesTree(graph);
-
-  return new Promise((resolve, reject) => {
-    const filename = markdownTitle.endsWith('.md')
-      ? markdownTitle
-      : `./${markdownTitle}.md`;
-    const _ws = createWriteStream(filename);
-    _ws.on('finish', resolve);
-    _ws.on('error', reject);
-    const ws = new WriteStreamWrapper(_ws);
-
-    ws.write('# typescript graph on mermaid\n');
-    ws.write('\n');
-    ws.write('```bash\n');
-    ws.write(`${options.executedScript}\n`);
-    ws.write('```\n');
-    ws.write('\n');
-    ws.write('```mermaid\n');
-    mermaidify(ws, dirAndNodesTree, graph.relations, options);
-    ws.write('```\n');
-    _ws.end();
-
-    console.log(filename);
-  });
-}
-
 /**
  * ディレクトリツリーの形を再現する。
  */
-function createDirAndNodesTree(graph: Graph) {
+export function createDirAndNodesTree(graph: Graph) {
   function getDirectoryPath(filePath: string) {
     const array = filePath.split('/');
     if (array.includes('node_modules')) {
@@ -146,7 +115,7 @@ function createDirAndNodesTree(graph: Graph) {
   return dirAndNodesTree;
 }
 
-async function mermaidify(
+export async function mermaidify(
   ws: WriteStreamWrapper,
   dirAndNodesTree: DirAndNodesTree[],
   relations: Relation[],
