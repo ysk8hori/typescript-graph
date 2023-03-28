@@ -15,7 +15,11 @@ const fileName = './typescript-graph.md';
 execSync(
   `npx tsg --md "${fileName}" --LR --include ${modified.join(
     ' ',
-  )} ${created.join(' ')} ${deleted.join(' ')}} --exclude node_modules`,
+  )} ${created.join(' ')} ${deleted.join(
+    ' ',
+  )} --exclude node_modules --highlight ${modified.join(' ')} ${created.join(
+    ' ',
+  )} ${deleted.join(' ')}`,
 );
 const graphString = readFileSync(fileName, 'utf8');
 message(graphString);
