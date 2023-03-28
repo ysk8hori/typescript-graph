@@ -1,8 +1,8 @@
-import { createWriteStream } from 'fs';
 import path from 'path';
 import { Graph, Node, OptionValues, Relation } from './models';
 import WriteStreamWrapper from './WriteStreamWrapper';
 
+/** ディレクトリツリーを表現するオブジェクト */
 type DirAndNodesTree = {
   currentDir: string;
   nodes: Node[];
@@ -17,10 +17,43 @@ const indent = '    ';
 const CLASSNAME_DIR = 'dir';
 const CLASSNAME_HIGHLIGHT = 'highlight';
 
+export default async function mermaidify(
+  ws: WriteStreamWrapper,
+  graph: Graph,
+  options: Options,
+) {
+  // フローチャートの方向を指定
+  if (options.LR) {
+    ws.write(`flowchart LR\n`);
+  } else if (options.TB) {
+    ws.write(`flowchart TB\n`);
+  } else {
+    ws.write(`flowchart\n`);
+  }
+
+  // 抽象化フラグが立っている場合は、クラス定義を追加
+  if (options.abstraction)
+    ws.write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999\n`);
+
+  // ハイライトフラグが立っている場合は、クラス定義を追加
+  if (options.highlight)
+    ws.write(
+      `${indent}classDef ${CLASSNAME_HIGHLIGHT} fill:yellow,color:black\n`,
+    );
+
+  const dirAndNodesTree = createDirAndNodesTree(graph);
+  writeFileNodesWithSubgraph(ws, dirAndNodesTree);
+  writeRelations(ws, graph.relations);
+
+  if (options.mermaidLink) {
+    writeFileLink(ws, dirAndNodesTree, options.rootDir);
+  }
+}
+
 /**
- * ディレクトリツリーの形を再現する。
+ * Graph からディレクトリツリーを再現した DirAndNodesTree の配列を生成する
  */
-export function createDirAndNodesTree(graph: Graph) {
+function createDirAndNodesTree(graph: Graph): DirAndNodesTree[] {
   function getDirectoryPath(filePath: string) {
     const array = filePath.split('/');
     if (array.includes('node_modules')) {
@@ -113,35 +146,6 @@ export function createDirAndNodesTree(graph: Graph) {
     .map(createDirAndNodesRecursive)
     .flat();
   return dirAndNodesTree;
-}
-
-export async function mermaidify(
-  ws: WriteStreamWrapper,
-  dirAndNodesTree: DirAndNodesTree[],
-  relations: Relation[],
-  options: Options,
-) {
-  if (options.LR) {
-    ws.write(`flowchart LR\n`);
-  } else if (options.TB) {
-    ws.write(`flowchart TB\n`);
-  } else {
-    ws.write(`flowchart\n`);
-  }
-  if (options.abstraction)
-    ws.write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999\n`);
-  if (options.highlight)
-    ws.write(
-      `${indent}classDef ${CLASSNAME_HIGHLIGHT} fill:yellow,color:black\n`,
-    );
-
-  writeFileNodesWithSubgraph(ws, dirAndNodesTree);
-
-  writeRelations(ws, relations);
-
-  if (options.mermaidLink) {
-    writeFileLink(ws, dirAndNodesTree, options.rootDir);
-  }
 }
 
 function writeRelations(ws: WriteStreamWrapper, relations: Relation[]) {

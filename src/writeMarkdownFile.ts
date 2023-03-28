@@ -1,5 +1,5 @@
 import { createWriteStream } from 'fs';
-import { createDirAndNodesTree, mermaidify } from './mermaidify';
+import mermaidify from './mermaidify';
 import { Graph, OptionValues } from './models';
 import WriteStreamWrapper from './WriteStreamWrapper';
 
@@ -13,8 +13,6 @@ export async function writeMarkdownFile(
   graph: Graph,
   options: Options,
 ) {
-  const dirAndNodesTree = createDirAndNodesTree(graph);
-
   return new Promise((resolve, reject) => {
     const filename = markdownTitle.endsWith('.md')
       ? markdownTitle
@@ -31,7 +29,7 @@ export async function writeMarkdownFile(
     ws.write('```\n');
     ws.write('\n');
     ws.write('```mermaid\n');
-    mermaidify(ws, dirAndNodesTree, graph.relations, options);
+    mermaidify(ws, graph, options);
     ws.write('```\n');
     _ws.end();
 
