@@ -1,7 +1,6 @@
 import { createWriteStream } from 'fs';
 import mermaidify from './mermaidify';
 import { Graph, OptionValues } from './models';
-import WriteStreamWrapper from './WriteStreamWrapper';
 
 type Options = Partial<OptionValues> & {
   rootDir: string;
@@ -17,10 +16,9 @@ export async function writeMarkdownFile(
     const filename = markdownTitle.endsWith('.md')
       ? markdownTitle
       : `./${markdownTitle}.md`;
-    const _ws = createWriteStream(filename);
-    _ws.on('finish', resolve);
-    _ws.on('error', reject);
-    const ws = new WriteStreamWrapper(_ws);
+    const ws = createWriteStream(filename);
+    ws.on('finish', resolve);
+    ws.on('error', reject);
 
     ws.write('# typescript graph on mermaid\n');
     ws.write('\n');
@@ -29,9 +27,9 @@ export async function writeMarkdownFile(
     ws.write('```\n');
     ws.write('\n');
     ws.write('```mermaid\n');
-    mermaidify(ws, graph, options);
+    mermaidify(str => ws.write(str), graph, options);
     ws.write('```\n');
-    _ws.end();
+    ws.end();
 
     console.log(filename);
   });

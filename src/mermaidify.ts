@@ -1,6 +1,5 @@
 import path from 'path';
 import { Graph, Node, OptionValues, Relation } from './models';
-import WriteStreamWrapper from './WriteStreamWrapper';
 
 /** ディレクトリツリーを表現するオブジェクト */
 type DirAndNodesTree = {
@@ -18,35 +17,33 @@ const CLASSNAME_DIR = 'dir';
 const CLASSNAME_HIGHLIGHT = 'highlight';
 
 export default async function mermaidify(
-  ws: WriteStreamWrapper,
+  write: (arg: string) => void,
   graph: Graph,
   options: Options,
 ) {
   // フローチャートの方向を指定
   if (options.LR) {
-    ws.write(`flowchart LR\n`);
+    write(`flowchart LR\n`);
   } else if (options.TB) {
-    ws.write(`flowchart TB\n`);
+    write(`flowchart TB\n`);
   } else {
-    ws.write(`flowchart\n`);
+    write(`flowchart\n`);
   }
 
   // 抽象化フラグが立っている場合は、クラス定義を追加
   if (options.abstraction)
-    ws.write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999\n`);
+    write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999\n`);
 
   // ハイライトフラグが立っている場合は、クラス定義を追加
   if (options.highlight)
-    ws.write(
-      `${indent}classDef ${CLASSNAME_HIGHLIGHT} fill:yellow,color:black\n`,
-    );
+    write(`${indent}classDef ${CLASSNAME_HIGHLIGHT} fill:yellow,color:black\n`);
 
   const dirAndNodesTree = createDirAndNodesTree(graph);
-  writeFileNodesWithSubgraph(ws, dirAndNodesTree);
-  writeRelations(ws, graph.relations);
+  writeFileNodesWithSubgraph(write, dirAndNodesTree);
+  writeRelations(write, graph.relations);
 
   if (options.mermaidLink) {
-    writeFileLink(ws, dirAndNodesTree, options.rootDir);
+    writeFileLink(write, dirAndNodesTree, options.rootDir);
   }
 }
 
@@ -148,7 +145,7 @@ function createDirAndNodesTree(graph: Graph): DirAndNodesTree[] {
   return dirAndNodesTree;
 }
 
-function writeRelations(ws: WriteStreamWrapper, relations: Relation[]) {
+function writeRelations(write: (arg: string) => void, relations: Relation[]) {
   relations
     .map(relation => ({
       from: {
@@ -161,8 +158,8 @@ function writeRelations(ws: WriteStreamWrapper, relations: Relation[]) {
       },
     }))
     .forEach(relation => {
-      ws.write(`    ${relation.from.mermaidId}-->${relation.to.mermaidId}`);
-      ws.write('\n');
+      write(`    ${relation.from.mermaidId}-->${relation.to.mermaidId}`);
+      write('\n');
     });
 }
 
@@ -179,14 +176,14 @@ function fileNameToMermaidName(fileName: string): string {
 }
 
 function writeFileNodesWithSubgraph(
-  ws: WriteStreamWrapper,
+  write: (arg: string) => void,
   trees: DirAndNodesTree[],
 ) {
-  trees.forEach(tree => addGraph(ws, tree));
+  trees.forEach(tree => addGraph(write, tree));
 }
 
 function addGraph(
-  ws: WriteStreamWrapper,
+  write: (arg: string) => void,
   tree: DirAndNodesTree,
   indentNumber = 0,
   parent?: string,
@@ -195,18 +192,18 @@ function addGraph(
   for (let i = 0; i < indentNumber; i++) {
     _indent = _indent + indent;
   }
-  ws.write(
+  write(
     `${_indent}subgraph ${fileNameToMermaidId(
       tree.currentDir,
     )}["${fileNameToMermaidName(
       parent ? tree.currentDir.replace(parent, '') : tree.currentDir,
     )}"]`,
   );
-  ws.write('\n');
+  write('\n');
   tree.nodes
     .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
     .forEach(node => {
-      ws.write(
+      write(
         `${_indent}${indent}${node.mermaidId}["${fileNameToMermaidName(
           node.name,
         )}"]${
@@ -217,37 +214,37 @@ function addGraph(
             : ''
         }`,
       );
-      ws.write('\n');
+      write('\n');
     });
   tree.children.forEach(child =>
-    addGraph(ws, child, indentNumber + 1, tree.currentDir),
+    addGraph(write, child, indentNumber + 1, tree.currentDir),
   );
-  ws.write(`${_indent}end`);
-  ws.write('\n');
+  write(`${_indent}end`);
+  write('\n');
 }
 function writeFileLink(
-  ws: WriteStreamWrapper,
+  write: (arg: string) => void,
   trees: DirAndNodesTree[],
   rootDir: string,
 ) {
-  trees.forEach(tree => addLink(ws, tree, rootDir));
+  trees.forEach(tree => addLink(write, tree, rootDir));
 }
 
 function addLink(
-  ws: WriteStreamWrapper,
+  write: (arg: string) => void,
   tree: DirAndNodesTree,
   rootDir: string,
 ): void {
   tree.nodes
     .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
     .forEach(node => {
-      ws.write(
+      write(
         `${indent}click ${node.mermaidId} href "vscode://file/${path.join(
           rootDir,
           node.path,
         )}" _blank`,
       );
-      ws.write('\n');
+      write('\n');
     });
-  tree.children.forEach(child => addLink(ws, child, rootDir));
+  tree.children.forEach(child => addLink(write, child, rootDir));
 }
