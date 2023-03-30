@@ -169,6 +169,7 @@ function fileNameToMermaidId(fileName: string): string {
     .join('//')
     .replaceAll('/graph/', '/_graph_/')
     .replaceAll('style', 'style_')
+    .replaceAll('graph', 'graph_')
     .replaceAll('class', 'class_');
 }
 function fileNameToMermaidName(fileName: string): string {
