@@ -9,7 +9,6 @@ type DirAndNodesTree = {
 };
 type Options = Partial<OptionValues> & {
   rootDir: string;
-  executedScript: string;
 };
 
 const indent = '    ';

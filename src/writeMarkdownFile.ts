@@ -4,7 +4,7 @@ import { Graph, OptionValues } from './models';
 
 type Options = Partial<OptionValues> & {
   rootDir: string;
-  executedScript: string;
+  executedScript?: string;
 };
 
 export async function writeMarkdownFile(
@@ -22,9 +22,11 @@ export async function writeMarkdownFile(
 
     ws.write('# typescript graph on mermaid\n');
     ws.write('\n');
-    ws.write('```bash\n');
-    ws.write(`${options.executedScript}\n`);
-    ws.write('```\n');
+    if (options.executedScript) {
+      ws.write('```bash\n');
+      ws.write(`${options.executedScript}\n`);
+      ws.write('```\n');
+    }
     ws.write('\n');
     ws.write('```mermaid\n');
     mermaidify(str => ws.write(str), graph, options);
