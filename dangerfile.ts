@@ -1,8 +1,12 @@
 import { danger, message, warn } from 'danger';
-import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { createGraph } from './src/graph/createGraph';
+import { curry, pipe } from '@ysk8hori/simple-functional-ts';
+import { filterGraph } from './src/graph/filterGraph';
+import { abstraction } from './src/graph/abstraction';
+import { highlight } from './src/graph/highlight';
+import { writeMarkdownFile } from './src/writeMarkdownFile';
 
 //  なぜ変更したのかの説明を含めると、どんなPRも小さくはありません
 if (danger.github.pr.body.length < 10) {
@@ -44,10 +48,10 @@ if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
     }, []);
 
   // Graph を生成
-  const { graph } = createGraph(path.resolve('./'));
+  const { graph: fullGraph, meta } = createGraph(path.resolve('./'));
 
   // Graph の node から、抽象化して良いディレクトリのリストを作成する
-  const abstractionTargetDirs = graph.nodes
+  const abstractionTarget = fullGraph.nodes
     .map(node => path.dirname(node.path))
     .filter(path => path !== '.' && !path.includes('node_modules'))
     .filter(path => noAbstractionDirs.every(dir => dir !== path))
@@ -59,40 +63,38 @@ if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
       return prev;
     }, []);
 
-  const abstractionFlag =
-    abstractionTargetDirs.length > 0
-      ? `--abstraction ${abstractionTargetDirs.join(' ')}`
-      : '';
+  const graph = pipe(
+    curry(filterGraph)([modified, created].flat())(['node_modules']),
+    curry(abstraction)(abstractionTarget),
+    curry(highlight)([modified, created].flat()),
+  )(fullGraph);
 
   const fileName = './typescript-graph.md';
-  execSync(
-    `npx tsg --md "${fileName}" --LR --include ${modified.join(
-      ' ',
-    )} ${created.join(' ')} ${deleted.join(
-      ' ',
-    )} --exclude node_modules --highlight ${modified.join(' ')} ${created.join(
-      ' ',
-    )} ${deleted.join(' ')} ${abstractionFlag}`,
-  );
-  const graphString = readFileSync(fileName, 'utf8');
-  message(graphString);
+  writeMarkdownFile(fileName, graph, {
+    rootDir: meta.rootDir,
+    LR: true,
+    highlight: [modified, created].flat(),
+  }).then(() => {
+    const graphString = readFileSync(fileName, 'utf8');
+    message(graphString);
 
-  // eslint-disable-next-line no-constant-condition
-  if (false) {
-    // gist にアップロードする場合
-    danger.github.api.gists
-      .create({
-        description: 'typescript-graph',
-        public: true,
-        files: {
-          'typescript-graph.md': {
-            content: graphString,
+    // eslint-disable-next-line no-constant-condition
+    if (false) {
+      // gist にアップロードする場合
+      danger.github.api.gists
+        .create({
+          description: 'typescript-graph',
+          public: true,
+          files: {
+            'typescript-graph.md': {
+              content: graphString,
+            },
           },
-        },
-      })
-      .then(res => {
-        if (!res.data.html_url) return;
-        message(`[typescript-graph](${res.data.html_url})`);
-      });
-  }
+        })
+        .then(res => {
+          if (!res.data.html_url) return;
+          message(`[typescript-graph](${res.data.html_url})`);
+        });
+    }
+  });
 }
