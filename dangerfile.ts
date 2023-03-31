@@ -18,6 +18,19 @@ const modified = danger.git.modified_files;
 const created = danger.git.created_files;
 const deleted = danger.git.deleted_files;
 
+modified
+  .concat(created)
+  .concat(deleted)
+  .forEach(file => {
+    danger.git.diffForFile(file).then(diff => {
+      if (diff?.before && diff.after && diff.before !== diff.after) {
+        console.log(
+          `The file ${diff.before} has been renamed to ${diff.after}`,
+        );
+      }
+    });
+  });
+
 // .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
 if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
   // 各 *_files から、抽象化してはいけないディレクトリのリストを作成する
