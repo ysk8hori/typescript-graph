@@ -7,6 +7,7 @@ import { filterGraph } from './src/graph/filterGraph';
 import { abstraction } from './src/graph/abstraction';
 import { highlight } from './src/graph/highlight';
 import { writeMarkdownFile } from './src/writeMarkdownFile';
+import { execSync } from 'child_process';
 
 //  なぜ変更したのかの説明を含めると、どんなPRも小さくはありません
 if (danger.github.pr.body.length < 10) {
@@ -18,21 +19,11 @@ const modified = danger.git.modified_files;
 const created = danger.git.created_files;
 const deleted = danger.git.deleted_files;
 
-modified
-  .concat(created)
-  .concat(deleted)
-  .forEach(file => {
-    danger.git.diffForFile(file).then(diff => {
-      if (diff?.before && diff.after && diff.before !== diff.after) {
-        console.log(
-          `The file ${diff.before} has been renamed to ${diff.after}`,
-        );
-      }
-    });
-    danger.git.structuredDiffForFile(file).then(diff => {
-      diff?.chunks.forEach(chunk => {chunk.})
-    })
-  });
+// `git diff base..head --name-status --diff-filter=R` でリネームされたファイルを取得する
+const renamed = execSync(
+  `git diff ${danger.github.pr.base.sha}..${danger.github.pr.head.sha} --name-status --diff-filter=R`,
+);
+console.log(renamed.toString());
 
 // .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
 if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
