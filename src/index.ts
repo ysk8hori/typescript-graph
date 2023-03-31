@@ -7,7 +7,7 @@ import { filterGraph } from './graph/filterGraph';
 import { abstraction } from './graph/abstraction';
 import { highlight } from './graph/highlight';
 import { writeMarkdownFile } from './writeMarkdownFile';
-import { clearDatabase, neo4jfy } from './neo4jfy';
+import { clearDatabase, neo4jfy } from './neo4jfyai';
 import packagejson from '../package.json';
 import { OptionValues } from './models';
 import { curry, pipe } from '@ysk8hori/simple-functional-ts';
