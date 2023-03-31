@@ -7,7 +7,6 @@ import { filterGraph } from './src/graph/filterGraph';
 import { abstraction } from './src/graph/abstraction';
 import { highlight } from './src/graph/highlight';
 import { writeMarkdownFile } from './src/writeMarkdownFile';
-import { execSync } from 'child_process';
 
 //  なぜ変更したのかの説明を含めると、どんなPRも小さくはありません
 if (danger.github.pr.body.length < 10) {
@@ -19,11 +18,22 @@ const modified = danger.git.modified_files;
 const created = danger.git.created_files;
 const deleted = danger.git.deleted_files;
 
-// `git diff base..head --name-status --diff-filter=R` でリネームされたファイルを取得する
-const renamed = execSync(
-  `git diff ${danger.github.pr.base.sha}..${danger.github.pr.head.sha} --name-status --diff-filter=R`,
-);
-console.log(renamed.toString());
+const baseBranch = danger.github.pr.base.ref; // ベースブランチ名
+const featureBranch = danger.github.pr.head.ref; // フィーチャーブランチ名
+const repoOwner = danger.github.pr.base.repo.owner.login;
+const repoName = danger.github.pr.base.repo.name;
+danger.github.api.repos
+  .compareCommitsWithBasehead({
+    owner: repoOwner,
+    repo: repoName,
+    basehead: `${baseBranch}...${featureBranch}`,
+  })
+  .then(comparison => {
+    const renamed = comparison.data.files?.filter(
+      file => file.status === 'renamed',
+    );
+    console.log(renamed);
+  });
 
 // .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
 if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
