@@ -29,6 +29,9 @@ modified
         );
       }
     });
+    danger.git.structuredDiffForFile(file).then(diff => {
+      diff?.chunks.forEach(chunk => {chunk.})
+    })
   });
 
 // .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
