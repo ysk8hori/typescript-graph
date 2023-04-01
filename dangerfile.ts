@@ -39,31 +39,9 @@ danger.github.api.repos
 // .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
 if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
   // 各 *_files から、抽象化してはいけないディレクトリのリストを作成する
-
-  const noAbstractionDirs = [modified, created, deleted]
-    .flat()
-    .map(file => {
-      const array = file.split('/');
-      if (array.includes('node_modules')) {
-        // node_modules より深いディレクトリ階層の情報は捨てる
-        // node_modules 内の node の name はパッケージ名のようなものになっているのでそれで良い
-        return 'node_modules';
-      } else if (array.length === 1) {
-        // トップレベルのファイルの場合
-        return undefined;
-      } else {
-        // 末尾のファイル名は不要
-        return path.join(...array.slice(0, array.length - 1));
-      }
-    })
-    .filter(Boolean)
-    .sort()
-    // noAbstractionDirs の重複を除去する
-    .reduce<string[]>((prev, current) => {
-      if (!current) return prev;
-      if (!prev.includes(current)) prev.push(current);
-      return prev;
-    }, []);
+  const noAbstractionDirs = extractNoAbstractionDirs(
+    [modified, created, deleted].flat(),
+  );
 
   // Graph を生成
   const { graph: fullGraph, meta } = createGraph(path.resolve('./'));
@@ -110,6 +88,35 @@ if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
         });
     }
   });
+}
+
+/** （本PRで）変更のあったファイルのパスから、抽象化してはいけないディレクトリのリストを作成する */
+function extractNoAbstractionDirs(filePaths: string[]) {
+  return (
+    filePaths
+      .map(file => {
+        const array = file.split('/');
+        if (array.includes('node_modules')) {
+          // node_modules より深いディレクトリ階層の情報は捨てる
+          // node_modules 内の node の name はパッケージ名のようなものになっているのでそれで良い
+          return 'node_modules';
+        } else if (array.length === 1) {
+          // トップレベルのファイルの場合
+          return undefined;
+        } else {
+          // 末尾のファイル名は不要
+          return path.join(...array.slice(0, array.length - 1));
+        }
+      })
+      .filter(Boolean)
+      .sort()
+      // noAbstractionDirs の重複を除去する
+      .reduce<string[]>((prev, current) => {
+        if (!current) return prev;
+        if (!prev.includes(current)) prev.push(current);
+        return prev;
+      }, [])
+  );
 }
 
 /** グラフと、抽象化してはいけないファイルのパスから、抽象化して良いディレクトリのパスを取得する */
