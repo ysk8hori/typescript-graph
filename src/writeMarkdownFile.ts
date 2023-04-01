@@ -20,7 +20,7 @@ export async function writeMarkdownFile(
     ws.on('finish', resolve);
     ws.on('error', reject);
 
-    ws.write('# typescript graph on mermaid\n');
+    ws.write('# TypeScript Graph\n');
     ws.write('\n');
     if (options.executedScript) {
       ws.write('```bash\n');
