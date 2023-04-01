@@ -7,6 +7,7 @@ import { filterGraph } from './src/graph/filterGraph';
 import { abstraction } from './src/graph/abstraction';
 import { highlight } from './src/graph/highlight';
 import { writeMarkdownFile } from './src/writeMarkdownFile';
+import { Graph } from './src/models';
 
 //  なぜ変更したのかの説明を含めると、どんなPRも小さくはありません
 if (danger.github.pr.body.length < 10) {
@@ -68,23 +69,18 @@ if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
   const { graph: fullGraph, meta } = createGraph(path.resolve('./'));
 
   // Graph の node から、抽象化して良いディレクトリのリストを作成する
-  const abstractionTarget = fullGraph.nodes
-    .map(node => path.dirname(node.path))
-    .filter(path => path !== '.' && !path.includes('node_modules'))
-    .filter(path => noAbstractionDirs.every(dir => dir !== path))
-    .sort()
-    // 重複を除去する
-    .reduce<string[]>((prev, current) => {
-      if (!current) return prev;
-      if (!prev.includes(current)) prev.push(current);
-      return prev;
-    }, []);
+  const abstractionTarget = extractAbstractionTarget(
+    fullGraph,
+    noAbstractionDirs,
+  );
 
   const graph = pipe(
     curry(filterGraph)([modified, created].flat())(['node_modules']),
     curry(abstraction)(abstractionTarget),
     curry(highlight)([modified, created].flat()),
   )(fullGraph);
+
+  // file 書き出しと投稿フェーズ
 
   const fileName = './typescript-graph.md';
   writeMarkdownFile(fileName, graph, {
@@ -114,4 +110,24 @@ if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
         });
     }
   });
+}
+
+/** グラフと、抽象化してはいけないファイルのパスから、抽象化して良いディレクトリのパスを取得する */
+function extractAbstractionTarget(
+  fullGraph: Graph,
+  noAbstractionDirs: string[],
+): string[] {
+  return (
+    fullGraph.nodes
+      .map(node => path.dirname(node.path))
+      .filter(path => path !== '.' && !path.includes('node_modules'))
+      .filter(path => noAbstractionDirs.every(dir => dir !== path))
+      .sort()
+      // 重複を除去する
+      .reduce<string[]>((prev, current) => {
+        if (!current) return prev;
+        if (!prev.includes(current)) prev.push(current);
+        return prev;
+      }, [])
+  );
 }
