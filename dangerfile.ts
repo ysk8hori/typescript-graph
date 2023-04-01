@@ -1,4 +1,4 @@
-import { danger, message, warn } from 'danger';
+import { danger, message, warn, markdown } from 'danger';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { createGraph } from './src/graph/createGraph';
@@ -98,7 +98,7 @@ async function makeGraph() {
       LR: true,
     });
     const graphString = readFileSync(fileName, 'utf8');
-    message(graphString);
+    markdown(graphString);
 
     // eslint-disable-next-line no-constant-condition
     if (false) {
