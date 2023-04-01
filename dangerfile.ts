@@ -8,6 +8,8 @@ import { abstraction } from './src/graph/abstraction';
 import { highlight } from './src/graph/highlight';
 import { writeMarkdownFile } from './src/writeMarkdownFile';
 import { Graph } from './src/models';
+import { execSync } from 'child_process';
+import { mergeGraph } from './src/graph/utils';
 
 //  なぜ変更したのかの説明を含めると、どんなPRも小さくはありません
 if (danger.github.pr.body.length < 10) {
@@ -43,12 +45,19 @@ if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
     [modified, created, deleted].flat(),
   );
 
-  // Graph を生成
+  // head の Graph を生成
   const { graph: fullGraph, meta } = createGraph(path.resolve('./'));
+
+  // base の Graph を生成
+  execSync(`git fetch origin ${baseBranch}`);
+  execSync(`git checkout ${baseBranch}`);
+  const { graph: baseFullGraph } = createGraph(path.resolve('./'));
+
+  const mergedGraph = mergeGraph(fullGraph, baseFullGraph);
 
   // Graph の node から、抽象化して良いディレクトリのリストを作成する
   const abstractionTarget = extractAbstractionTarget(
-    fullGraph,
+    mergedGraph,
     noAbstractionDirs,
   );
 
@@ -56,7 +65,7 @@ if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
     curry(filterGraph)([modified, created].flat())(['node_modules']),
     curry(abstraction)(abstractionTarget),
     curry(highlight)([modified, created].flat()),
-  )(fullGraph);
+  )(mergedGraph);
 
   // file 書き出しと投稿フェーズ
 
