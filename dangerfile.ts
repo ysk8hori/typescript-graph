@@ -1,4 +1,4 @@
-import { danger, message, warn, markdown } from 'danger';
+import { danger, warn, markdown } from 'danger';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { createGraph } from './src/graph/createGraph';
@@ -10,6 +10,7 @@ import { Graph } from './src/models';
 import { execSync } from 'child_process';
 import { mergeGraph } from './src/graph/utils';
 import addStatus from './src/graph/addStatus';
+import mermaidify from './src/mermaidify';
 
 //  なぜ変更したのかの説明を含めると、どんなPRも小さくはありません
 if (danger.github.pr.body.length < 10) {
@@ -18,7 +19,7 @@ if (danger.github.pr.body.length < 10) {
 
 async function makeGraph() {
   // 以下の *_files は src/index.ts のようなパス文字列になっている
-  const modified = danger.git.modified_files;
+  // const modified = danger.git.modified_files;
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
 
@@ -41,6 +42,17 @@ async function makeGraph() {
     ...(renamed?.map(file => file.previous_filename ?? '').filter(Boolean) ??
       []),
   );
+  // rename 後のファイルは新規作成扱いとする
+  created.push(
+    ...(renamed?.map(file => file.filename ?? '').filter(Boolean) ?? []),
+  );
+  // rename 前後のファイルは変更ファイルから除外する
+  const modified = danger.git.modified_files.filter(
+    file =>
+      !renamed?.some(
+        rename => rename.previous_filename === file || rename.filename === file,
+      ),
+  );
 
   // .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
   if (
@@ -52,72 +64,134 @@ async function makeGraph() {
     );
 
     // head の Graph を生成
-    const { graph: fullGraph, meta } = createGraph(path.resolve('./'));
+    const { graph: fullHeadGraph, meta } = createGraph(path.resolve('./'));
+    // Graph の node から、抽象化して良いディレクトリのリストを作成する
+    const abstractionTargetForHead = extractAbstractionTarget(
+      fullHeadGraph,
+      noAbstractionDirs,
+    );
+    // head には deleted 対象はないので deleted を空配列にしている
+    const headGraph = pipe(
+      curry(filterGraph)([modified, created].flat())(['node_modules']),
+      curry(abstraction)(abstractionTargetForHead),
+      curry(addStatus)({ modified, created, deleted: [] }),
+    )(fullHeadGraph);
+
+    // head の書き出し
+    const headLines: string[] = [];
+    await mermaidify((arg: string) => headLines.push(arg), headGraph, {
+      rootDir: meta.rootDir,
+      LR: true,
+    });
+    const headFileName = './typescript-graph-head.md';
+    await writeMarkdownFile(headFileName, headGraph, {
+      rootDir: meta.rootDir,
+      LR: true,
+    });
 
     // base の Graph を生成
     execSync(`git fetch origin ${baseBranch}`);
     execSync(`git checkout ${baseBranch}`);
-    const { graph: baseFullGraph } = createGraph(path.resolve('./'));
-
-    const mergedGraph = mergeGraph(fullGraph, baseFullGraph);
+    const { graph: fullBaseGraph } = createGraph(path.resolve('./'));
 
     // Graph の node から、抽象化して良いディレクトリのリストを作成する
-    const abstractionTarget = extractAbstractionTarget(
-      mergedGraph,
+    const abstractionTargetForBase = extractAbstractionTarget(
+      fullBaseGraph,
       noAbstractionDirs,
     );
 
-    const graph = pipe(
-      curry(filterGraph)([modified, created].flat())(['node_modules']),
-      curry(abstraction)(abstractionTarget),
+    const baseGraph = pipe(
+      curry(filterGraph)([modified, created, deleted].flat())(['node_modules']),
+      curry(abstraction)(abstractionTargetForBase),
       curry(addStatus)({ modified, created, deleted }),
-    )(mergedGraph);
+    )(fullBaseGraph);
 
-    // rename の Relation を追加する
-    if (renamed) {
-      renamed.forEach(file => {
-        const from = file.previous_filename;
-        const to = file.filename;
-        if (!from || !to) return;
-        const fromNode = graph.nodes.find(node => node.path === from);
-        const toNode = graph.nodes.find(node => node.path === to);
-        if (!fromNode || !toNode) return;
-        graph.relations.push({
-          from: fromNode,
-          to: toNode,
-          kind: 'rename_to',
-        });
-      });
-    }
-
-    // file 書き出しと投稿フェーズ
-
-    const fileName = './typescript-graph.md';
-    await writeMarkdownFile(fileName, graph, {
+    // base の書き出し
+    const baseLines: string[] = [];
+    await mermaidify((arg: string) => baseLines.push(arg), baseGraph, {
       rootDir: meta.rootDir,
       LR: true,
     });
-    const graphString = readFileSync(fileName, 'utf8');
-    markdown(graphString);
+
+    markdown(`
+# TypeScript Graph - Diff
+
+## Base Branch
+
+\`\`\`mermaid
+${baseLines.join('\n')}
+\`\`\`
+
+## Head Branch
+
+\`\`\`mermaid
+${headLines.join('\n')}
+\`\`\`
+
+`);
+
+    // const baseFileName = './typescript-graph-base.md';
+    // await writeMarkdownFile(baseFileName, baseGraph, {
+    //   rootDir: meta.rootDir,
+    //   LR: true,
+    // });
+    // // base の読み込み
+    // const baseGraphString = readFileSync(baseFileName, 'utf8');
+    // // base の投稿
+    // markdown(`# Before`);
+    // markdown(baseGraphString);
+
+    // // head の読み込み
+    // const headGraphString = readFileSync(headFileName, 'utf8');
+    // // head の投稿
+    // markdown(`# After`);
+    // markdown(headGraphString);
+
+    // // rename の Relation を追加する
+    // if (renamed) {
+    //   renamed.forEach(file => {
+    //     const from = file.previous_filename;
+    //     const to = file.filename;
+    //     if (!from || !to) return;
+    //     const fromNode = graph.nodes.find(node => node.path === from);
+    //     const toNode = graph.nodes.find(node => node.path === to);
+    //     if (!fromNode || !toNode) return;
+    //     graph.relations.push({
+    //       from: fromNode,
+    //       to: toNode,
+    //       kind: 'rename_to',
+    //     });
+    //   });
+    // }
+
+    // file 書き出しと投稿フェーズ
+
+    // const fileName = './typescript-graph.md';
+    // await writeMarkdownFile(fileName, graph, {
+    //   rootDir: meta.rootDir,
+    //   LR: true,
+    // });
+    // const graphString = readFileSync(fileName, 'utf8');
+    // markdown(graphString);
 
     // eslint-disable-next-line no-constant-condition
-    if (false) {
-      // gist にアップロードする場合
-      await danger.github.api.gists
-        .create({
-          description: 'typescript-graph',
-          public: true,
-          files: {
-            'typescript-graph.md': {
-              content: graphString,
-            },
-          },
-        })
-        .then(res => {
-          if (!res.data.html_url) return;
-          message(`[typescript-graph](${res.data.html_url})`);
-        });
-    }
+    // if (false) {
+    //   // gist にアップロードする場合
+    //   await danger.github.api.gists
+    //     .create({
+    //       description: 'typescript-graph',
+    //       public: true,
+    //       files: {
+    //         'typescript-graph.md': {
+    //           content: graphString,
+    //         },
+    //       },
+    //     })
+    //     .then(res => {
+    //       if (!res.data.html_url) return;
+    //       message(`[typescript-graph](${res.data.html_url})`);
+    //     });
+    // }
   }
 }
 makeGraph();
