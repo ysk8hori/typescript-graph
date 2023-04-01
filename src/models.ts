@@ -49,3 +49,12 @@ export function getUniqueRelations(relations: Relation[]): Relation[] {
     return prev;
   }, new Array<Relation>());
 }
+
+/** 受け取った node の重複をなくす */
+export function getUniqueNodes(nodes: Node[]): Node[] {
+  return nodes.reduce((prev, current) => {
+    if (prev.some(rel => isSameNode(rel, current))) return prev;
+    prev.push(current);
+    return prev;
+  }, new Array<Node>());
+}
