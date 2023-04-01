@@ -171,6 +171,7 @@ function writeRelations(write: (arg: string) => void, graph: Graph) {
   );
   graph.relations
     .map(relation => ({
+      ...relation,
       from: {
         ...relation.from,
         mermaidId: fileNameToMermaidId(relation.from.path),
@@ -181,7 +182,11 @@ function writeRelations(write: (arg: string) => void, graph: Graph) {
       },
     }))
     .forEach(relation => {
-      if (
+      if (relation.kind === 'rename_to') {
+        write(
+          `    ${relation.from.mermaidId}-.->|"rename to"|${relation.to.mermaidId}`,
+        );
+      } else if (
         deletedNode.map(node => node.path).includes(relation.from.path) ||
         deletedNode.map(node => node.path).includes(relation.to.path)
       ) {

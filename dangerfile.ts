@@ -36,6 +36,7 @@ async function makeGraph() {
       comparison.data.files?.filter(file => file.status === 'renamed'),
     );
 
+  // rename 前のファイルは削除扱いとする
   deleted.push(
     ...(renamed?.map(file => file.previous_filename ?? '').filter(Boolean) ??
       []),
@@ -71,6 +72,23 @@ async function makeGraph() {
       curry(abstraction)(abstractionTarget),
       curry(addStatus)({ modified, created, deleted }),
     )(mergedGraph);
+
+    // rename の Relation を追加する
+    if (renamed) {
+      renamed.forEach(file => {
+        const from = file.previous_filename;
+        const to = file.filename;
+        if (!from || !to) return;
+        const fromNode = graph.nodes.find(node => node.path === from);
+        const toNode = graph.nodes.find(node => node.path === to);
+        if (!fromNode || !toNode) return;
+        graph.relations.push({
+          from: fromNode,
+          to: toNode,
+          kind: 'rename_to',
+        });
+      });
+    }
 
     // file 書き出しと投稿フェーズ
 
