@@ -14,6 +14,9 @@ type Options = Partial<OptionValues> & {
 const indent = '    ';
 const CLASSNAME_DIR = 'dir';
 const CLASSNAME_HIGHLIGHT = 'highlight';
+const CLASSNAME_CREATED = 'created';
+const CLASSNAME_MODIFIED = 'modified';
+const CLASSNAME_DELETED = 'deleted';
 
 export default async function mermaidify(
   write: (arg: string) => void,
@@ -37,9 +40,27 @@ export default async function mermaidify(
   if (options.highlight)
     write(`${indent}classDef ${CLASSNAME_HIGHLIGHT} fill:yellow,color:black\n`);
 
+  // created のノードがある場合は、クラス定義を追加
+  if (graph.nodes.some(node => node.changeStatus === 'created'))
+    write(
+      `${indent}classDef ${CLASSNAME_CREATED} fill:cyan,stroke:#999,color:black\n`,
+    );
+
+  // modified のノードがある場合は、クラス定義を追加
+  if (graph.nodes.some(node => node.changeStatus === 'modified'))
+    write(
+      `${indent}classDef ${CLASSNAME_MODIFIED} fill:yellow,stroke:#999,color:black\n`,
+    );
+
+  // deleted のノードがある場合は、クラス定義を追加
+  if (graph.nodes.some(node => node.changeStatus === 'deleted'))
+    write(
+      `${indent}classDef ${CLASSNAME_DELETED} fill:dimgray,stroke:#999,color:black,stroke-dasharray: 4 4,stroke-width:2px;\n`,
+    );
+
   const dirAndNodesTree = createDirAndNodesTree(graph);
   writeFileNodesWithSubgraph(write, dirAndNodesTree);
-  writeRelations(write, graph.relations);
+  writeRelations(write, graph);
 
   if (options.mermaidLink) {
     writeFileLink(write, dirAndNodesTree, options.rootDir);
@@ -144,8 +165,11 @@ function createDirAndNodesTree(graph: Graph): DirAndNodesTree[] {
   return dirAndNodesTree;
 }
 
-function writeRelations(write: (arg: string) => void, relations: Relation[]) {
-  relations
+function writeRelations(write: (arg: string) => void, graph: Graph) {
+  const deletedNode = graph.nodes.filter(
+    node => node.changeStatus === 'deleted',
+  );
+  graph.relations
     .map(relation => ({
       from: {
         ...relation.from,
@@ -157,7 +181,14 @@ function writeRelations(write: (arg: string) => void, relations: Relation[]) {
       },
     }))
     .forEach(relation => {
-      write(`    ${relation.from.mermaidId}-->${relation.to.mermaidId}`);
+      if (
+        deletedNode.map(node => node.path).includes(relation.from.path) ||
+        deletedNode.map(node => node.path).includes(relation.to.path)
+      ) {
+        write(`    ${relation.from.mermaidId}-.->${relation.to.mermaidId}`);
+      } else {
+        write(`    ${relation.from.mermaidId}-->${relation.to.mermaidId}`);
+      }
       write('\n');
     });
 }
@@ -203,16 +234,27 @@ function addGraph(
   tree.nodes
     .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
     .forEach(node => {
+      const classString = (function () {
+        if (node.highlight) {
+          return `:::${CLASSNAME_HIGHLIGHT}`;
+        } else if (node.isDirectory) {
+          return `:::${CLASSNAME_DIR}`;
+        }
+        switch (node.changeStatus) {
+          case 'created':
+            return `:::${CLASSNAME_CREATED}`;
+          case 'modified':
+            return `:::${CLASSNAME_MODIFIED}`;
+          case 'deleted':
+            return `:::${CLASSNAME_DELETED}`;
+          default:
+            return '';
+        }
+      })();
       write(
         `${_indent}${indent}${node.mermaidId}["${fileNameToMermaidName(
           node.name,
-        )}"]${
-          node.highlight
-            ? `:::${CLASSNAME_HIGHLIGHT}`
-            : node.isDirectory
-            ? `:::${CLASSNAME_DIR}`
-            : ''
-        }`,
+        )}"]${classString}`,
       );
       write('\n');
     });

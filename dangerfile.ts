@@ -5,11 +5,11 @@ import { createGraph } from './src/graph/createGraph';
 import { curry, pipe } from '@ysk8hori/simple-functional-ts';
 import { filterGraph } from './src/graph/filterGraph';
 import { abstraction } from './src/graph/abstraction';
-import { highlight } from './src/graph/highlight';
 import { writeMarkdownFile } from './src/writeMarkdownFile';
 import { Graph } from './src/models';
 import { execSync } from 'child_process';
 import { mergeGraph } from './src/graph/utils';
+import addStatus from './src/graph/addStatus';
 
 //  なぜ変更したのかの説明を含めると、どんなPRも小さくはありません
 if (danger.github.pr.body.length < 10) {
@@ -35,6 +35,11 @@ async function makeGraph() {
     .then(comparison =>
       comparison.data.files?.filter(file => file.status === 'renamed'),
     );
+
+  deleted.push(
+    ...(renamed?.map(file => file.previous_filename ?? '').filter(Boolean) ??
+      []),
+  );
 
   // .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
   if (
@@ -64,7 +69,7 @@ async function makeGraph() {
     const graph = pipe(
       curry(filterGraph)([modified, created].flat())(['node_modules']),
       curry(abstraction)(abstractionTarget),
-      curry(highlight)([modified, created].flat()),
+      curry(addStatus)({ modified, created, deleted }),
     )(mergedGraph);
 
     // file 書き出しと投稿フェーズ
@@ -73,7 +78,6 @@ async function makeGraph() {
     await writeMarkdownFile(fileName, graph, {
       rootDir: meta.rootDir,
       LR: true,
-      highlight: [modified, created].flat(),
     });
     const graphString = readFileSync(fileName, 'utf8');
     message(graphString);

@@ -15,11 +15,13 @@ export type OptionValues = {
 type FileName = string;
 type DirName = string;
 type FilePath = string;
+export type ChangeStatus = 'not_modified' | 'created' | 'modified' | 'deleted';
 export type Node = {
   path: FilePath;
   name: FileName | DirName;
   isDirectory?: boolean;
   highlight?: boolean;
+  changeStatus: ChangeStatus;
 };
 export type RelationType = 'depends_on' | 'rename_to';
 export type RelationOfDependsOn = {
