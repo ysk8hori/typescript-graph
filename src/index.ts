@@ -74,7 +74,7 @@ export async function main(
   });
 
   if (commandOptions.neo4j) {
-    await neo4jfy(graph);
+    // await neo4jfy(graph);
   }
 }
 

@@ -21,7 +21,15 @@ export type Node = {
   isDirectory?: boolean;
   highlight?: boolean;
 };
-export type Relation = { from: Node; to: Node; fullText: string };
+export type RelationType = 'depends_on' | 'rename_to';
+export type RelationOfDependsOn = {
+  kind: 'depends_on';
+  from: Node;
+  to: Node;
+  fullText: string;
+};
+export type RelationOfRenameTo = { kind: 'rename_to'; from: Node; to: Node };
+export type Relation = RelationOfDependsOn | RelationOfRenameTo;
 export type Graph = { nodes: Node[]; relations: Relation[] };
 export type Meta = { rootDir: string };
 
