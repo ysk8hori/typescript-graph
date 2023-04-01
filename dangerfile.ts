@@ -16,72 +16,72 @@ if (danger.github.pr.body.length < 10) {
   warn('Please include a description of your PR changes.');
 }
 
-// 以下の *_files は src/index.ts のようなパス文字列になっている
-const modified = danger.git.modified_files;
-const created = danger.git.created_files;
-const deleted = danger.git.deleted_files;
+async function makeGraph() {
+  // 以下の *_files は src/index.ts のようなパス文字列になっている
+  const modified = danger.git.modified_files;
+  const created = danger.git.created_files;
+  const deleted = danger.git.deleted_files;
 
-const baseBranch = danger.github.pr.base.ref; // ベースブランチ名
-const featureBranch = danger.github.pr.head.ref; // フィーチャーブランチ名
-const repoOwner = danger.github.pr.base.repo.owner.login;
-const repoName = danger.github.pr.base.repo.name;
-danger.github.api.repos
-  .compareCommitsWithBasehead({
-    owner: repoOwner,
-    repo: repoName,
-    basehead: `${baseBranch}...${featureBranch}`,
-  })
-  .then(comparison => {
-    const renamed = comparison.data.files?.filter(
-      file => file.status === 'renamed',
+  const baseBranch = danger.github.pr.base.ref; // ベースブランチ名
+  const featureBranch = danger.github.pr.head.ref; // フィーチャーブランチ名
+  const repoOwner = danger.github.pr.base.repo.owner.login;
+  const repoName = danger.github.pr.base.repo.name;
+  const renamed = await danger.github.api.repos
+    .compareCommitsWithBasehead({
+      owner: repoOwner,
+      repo: repoName,
+      basehead: `${baseBranch}...${featureBranch}`,
+    })
+    .then(comparison =>
+      comparison.data.files?.filter(file => file.status === 'renamed'),
     );
-    console.log(renamed);
-  });
 
-// .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
-if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
-  // 各 *_files から、抽象化してはいけないディレクトリのリストを作成する
-  const noAbstractionDirs = extractNoAbstractionDirs(
-    [modified, created, deleted].flat(),
-  );
+  // .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
+  if (
+    [modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))
+  ) {
+    // 各 *_files から、抽象化してはいけないディレクトリのリストを作成する
+    const noAbstractionDirs = extractNoAbstractionDirs(
+      [modified, created, deleted].flat(),
+    );
 
-  // head の Graph を生成
-  const { graph: fullGraph, meta } = createGraph(path.resolve('./'));
+    // head の Graph を生成
+    const { graph: fullGraph, meta } = createGraph(path.resolve('./'));
 
-  // base の Graph を生成
-  execSync(`git fetch origin ${baseBranch}`);
-  execSync(`git checkout ${baseBranch}`);
-  const { graph: baseFullGraph } = createGraph(path.resolve('./'));
+    // base の Graph を生成
+    execSync(`git fetch origin ${baseBranch}`);
+    execSync(`git checkout ${baseBranch}`);
+    const { graph: baseFullGraph } = createGraph(path.resolve('./'));
 
-  const mergedGraph = mergeGraph(fullGraph, baseFullGraph);
+    const mergedGraph = mergeGraph(fullGraph, baseFullGraph);
 
-  // Graph の node から、抽象化して良いディレクトリのリストを作成する
-  const abstractionTarget = extractAbstractionTarget(
-    mergedGraph,
-    noAbstractionDirs,
-  );
+    // Graph の node から、抽象化して良いディレクトリのリストを作成する
+    const abstractionTarget = extractAbstractionTarget(
+      mergedGraph,
+      noAbstractionDirs,
+    );
 
-  const graph = pipe(
-    curry(filterGraph)([modified, created].flat())(['node_modules']),
-    curry(abstraction)(abstractionTarget),
-    curry(highlight)([modified, created].flat()),
-  )(mergedGraph);
+    const graph = pipe(
+      curry(filterGraph)([modified, created].flat())(['node_modules']),
+      curry(abstraction)(abstractionTarget),
+      curry(highlight)([modified, created].flat()),
+    )(mergedGraph);
 
-  // file 書き出しと投稿フェーズ
+    // file 書き出しと投稿フェーズ
 
-  const fileName = './typescript-graph.md';
-  writeMarkdownFile(fileName, graph, {
-    rootDir: meta.rootDir,
-    LR: true,
-    highlight: [modified, created].flat(),
-  }).then(() => {
+    const fileName = './typescript-graph.md';
+    await writeMarkdownFile(fileName, graph, {
+      rootDir: meta.rootDir,
+      LR: true,
+      highlight: [modified, created].flat(),
+    });
     const graphString = readFileSync(fileName, 'utf8');
     message(graphString);
 
     // eslint-disable-next-line no-constant-condition
     if (false) {
       // gist にアップロードする場合
-      danger.github.api.gists
+      await danger.github.api.gists
         .create({
           description: 'typescript-graph',
           public: true,
@@ -96,8 +96,9 @@ if ([modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))) {
           message(`[typescript-graph](${res.data.html_url})`);
         });
     }
-  });
+  }
 }
+makeGraph();
 
 /** （本PRで）変更のあったファイルのパスから、抽象化してはいけないディレクトリのリストを作成する */
 function extractNoAbstractionDirs(filePaths: string[]) {
