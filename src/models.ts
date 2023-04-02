@@ -29,8 +29,13 @@ export type RelationOfDependsOn = {
   from: Node;
   to: Node;
   fullText: string;
+  changeStatus: ChangeStatus;
 };
-export type RelationOfRenameTo = { kind: 'rename_to'; from: Node; to: Node };
+export type RelationOfRenameTo = {
+  kind: 'rename_to';
+  from: Node;
+  to: Node;
+};
 export type Relation = RelationOfDependsOn | RelationOfRenameTo;
 export type Graph = { nodes: Node[]; relations: Relation[] };
 export type Meta = { rootDir: string };
