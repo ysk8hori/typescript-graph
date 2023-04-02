@@ -79,9 +79,11 @@ async function makeGraph() {
     graphPromise,
   ]);
 
-  // ファイルの削除またはリネームがある場合は Graph を2つ表示する
-  if (created.length !== 0 || (renamed && renamed.length !== 0)) {
-    // 2つのグラフを表示する
+  const hasRenamed = headGraph.nodes.some(headNode =>
+    renamed?.map(({ filename }) => filename).includes(headNode.path),
+  );
+  if (deleted.length !== 0 || hasRenamed) {
+    // ファイルの削除またはリネームがある場合は Graph を2つ表示する
     let tmpBaseGraph = abstraction(
       extractAbstractionTarget(
         baseGraph,
