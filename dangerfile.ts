@@ -87,9 +87,73 @@ async function makeGraph() {
     graphPromise,
   ]);
 
-  // 1つのグラフを表示するか、2つのグラフを表示するかの判定
+  // ファイルの削除またはリネームがある場合は Graph を2つ表示する
   // eslint-disable-next-line no-constant-condition
-  if (true) {
+  if (created.length !== 0 || (renamed && renamed.length !== 0)) {
+    // 2つのグラフを表示する
+    let tmpBaseGraph = abstraction(
+      extractAbstractionTarget(
+        baseGraph,
+        extractNoAbstractionDirs(
+          [
+            created,
+            deleted,
+            modified,
+            (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
+              []) as string[],
+          ].flat(),
+        ),
+      ),
+      baseGraph,
+    );
+    tmpBaseGraph = addStatus({ modified, created, deleted }, tmpBaseGraph);
+    // base の書き出し
+    const baseLines: string[] = [];
+    await mermaidify((arg: string) => baseLines.push(arg), tmpBaseGraph, {
+      rootDir: meta.rootDir,
+      LR: true,
+    });
+
+    let tmpHeadGraph = abstraction(
+      extractAbstractionTarget(
+        headGraph,
+        extractNoAbstractionDirs(
+          [
+            created,
+            deleted,
+            modified,
+            (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
+              []) as string[],
+          ].flat(),
+        ),
+      ),
+      headGraph,
+    );
+    tmpHeadGraph = addStatus({ modified, created, deleted }, tmpHeadGraph);
+    // head の書き出し
+    const headLines: string[] = [];
+    await mermaidify((arg: string) => headLines.push(arg), tmpHeadGraph, {
+      rootDir: meta.rootDir,
+      LR: true,
+    });
+
+    markdown(`
+# TypeScript Graph - Diff
+
+## Base Branch
+
+\`\`\`mermaid
+${baseLines.join('\n')}
+\`\`\`
+
+## Head Branch
+
+\`\`\`mermaid
+${headLines.join('\n')}
+\`\`\`
+
+`);
+  } else {
     // base と head のグラフをマージする
     updateChangeStatusFromDiff(baseGraph, headGraph);
     const mergedGraph = mergeGraph(headGraph, baseGraph);
@@ -141,8 +205,6 @@ async function makeGraph() {
   \`\`\`
 
   `);
-  } else {
-    // 2つのグラフを表示する
   }
 
   // // rename 前のファイルは削除扱いとする
