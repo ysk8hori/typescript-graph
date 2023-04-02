@@ -32,7 +32,11 @@ export function createGraph(dir: string): { graph: Graph; meta: Meta } {
           : sourceFile.fileName,
       );
       const fileName = getName(filePath);
-      const fromNode: Node = { path: filePath, name: fileName };
+      const fromNode: Node = {
+        path: filePath,
+        name: fileName,
+        changeStatus: 'not_modified',
+      };
       nodes.push(fromNode);
 
       ts.forEachChild(sourceFile, node => {
@@ -52,14 +56,17 @@ export function createGraph(dir: string): { graph: Graph; meta: Meta } {
         const toNode: Node = {
           path: moduleFilePath,
           name: getName(moduleFilePath),
+          changeStatus: 'not_modified',
         };
         if (!findNode(nodes, moduleFilePath)) {
           nodes.push(toNode);
         }
         relations.push({
+          kind: 'depends_on',
           from: fromNode,
           to: toNode,
           fullText: node.getChildAt(1, sourceFile).getText(sourceFile),
+          changeStatus: 'not_modified',
         });
       });
     });

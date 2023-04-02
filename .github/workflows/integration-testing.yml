@@ -38,7 +38,6 @@ jobs:
           node-version: 18.x
           cache: 'npm'
       - run: npm ci
-      - run: npm run build --if-present
       - name: Danger
         run: npx danger ci
         env:

@@ -1,7 +1,10 @@
 import neo4j from 'neo4j-driver';
-import { Node, Relation } from './models';
+import { Node, RelationOfDependsOn } from './models';
 
-export async function neo4jfy(graph: { nodes: Node[]; relations: Relation[] }) {
+export async function neo4jfy(graph: {
+  nodes: Node[];
+  relations: RelationOfDependsOn[];
+}) {
   const driver = neo4j.driver('neo4j://localhost:7687');
   const session = driver.session();
   try {

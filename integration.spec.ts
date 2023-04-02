@@ -16,7 +16,7 @@ test('run:sample', async () => {
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
-    "# typescript graph on mermaid
+    "# TypeScript Graph
 
     \`\`\`bash
     tsg -d ./dummy_project --md __tmp__/test.md
@@ -118,7 +118,7 @@ test('run:sample:include', async () => {
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
-    "# typescript graph on mermaid
+    "# TypeScript Graph
 
     \`\`\`bash
     tsg -d ./dummy_project --include includeFiles config --md __tmp__/test.md
@@ -202,7 +202,7 @@ test('run:sample:exclude', async () => {
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
-    "# typescript graph on mermaid
+    "# TypeScript Graph
 
     \`\`\`bash
     tsg -d ./dummy_project --include includeFiles --exclude excludeFiles utils config --md __tmp__/test.md
@@ -248,7 +248,7 @@ test('run:sample:abstraction', async () => {
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
-    "# typescript graph on mermaid
+    "# TypeScript Graph
 
     \`\`\`bash
     tsg -d ./dummy_project --include includeFiles --exclude excludeFiles utils config --abstraction abstractions --md __tmp__/test.md
@@ -285,7 +285,7 @@ test('run:sample:highlight', async () => {
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
-    "# typescript graph on mermaid
+    "# TypeScript Graph
 
     \`\`\`bash
     tsg -d ./dummy_project --include includeFiles --exclude excludeFiles utils config --abstraction abstractions --highlight config.ts b.ts --md __tmp__/test.md

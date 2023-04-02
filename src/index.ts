@@ -6,7 +6,7 @@ import { createGraph } from './graph/createGraph';
 import { filterGraph } from './graph/filterGraph';
 import { abstraction } from './graph/abstraction';
 import { highlight } from './graph/highlight';
-import mermaidify from './mermaidify';
+import { writeMarkdownFile } from './writeMarkdownFile';
 import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
 import { OptionValues } from './models';
@@ -67,14 +67,14 @@ export async function main(
     curry(highlight)(commandOptions.highlight),
   )(fullGraph);
 
-  await mermaidify(commandOptions.md ?? 'typescript-graph', graph, {
+  await writeMarkdownFile(commandOptions.md ?? 'typescript-graph', graph, {
     ...commandOptions,
     rootDir: meta.rootDir,
     executedScript: commandOptions.executedScript,
   });
 
   if (commandOptions.neo4j) {
-    await neo4jfy(graph);
+    // await neo4jfy(graph);
   }
 }
 
