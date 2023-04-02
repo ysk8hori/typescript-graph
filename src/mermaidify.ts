@@ -166,9 +166,6 @@ function createDirAndNodesTree(graph: Graph): DirAndNodesTree[] {
 }
 
 function writeRelations(write: (arg: string) => void, graph: Graph) {
-  const deletedNode = graph.nodes.filter(
-    node => node.changeStatus === 'deleted',
-  );
   graph.relations
     .map(relation => ({
       ...relation,
@@ -186,10 +183,7 @@ function writeRelations(write: (arg: string) => void, graph: Graph) {
         write(
           `    ${relation.from.mermaidId}-.->|"rename to"|${relation.to.mermaidId}`,
         );
-      } else if (
-        deletedNode.map(node => node.path).includes(relation.from.path) ||
-        deletedNode.map(node => node.path).includes(relation.to.path)
-      ) {
+      } else if (relation.changeStatus === 'deleted') {
         write(`    ${relation.from.mermaidId}-.->${relation.to.mermaidId}`);
       } else {
         write(`    ${relation.from.mermaidId}-->${relation.to.mermaidId}`);

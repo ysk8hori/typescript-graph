@@ -6,9 +6,9 @@ import { curry, pipe } from '@ysk8hori/simple-functional-ts';
 import { filterGraph } from './src/graph/filterGraph';
 import { abstraction } from './src/graph/abstraction';
 import { writeMarkdownFile } from './src/writeMarkdownFile';
-import { Graph } from './src/models';
+import { Graph, Meta } from './src/models';
 import { execSync } from 'child_process';
-import { mergeGraph } from './src/graph/utils';
+import { updateChangeStatusFromDiff, mergeGraph } from './src/graph/utils';
 import addStatus from './src/graph/addStatus';
 import mermaidify from './src/mermaidify';
 
@@ -32,7 +32,7 @@ async function makeGraph() {
     return;
   }
 
-  // const modified = danger.git.modified_files;
+  const modified = danger.git.modified_files;
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
 
@@ -40,7 +40,13 @@ async function makeGraph() {
   const featureBranch = danger.github.pr.head.ref; // フィーチャーブランチ名
   const repoOwner = danger.github.pr.base.repo.owner.login;
   const repoName = danger.github.pr.base.repo.name;
-  const renamed = await danger.github.api.repos
+
+  // 各 *_files から、抽象化してはいけないディレクトリのリストを作成する
+  const noAbstractionDirs = extractNoAbstractionDirs(
+    [modified, created, deleted].flat(),
+  );
+
+  const renamePromise = danger.github.api.repos
     .compareCommitsWithBasehead({
       owner: repoOwner,
       repo: repoName,
@@ -50,94 +56,183 @@ async function makeGraph() {
       comparison.data.files?.filter(file => file.status === 'renamed'),
     );
 
-  // rename 前のファイルは削除扱いとする
-  deleted.push(
-    ...(renamed?.map(file => file.previous_filename ?? '').filter(Boolean) ??
-      []),
-  );
-  // rename 後のファイルは新規作成扱いとする
-  created.push(
-    ...(renamed?.map(file => file.filename ?? '').filter(Boolean) ?? []),
-  );
-  // rename 前後のファイルは変更ファイルから除外する
-  const modified = danger.git.modified_files.filter(
-    file =>
-      !renamed?.some(
-        rename => rename.previous_filename === file || rename.filename === file,
+  const graphPromise = new Promise<{
+    headGraph: Graph;
+    baseGraph: Graph;
+    meta: Meta;
+  }>(resolve => {
+    // head の Graph を生成
+    const { graph: fullHeadGraph, meta } = createGraph(path.resolve('./'));
+    // head には deleted 対象はない
+    const headGraph = filterGraph(
+      [modified, created].flat(),
+      ['node_modules'],
+      fullHeadGraph,
+    );
+
+    // base の Graph を生成
+    execSync(`git fetch origin ${baseBranch}`);
+    execSync(`git checkout ${baseBranch}`);
+    const { graph: fullBaseGraph } = createGraph(path.resolve('./'));
+    const baseGraph = filterGraph(
+      [modified, created, deleted].flat(),
+      ['node_modules'],
+      fullBaseGraph,
+    );
+    resolve({ headGraph, baseGraph, meta });
+  });
+
+  const [renamed, { headGraph, baseGraph, meta }] = await Promise.all([
+    renamePromise,
+    graphPromise,
+  ]);
+
+  // 1つのグラフを表示するか、2つのグラフを表示するかの判定
+  // eslint-disable-next-line no-constant-condition
+  if (true) {
+    // base と head のグラフをマージする
+    updateChangeStatusFromDiff(baseGraph, headGraph);
+    const mergedGraph = mergeGraph(headGraph, baseGraph);
+
+    // rename の Relation を追加する
+    if (renamed) {
+      renamed.forEach(file => {
+        const from = file.previous_filename;
+        const to = file.filename;
+        if (!from || !to) return;
+        const fromNode = mergedGraph.nodes.find(node => node.path === from);
+        const toNode = mergedGraph.nodes.find(node => node.path === to);
+        if (!fromNode || !toNode) return;
+        mergedGraph.relations.push({
+          from: fromNode,
+          to: toNode,
+          kind: 'rename_to',
+        });
+      });
+    }
+
+    const graph = abstraction(
+      extractAbstractionTarget(
+        mergedGraph,
+        extractNoAbstractionDirs(
+          [
+            created,
+            deleted,
+            modified,
+            (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
+              []) as string[],
+          ].flat(),
+        ),
       ),
-  );
+      mergedGraph,
+    );
 
-  // 各 *_files から、抽象化してはいけないディレクトリのリストを作成する
-  const noAbstractionDirs = extractNoAbstractionDirs(
-    [modified, created, deleted].flat(),
-  );
+    const mermaidLines: string[] = [];
+    mermaidify((arg: string) => mermaidLines.push(arg), graph, {
+      rootDir: meta.rootDir,
+      LR: true,
+    });
 
-  // head の Graph を生成
-  const { graph: fullHeadGraph, meta } = createGraph(path.resolve('./'));
+    markdown(`
+  # TypeScript Graph - Diff
+
+  \`\`\`mermaid
+  ${mermaidLines.join('\n')}
+  \`\`\`
+
+  `);
+  } else {
+    // 2つのグラフを表示する
+  }
+
+  // // rename 前のファイルは削除扱いとする
+  // deleted.push(
+  //   ...(renamed?.map(file => file.previous_filename ?? '').filter(Boolean) ??
+  //     []),
+  // );
+  // // rename 後のファイルは新規作成扱いとする
+  // created.push(
+  //   ...(renamed?.map(file => file.filename ?? '').filter(Boolean) ?? []),
+  // );
+  // // rename 前後のファイルは変更ファイルから除外する
+  // const modified = danger.git.modified_files.filter(
+  //   file =>
+  //     !renamed?.some(
+  //       rename => rename.previous_filename === file || rename.filename === file,
+  //     ),
+  // );
+
+  // // 各 *_files から、抽象化してはいけないディレクトリのリストを作成する
+  // const noAbstractionDirs = extractNoAbstractionDirs(
+  //   [modified, created, deleted].flat(),
+  // );
+
+  // // head の Graph を生成
+  // const { graph: fullHeadGraph, meta } = createGraph(path.resolve('./'));
   // Graph の node から、抽象化して良いディレクトリのリストを作成する
-  const abstractionTargetForHead = extractAbstractionTarget(
-    fullHeadGraph,
-    noAbstractionDirs,
-  );
-  // head には deleted 対象はないので deleted を空配列にしている
-  const headGraph = pipe(
-    curry(filterGraph)([modified, created].flat())(['node_modules']),
-    curry(abstraction)(abstractionTargetForHead),
-    curry(addStatus)({ modified, created, deleted: [] }),
-  )(fullHeadGraph);
+  // const abstractionTargetForHead = extractAbstractionTarget(
+  //   fullHeadGraph,
+  //   noAbstractionDirs,
+  // // );
+  // // head には deleted 対象はないので deleted を空配列にしている
+  // const headGraph = pipe(
+  //   curry(filterGraph)([modified, created].flat())(['node_modules']),
+  //   // curry(abstraction)(abstractionTargetForHead),
+  //   // curry(addStatus)({ modified, created, deleted: [] }),
+  // )(fullHeadGraph);
 
-  // head の書き出し
-  const headLines: string[] = [];
-  await mermaidify((arg: string) => headLines.push(arg), headGraph, {
-    rootDir: meta.rootDir,
-    LR: true,
-  });
-  const headFileName = './typescript-graph-head.md';
-  await writeMarkdownFile(headFileName, headGraph, {
-    rootDir: meta.rootDir,
-    LR: true,
-  });
+  // // head の書き出し
+  // const headLines: string[] = [];
+  // await mermaidify((arg: string) => headLines.push(arg), headGraph, {
+  //   rootDir: meta.rootDir,
+  //   LR: true,
+  // });
+  // const headFileName = './typescript-graph-head.md';
+  // await writeMarkdownFile(headFileName, headGraph, {
+  //   rootDir: meta.rootDir,
+  //   LR: true,
+  // });
 
   // base の Graph を生成
-  execSync(`git fetch origin ${baseBranch}`);
-  execSync(`git checkout ${baseBranch}`);
-  const { graph: fullBaseGraph } = createGraph(path.resolve('./'));
+  // execSync(`git fetch origin ${baseBranch}`);
+  // execSync(`git checkout ${baseBranch}`);
+  // const { graph: fullBaseGraph } = createGraph(path.resolve('./'));
 
-  // Graph の node から、抽象化して良いディレクトリのリストを作成する
-  const abstractionTargetForBase = extractAbstractionTarget(
-    fullBaseGraph,
-    noAbstractionDirs,
-  );
+  // // Graph の node から、抽象化して良いディレクトリのリストを作成する
+  // const abstractionTargetForBase = extractAbstractionTarget(
+  //   fullBaseGraph,
+  //   noAbstractionDirs,
+  // );
 
-  const baseGraph = pipe(
-    curry(filterGraph)([modified, created, deleted].flat())(['node_modules']),
-    curry(abstraction)(abstractionTargetForBase),
-    curry(addStatus)({ modified, created, deleted }),
-  )(fullBaseGraph);
+  // const baseGraph = pipe(
+  //   curry(filterGraph)([modified, created, deleted].flat())(['node_modules']),
+  //   // curry(abstraction)(abstractionTargetForBase),
+  //   // curry(addStatus)({ modified, created, deleted }),
+  // )(fullBaseGraph);
 
-  // base の書き出し
-  const baseLines: string[] = [];
-  await mermaidify((arg: string) => baseLines.push(arg), baseGraph, {
-    rootDir: meta.rootDir,
-    LR: true,
-  });
+  //   // base の書き出し
+  //   const baseLines: string[] = [];
+  //   await mermaidify((arg: string) => baseLines.push(arg), baseGraph, {
+  //     rootDir: meta.rootDir,
+  //     LR: true,
+  //   });
 
-  markdown(`
-# TypeScript Graph - Diff
+  //   markdown(`
+  // # TypeScript Graph - Diff
 
-## Base Branch
+  // ## Base Branch
 
-\`\`\`mermaid
-${baseLines.join('\n')}
-\`\`\`
+  // \`\`\`mermaid
+  // ${baseLines.join('\n')}
+  // \`\`\`
 
-## Head Branch
+  // ## Head Branch
 
-\`\`\`mermaid
-${headLines.join('\n')}
-\`\`\`
+  // \`\`\`mermaid
+  // ${headLines.join('\n')}
+  // \`\`\`
 
-`);
+  // `);
 
   // const baseFileName = './typescript-graph-base.md';
   // await writeMarkdownFile(baseFileName, baseGraph, {
