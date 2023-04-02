@@ -6,7 +6,7 @@ import { curry, pipe } from '@ysk8hori/simple-functional-ts';
 import { filterGraph } from './src/graph/filterGraph';
 import { abstraction } from './src/graph/abstraction';
 import { writeMarkdownFile } from './src/writeMarkdownFile';
-import { Graph, Meta } from './src/models';
+import { Graph, isSameRelation, Meta } from './src/models';
 import { execSync } from 'child_process';
 import { updateChangeStatusFromDiff, mergeGraph } from './src/graph/utils';
 import addStatus from './src/graph/addStatus';
@@ -154,30 +154,23 @@ ${headLines.join('\n')}
 
 `);
   } else {
+    // 削除された Relation にマークをつける
+    headGraph.relations.forEach(current => {
+      for (const baseRelation of baseGraph.relations) {
+        if (
+          !isSameRelation(baseRelation, current) &&
+          baseRelation.kind === 'depends_on'
+        ) {
+          baseRelation.changeStatus = 'deleted';
+        }
+      }
+    });
     // base と head のグラフをマージする
-    updateChangeStatusFromDiff(baseGraph, headGraph);
-    const mergedGraph = mergeGraph(headGraph, baseGraph);
+    let tmpGraph = mergeGraph(headGraph, baseGraph);
 
-    // rename の Relation を追加する
-    if (renamed) {
-      renamed.forEach(file => {
-        const from = file.previous_filename;
-        const to = file.filename;
-        if (!from || !to) return;
-        const fromNode = mergedGraph.nodes.find(node => node.path === from);
-        const toNode = mergedGraph.nodes.find(node => node.path === to);
-        if (!fromNode || !toNode) return;
-        mergedGraph.relations.push({
-          from: fromNode,
-          to: toNode,
-          kind: 'rename_to',
-        });
-      });
-    }
-
-    const graph = abstraction(
+    tmpGraph = abstraction(
       extractAbstractionTarget(
-        mergedGraph,
+        tmpGraph,
         extractNoAbstractionDirs(
           [
             created,
@@ -188,11 +181,12 @@ ${headLines.join('\n')}
           ].flat(),
         ),
       ),
-      mergedGraph,
+      tmpGraph,
     );
+    tmpGraph = addStatus({ modified, created, deleted: [] }, tmpGraph);
 
     const mermaidLines: string[] = [];
-    mermaidify((arg: string) => mermaidLines.push(arg), graph, {
+    mermaidify((arg: string) => mermaidLines.push(arg), tmpGraph, {
       rootDir: meta.rootDir,
       LR: true,
     });
