@@ -66,6 +66,7 @@ export function createGraph(dir: string): { graph: Graph; meta: Meta } {
           from: fromNode,
           to: toNode,
           fullText: node.getChildAt(1, sourceFile).getText(sourceFile),
+          changeStatus: 'not_modified',
         });
       });
     });

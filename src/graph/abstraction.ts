@@ -71,6 +71,7 @@ function abstractionNode(node: Node, absDirArrArr: string[][]): Node {
     name: `/${absDirArr.at(-1)!}`,
     path: abstractionPath(node.path, absDirArr),
     isDirectory: true,
+    changeStatus: 'not_modified',
   };
 }
 
