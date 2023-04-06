@@ -78,6 +78,7 @@ async function makeGraph() {
     renamePromise,
     graphPromise,
   ]);
+  if (headGraph.nodes.length === 0) return;
 
   const hasRenamed = headGraph.nodes.some(headNode =>
     renamed?.map(({ filename }) => filename).includes(headNode.path),
