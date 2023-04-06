@@ -4,6 +4,7 @@ import b2 from './excludeFiles/h';
 import c2 from './excludeFiles/i';
 import { style } from './excludeFiles/style/style';
 import ClassA from './excludeFiles/class/classA';
+import * as d from './d';
 
 export default function a() {
   childA();
