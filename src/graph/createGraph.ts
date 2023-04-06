@@ -40,9 +40,11 @@ export function createGraph(dir: string): { graph: Graph; meta: Meta } {
       nodes.push(fromNode);
 
       ts.forEachChild(sourceFile, node => {
-        if (!ts.isImportDeclaration(node)) return;
-
-        const moduleNameText = node.moduleSpecifier.getText(sourceFile);
+        if (!ts.isImportDeclaration(node) && !ts.isExportDeclaration(node)) {
+          return;
+        }
+        const moduleNameText = node.moduleSpecifier?.getText(sourceFile);
+        if (!moduleNameText) return;
         const moduleName = moduleNameText.slice(1, moduleNameText.length - 1); // import 文のクォート及びダブルクォートを除去
         const moduleFileFullName =
           ts.resolveModuleName(moduleName, sourceFile.fileName, options, ts.sys)
