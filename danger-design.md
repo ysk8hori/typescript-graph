@@ -13,19 +13,22 @@ flowchart
 
   GetNoAbstraction-->|並行処理|GetRename["リネームされたファイルの一覧を取得"]
 
+  ExistsNode{グラフに<br>表示可能な<br>ノードが...}
+  ExistsNode-->|ない|TypeScripgGraph非表示-->end2((終了))
+  ExistsNode-->|ある|JudgeGraphAmmounts
+  FilterBaseGraph-->|待ち合わせ|ExistsNode
+  GetRename-->|待ち合わせ|ExistsNode
   JudgeGraphAmmounts{"ファイルの削除<br>またはリネームが..."}
-  FilterBaseGraph-->|待ち合わせ|JudgeGraphAmmounts
-  GetRename-->|待ち合わせ|JudgeGraphAmmounts
 
   %% 1つの Graph
   JudgeGraphAmmounts-->|ない|GetDiff["🏷 Head と Base の差分を取り<br>ノードやリレーションに<br>ステータスを付与する"]
   GetDiff-->MergeGraph["Head と Base をマージする"]
-  MergeGraph-->表示する
+  MergeGraph-->表示する-->end3((終了))
 
   %% 2つの Graph
   JudgeGraphAmmounts-->|ある|AddStatusToHead["🏷 Head の Graph に<br>ステータスを付与する"]
   AddStatusToHead-->AddStatusToBase["🏷 Base の Graph に<br>ステータスを付与する"]
-  AddStatusToBase-->Display2Graph["2つの Graph を表示する"]
+  AddStatusToBase-->Display2Graph["2つの Graph を表示する"]-->end4((終了))
 
 
 ```
