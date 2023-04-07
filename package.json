@@ -1,6 +1,6 @@
 {
   "name": "@ysk8hori/typescript-graph",
-  "version": "0.7.2",
+  "version": "0.7.3-0",
   "description": "A CLI to visualize the dependencies between files in the TypeScript codebase.",
   "main": "index.js",
   "homepage": "https://github.com/ysk8hori/typescript-graph",
@@ -53,9 +53,7 @@
     "prettier": "^2.8.1",
     "ts-node": "^10.9.1",
     "vitest": "^0.29.0",
-    "zx": "^7.1.1"
-  },
-  "peerDependencies": {
+    "zx": "^7.1.1",
     "typescript": "^4.9.4"
   }
 }
