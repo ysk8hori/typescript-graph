@@ -204,6 +204,9 @@ test('run:sample:include', async () => {
         src/main.ts-->src/includeFiles/b.ts
         src/main.ts-->src/includeFiles/abstractions/j.ts
         src/main.ts-->src/includeFiles/abstractions/k.ts
+        src/otherFiles/e.ts-->src/utils.ts
+        src/main.ts-->src/otherFiles/e.ts
+        src/main.ts-->src/utils.ts
     \`\`\`
     "
   `);
