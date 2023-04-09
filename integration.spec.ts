@@ -204,25 +204,29 @@ test('run:sample:include', async () => {
         src/main.ts-->src/includeFiles/b.ts
         src/main.ts-->src/includeFiles/abstractions/j.ts
         src/main.ts-->src/includeFiles/abstractions/k.ts
+        src/otherFiles/e.ts-->src/utils.ts
+        src/main.ts-->src/otherFiles/e.ts
+        src/main.ts-->src/utils.ts
     \`\`\`
     "
   `);
 });
 
 test('run:sample:exclude', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles --exclude excludeFiles utils config --md ${filepath}`;
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
     "# TypeScript Graph
 
     \`\`\`bash
-    tsg -d ./dummy_project --include includeFiles --exclude excludeFiles utils config --md __tmp__/test.md
+    tsg -d ./dummy_project --include includeFiles config --exclude excludeFiles utils --md __tmp__/test.md
     \`\`\`
 
     \`\`\`mermaid
     flowchart
         subgraph src[\\"src\\"]
+            src/config.ts[\\"config.ts\\"]
             src/main.ts[\\"main.ts\\"]
             subgraph src/includeFiles[\\"/includeFiles\\"]
                 src/includeFiles/b.ts[\\"b.ts\\"]
@@ -244,11 +248,17 @@ test('run:sample:exclude', async () => {
                     end
                 end
             end
+            subgraph src/otherFiles[\\"/otherFiles\\"]
+                src/otherFiles/e.ts[\\"e.ts\\"]
+            end
         end
+        src/includeFiles/b.ts-->src/config.ts
         src/includeFiles/c.ts-->src/includeFiles/b.ts
+        src/config.ts-->src/includeFiles/c.ts
         src/includeFiles/d/index.ts-->src/includeFiles/d/d.ts
         src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
         src/includeFiles/a.ts-->src/includeFiles/d/index.ts
+        src/otherFiles/e.ts-->src/config.ts
         src/includeFiles/abstractions/j.ts-->src/includeFiles/abstractions/children/childA.ts
         src/includeFiles/abstractions/j.ts-->data.json
         src/includeFiles/abstractions/k.ts-->src/includeFiles/abstractions/l.ts
@@ -256,26 +266,28 @@ test('run:sample:exclude', async () => {
         src/main.ts-->src/includeFiles/b.ts
         src/main.ts-->src/includeFiles/abstractions/j.ts
         src/main.ts-->src/includeFiles/abstractions/k.ts
+        src/main.ts-->src/otherFiles/e.ts
     \`\`\`
     "
   `);
 });
 
 test('run:sample:abstraction', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles --exclude excludeFiles utils config --abstraction abstractions --md ${filepath}`;
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
     "# TypeScript Graph
 
     \`\`\`bash
-    tsg -d ./dummy_project --include includeFiles --exclude excludeFiles utils config --abstraction abstractions --md __tmp__/test.md
+    tsg -d ./dummy_project --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --md __tmp__/test.md
     \`\`\`
 
     \`\`\`mermaid
     flowchart
         classDef dir fill:#0000,stroke:#999
         subgraph src[\\"src\\"]
+            src/config.ts[\\"config.ts\\"]
             src/main.ts[\\"main.ts\\"]
             subgraph src/includeFiles[\\"/includeFiles\\"]
                 src/includeFiles/b.ts[\\"b.ts\\"]
@@ -290,29 +302,36 @@ test('run:sample:abstraction', async () => {
                     src/includeFiles/d/index.ts[\\"index.ts\\"]
                 end
             end
+            subgraph src/otherFiles[\\"/otherFiles\\"]
+                src/otherFiles/e.ts[\\"e.ts\\"]
+            end
         end
+        src/includeFiles/b.ts-->src/config.ts
         src/includeFiles/c.ts-->src/includeFiles/b.ts
+        src/config.ts-->src/includeFiles/c.ts
         src/includeFiles/d/index.ts-->src/includeFiles/d/d.ts
         src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
         src/includeFiles/a.ts-->src/includeFiles/d/index.ts
+        src/otherFiles/e.ts-->src/config.ts
         src/includeFiles/abstractions-->data.json
         src/main.ts-->src/includeFiles/a.ts
         src/main.ts-->src/includeFiles/b.ts
         src/main.ts-->src/includeFiles/abstractions
+        src/main.ts-->src/otherFiles/e.ts
     \`\`\`
     "
   `);
 });
 
 test('run:sample:highlight', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles --exclude excludeFiles utils config --abstraction abstractions --highlight config.ts b.ts --md ${filepath}`;
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
     "# TypeScript Graph
 
     \`\`\`bash
-    tsg -d ./dummy_project --include includeFiles --exclude excludeFiles utils config --abstraction abstractions --highlight config.ts b.ts --md __tmp__/test.md
+    tsg -d ./dummy_project --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --md __tmp__/test.md
     \`\`\`
 
     \`\`\`mermaid
@@ -320,6 +339,7 @@ test('run:sample:highlight', async () => {
         classDef dir fill:#0000,stroke:#999
         classDef highlight fill:yellow,color:black
         subgraph src[\\"src\\"]
+            src/config.ts[\\"config.ts\\"]:::highlight
             src/main.ts[\\"main.ts\\"]
             subgraph src/includeFiles[\\"/includeFiles\\"]
                 src/includeFiles/b.ts[\\"b.ts\\"]:::highlight
@@ -334,15 +354,22 @@ test('run:sample:highlight', async () => {
                     src/includeFiles/d/index.ts[\\"index.ts\\"]
                 end
             end
+            subgraph src/otherFiles[\\"/otherFiles\\"]
+                src/otherFiles/e.ts[\\"e.ts\\"]
+            end
         end
+        src/includeFiles/b.ts-->src/config.ts
         src/includeFiles/c.ts-->src/includeFiles/b.ts
+        src/config.ts-->src/includeFiles/c.ts
         src/includeFiles/d/index.ts-->src/includeFiles/d/d.ts
         src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
         src/includeFiles/a.ts-->src/includeFiles/d/index.ts
+        src/otherFiles/e.ts-->src/config.ts
         src/includeFiles/abstractions-->data.json
         src/main.ts-->src/includeFiles/a.ts
         src/main.ts-->src/includeFiles/b.ts
         src/main.ts-->src/includeFiles/abstractions
+        src/main.ts-->src/otherFiles/e.ts
     \`\`\`
     "
   `);
