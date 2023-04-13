@@ -10,7 +10,7 @@ import { writeMarkdownFile } from './writeMarkdownFile';
 import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
 import { OptionValues } from './models';
-import { curry, pipe } from '@ysk8hori/simple-functional-ts';
+import { pipe } from 'remeda';
 
 const program = new Command();
 program
@@ -62,10 +62,11 @@ export async function main(
   const { graph: fullGraph, meta } = createGraph(dir);
 
   const graph = pipe(
-    curry(filterGraph)(commandOptions.include)(commandOptions.exclude),
-    curry(abstraction)(commandOptions.abstraction),
-    curry(highlight)(commandOptions.highlight),
-  )(fullGraph);
+    fullGraph,
+    graph => filterGraph(commandOptions.include, commandOptions.exclude, graph),
+    graph => abstraction(commandOptions.abstraction, graph),
+    graph => highlight(commandOptions.highlight, graph),
+  );
 
   await writeMarkdownFile(commandOptions.md ?? 'typescript-graph', graph, {
     ...commandOptions,

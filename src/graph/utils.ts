@@ -5,7 +5,6 @@ import {
   isSameNode,
   isSameRelation,
   Node,
-  Relation,
 } from '../models';
 
 /**

@@ -6,6 +6,7 @@ test('atoms matches /src/components/atoms/Button.tsx', () => {
   const node: Node = {
     name: 'Button.tsx',
     path: '/src/components/atoms/Button.tsx',
+    changeStatus: 'not_modified',
   };
   const abs: string[][] = [['foo'], ['atoms'], ['bar']];
   expect(getAbstractionDirArr(abs, node)).toEqual(['atoms']);
@@ -15,6 +16,7 @@ test('[components,atoms] matches /src/components/atoms/Button.tsx', () => {
   const node: Node = {
     name: 'Button.tsx',
     path: '/src/components/atoms/Button.tsx',
+    changeStatus: 'not_modified',
   };
   const abs: string[][] = [
     ['components', 'foo'],
@@ -28,6 +30,7 @@ test('/src/components/atoms/Button.tsx is filterd by src,components,atoms', () =
   const node: Node = {
     name: 'Button.tsx',
     path: '/src/components/atoms/Button.tsx',
+    changeStatus: 'not_modified',
   };
   const abs: string[][] = [
     ['src', 'components', 'foo'],
@@ -45,6 +48,7 @@ test('/src/components/atoms/Button.tsx is not filterd by atom', () => {
   const node: Node = {
     name: 'Button.tsx',
     path: '/src/components/atoms/Button.tsx',
+    changeStatus: 'not_modified',
   };
   const abs: string[][] = [['atom']];
   expect(getAbstractionDirArr(abs, node)).toBeUndefined();
@@ -53,6 +57,7 @@ test('/src/components/atoms/Button.tsx is not filterd by src,atoms', () => {
   const node: Node = {
     name: 'Button.tsx',
     path: '/src/components/atoms/Button.tsx',
+    changeStatus: 'not_modified',
   };
   const abs: string[][] = [['src', 'atoms']];
   expect(getAbstractionDirArr(abs, node)).toBeUndefined();
@@ -61,6 +66,7 @@ test('/src/components/atoms/Button.tsx is not filterd by [["atom"],["src", "atom
   const node: Node = {
     name: 'Button.tsx',
     path: '/src/components/atoms/Button.tsx',
+    changeStatus: 'not_modified',
   };
   const abs: string[][] = [['atom'], ['src', 'atoms']];
   expect(getAbstractionDirArr(abs, node)).toBeUndefined();
