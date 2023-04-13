@@ -1,5 +1,5 @@
 import path from 'path';
-import { Graph, Node, OptionValues, Relation } from './models';
+import { Graph, Node, OptionValues } from './models';
 
 /** ディレクトリツリーを表現するオブジェクト */
 type DirAndNodesTree = {
