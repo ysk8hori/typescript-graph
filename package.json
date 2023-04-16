@@ -28,13 +28,17 @@
     "run:sample:README": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace --include src/components/atoms/ConfigMenu --exclude test stories node_modules",
     "build": "tsc",
     "build:re": "rm -r ./dist && tsc",
+    "commit": "git-cz",
+    "commitmsg": "validate-commit-msg",
     "lint:fix": "eslint --fix src",
     "prettier": "prettier --write ./src",
     "type-check": "tsc --noEmit",
     "test": "vitest run src",
     "test:watch": "vitest src",
     "test:integration": "vitest run ./integration",
-    "prepublishOnly": "npm run test & npm run build"
+    "prepublishOnly": "npm run build",
+    "prepare": "husky install",
+    "semantic-release": "semantic-release"
   },
   "author": "ysk8hori",
   "license": "ISC",
@@ -44,17 +48,35 @@
     "remeda": "^1.12.0"
   },
   "devDependencies": {
+    "@total-typescript/ts-reset": "^0.4.2",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.48.0",
     "@typescript-eslint/parser": "^5.48.0",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
     "danger": "^11.2.4",
     "danger-plugin-typescript-graph": "^1.3.2",
     "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.6.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.0",
     "prettier": "^2.8.1",
+    "semantic-release": "^21.0.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.0",
     "vitest": "^0.30.0",
     "zx": "^7.1.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "lint-staged": {
+    "*.@(ts|tsx)": [
+      "eslint --fix",
+      "npm run prettier --",
+      "git add"
+    ]
   }
 }
