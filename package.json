@@ -55,7 +55,7 @@
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
     "danger": "^11.2.4",
-    "danger-plugin-typescript-graph": "^1.3.2",
+    "danger-plugin-typescript-graph": "^1.6.0",
     "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.6.0",
     "husky": "^8.0.3",
