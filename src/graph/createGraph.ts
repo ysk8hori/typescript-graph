@@ -40,35 +40,53 @@ export function createGraph(dir: string): { graph: Graph; meta: Meta } {
       nodes.push(fromNode);
 
       ts.forEachChild(sourceFile, node => {
-        if (!ts.isImportDeclaration(node) && !ts.isExportDeclaration(node)) {
-          return;
+        const importPaths: (string | undefined)[] = [];
+        function getModuleNameText(node: ts.Node) {
+          if (ts.isImportDeclaration(node)) {
+            importPaths.push(node.moduleSpecifier?.getText(sourceFile));
+          } else if (ts.isCallExpression(node)) {
+            const text = node.getText(sourceFile);
+            if (text.includes('require') || text.includes('import')) {
+              importPaths.push(node.arguments[0]?.getText(sourceFile));
+            }
+          } else if (ts.isExportDeclaration(node)) {
+            importPaths.push(node.moduleSpecifier?.getText(sourceFile));
+          }
+          ts.forEachChild(node, getModuleNameText);
         }
-        const moduleNameText = node.moduleSpecifier?.getText(sourceFile);
-        if (!moduleNameText) return;
-        const moduleName = moduleNameText.slice(1, moduleNameText.length - 1); // import 文のクォート及びダブルクォートを除去
-        const moduleFileFullName =
-          ts.resolveModuleName(moduleName, sourceFile.fileName, options, ts.sys)
-            .resolvedModule?.resolvedFileName ?? '';
-        const moduleFilePath = removeSlash(
-          options.rootDir
-            ? moduleFileFullName.replace(options.rootDir, '')
-            : moduleFileFullName,
-        );
-        if (!moduleFilePath) return;
-        const toNode: Node = {
-          path: moduleFilePath,
-          name: getName(moduleFilePath),
-          changeStatus: 'not_modified',
-        };
-        if (!findNode(nodes, moduleFilePath)) {
-          nodes.push(toNode);
-        }
-        relations.push({
-          kind: 'depends_on',
-          from: fromNode,
-          to: toNode,
-          fullText: node.getChildAt(1, sourceFile).getText(sourceFile),
-          changeStatus: 'not_modified',
+        getModuleNameText(node);
+
+        importPaths.forEach(moduleNameText => {
+          if (!moduleNameText) return;
+          const moduleName = moduleNameText.slice(1, moduleNameText.length - 1); // import 文のクォート及びダブルクォートを除去
+          const moduleFileFullName =
+            ts.resolveModuleName(
+              moduleName,
+              sourceFile.fileName,
+              options,
+              ts.sys,
+            ).resolvedModule?.resolvedFileName ?? '';
+          const moduleFilePath = removeSlash(
+            options.rootDir
+              ? moduleFileFullName.replace(options.rootDir, '')
+              : moduleFileFullName,
+          );
+          if (!moduleFilePath) return;
+          const toNode: Node = {
+            path: moduleFilePath,
+            name: getName(moduleFilePath),
+            changeStatus: 'not_modified',
+          };
+          if (!findNode(nodes, moduleFilePath)) {
+            nodes.push(toNode);
+          }
+          relations.push({
+            kind: 'depends_on',
+            from: fromNode,
+            to: toNode,
+            fullText: node.getChildAt(1, sourceFile).getText(sourceFile),
+            changeStatus: 'not_modified',
+          });
         });
       });
     });
