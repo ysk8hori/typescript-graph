@@ -43,9 +43,11 @@
     "test": "vitest run src",
     "test:watch": "vitest src",
     "test:integration": "vitest run ./integration",
+    "test:integration:update": "vitest run -u ./integration",
     "prepublishOnly": "npm run build",
     "prepare": "husky install",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "run:tsc:demo": "ts-node ./typescript-compiler-api-demo.ts"
   },
   "author": "ysk8hori",
   "license": "ISC",

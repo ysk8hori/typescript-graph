@@ -1,15 +1,16 @@
 import childA from './children/childA';
-import a2 from './excludeFiles/g';
-import b2 from './excludeFiles/h';
-import c2 from './excludeFiles/i';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const a2 = require('./excludeFiles/g');
+const c2 = import('./excludeFiles/i');
 import { style } from './excludeFiles/style/style';
 import ClassA from './excludeFiles/class/classA';
-import * as d from './d';
 
-export default function a() {
+export default async function a() {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const b2 = require('./excludeFiles/h');
+  const d = await import('./d/index');
   childA();
   a2();
   b2();
-  c2();
 }
 import { log } from '../utils';
