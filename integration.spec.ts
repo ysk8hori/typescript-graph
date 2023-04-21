@@ -36,8 +36,8 @@ test('run:sample', async () => {
                     src/includeFiles/children/childA.ts[\\"childA.ts\\"]
                 end
                 subgraph src/includeFiles/excludeFiles[\\"/excludeFiles\\"]
-                    src/includeFiles/excludeFiles/g.ts[\\"g.ts\\"]
                     src/includeFiles/excludeFiles/i.ts[\\"i.ts\\"]
+                    src/includeFiles/excludeFiles/g.ts[\\"g.ts\\"]
                     src/includeFiles/excludeFiles/h.ts[\\"h.ts\\"]
                     subgraph src/includeFiles/excludeFiles/style_[\\"/style\\"]
                         src/includeFiles/excludeFiles/style_/style_.ts[\\"style.ts\\"]
@@ -77,19 +77,14 @@ test('run:sample', async () => {
         src/config.ts-->src/utils.ts
         src/config.ts-->src/includeFiles/c.ts
         src/includeFiles/children/childA.ts-->src/utils.ts
-        src/includeFiles/excludeFiles/g.ts-->src/includeFiles/children/childA.ts
-        src/includeFiles/excludeFiles/g.ts-->src/utils.ts
         src/includeFiles/excludeFiles/i.ts-->src/utils.ts
-        src/includeFiles/excludeFiles/h.ts-->src/includeFiles/excludeFiles/i.ts
-        src/includeFiles/excludeFiles/h.ts-->src/utils.ts
-        src/includeFiles/excludeFiles/h.ts-->src/config.ts
         src/includeFiles/d/index.ts-->src/includeFiles/d/d.ts
         src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/g.ts
-        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/h.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/i.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/style_/style_.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/class_/class_A.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/h.ts
         src/includeFiles/a.ts-->src/includeFiles/d/index.ts
         src/includeFiles/a.ts-->src/utils.ts
         src/otherFiles/children/childA.ts-->src/utils.ts
@@ -144,8 +139,8 @@ test('run:sample:include', async () => {
                     src/includeFiles/children/childA.ts[\\"childA.ts\\"]
                 end
                 subgraph src/includeFiles/excludeFiles[\\"/excludeFiles\\"]
-                    src/includeFiles/excludeFiles/g.ts[\\"g.ts\\"]
                     src/includeFiles/excludeFiles/i.ts[\\"i.ts\\"]
+                    src/includeFiles/excludeFiles/g.ts[\\"g.ts\\"]
                     src/includeFiles/excludeFiles/h.ts[\\"h.ts\\"]
                     subgraph src/includeFiles/excludeFiles/style_[\\"/style\\"]
                         src/includeFiles/excludeFiles/style_/style_.ts[\\"style.ts\\"]
@@ -178,19 +173,14 @@ test('run:sample:include', async () => {
         src/config.ts-->src/utils.ts
         src/config.ts-->src/includeFiles/c.ts
         src/includeFiles/children/childA.ts-->src/utils.ts
-        src/includeFiles/excludeFiles/g.ts-->src/includeFiles/children/childA.ts
-        src/includeFiles/excludeFiles/g.ts-->src/utils.ts
         src/includeFiles/excludeFiles/i.ts-->src/utils.ts
-        src/includeFiles/excludeFiles/h.ts-->src/includeFiles/excludeFiles/i.ts
-        src/includeFiles/excludeFiles/h.ts-->src/utils.ts
-        src/includeFiles/excludeFiles/h.ts-->src/config.ts
         src/includeFiles/d/index.ts-->src/includeFiles/d/d.ts
         src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/g.ts
-        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/h.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/i.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/style_/style_.ts
         src/includeFiles/a.ts-->src/includeFiles/excludeFiles/class_/class_A.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/h.ts
         src/includeFiles/a.ts-->src/includeFiles/d/index.ts
         src/includeFiles/a.ts-->src/utils.ts
         src/otherFiles/e.ts-->src/config.ts
