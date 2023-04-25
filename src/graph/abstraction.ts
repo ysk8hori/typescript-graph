@@ -43,10 +43,8 @@ export function abstraction(
     );
   const { nodes: _nodes, relations: _relations } = graph;
 
-  // abs 対象ノードを除去する
-  const nodes = _nodes.filter(
-    node => !getAbstractionDirArr(absDirArrArr, node),
-  );
+  // abs 対象ノードを抽象化する
+  const nodes = _nodes.map(node => abstractionNode(node, absDirArrArr));
 
   const relations = getUniqueRelations(
     _relations
