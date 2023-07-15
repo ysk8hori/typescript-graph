@@ -1,5 +1,6 @@
 import path from 'path';
 import { Graph, Node, OptionValues } from './models';
+import { config } from './config/config';
 
 /** ディレクトリツリーを表現するオブジェクト */
 type DirAndNodesTree = {
@@ -192,15 +193,13 @@ function writeRelations(write: (arg: string) => void, graph: Graph) {
     });
 }
 
-function fileNameToMermaidId(fileName: string): string {
-  return fileName
-    .split(/@|\[|\]|-|>|<|{|}|\(|\)|=|&|\|~|,|"|%|\^|\*|_/)
-    .join('//')
-    .replaceAll('/graph/', '/_graph_/')
-    .replaceAll('style', 'style_')
-    .replaceAll('graph', 'graph_')
-    .replaceAll('class', 'class_');
+export function fileNameToMermaidId(fileName: string): string {
+  return config.reservedMermaidKeywords.reduce(
+    (prev, [from, to]) => prev.replaceAll(from, to),
+    fileName.split(/@|\[|\]|-|>|<|{|}|\(|\)|=|&|\|~|,|"|%|\^|\*|_/).join('//'),
+  );
 }
+
 function fileNameToMermaidName(fileName: string): string {
   return fileName.split(/"/).join('//');
 }
