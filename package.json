@@ -54,7 +54,8 @@
   "dependencies": {
     "commander": "^10.0.0",
     "neo4j-driver": "^5.4.0",
-    "remeda": "^1.12.0"
+    "remeda": "^1.12.0",
+    "zod": "3.21.4"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.4.2",

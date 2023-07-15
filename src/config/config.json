@@ -1,0 +1,9 @@
+{
+  "reservedMermaidKeywords": [
+    ["/graph/", "/_graph_/"],
+    ["style", "style_"],
+    ["graph", "graph_"],
+    ["class", "class_"],
+    ["end", "end_"]
+  ]
+}
