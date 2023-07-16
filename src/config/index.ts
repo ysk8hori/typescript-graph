@@ -13,13 +13,7 @@ export type TsgConfigScheme = z.infer<typeof tsgConfigScheme>;
 /** typescript-graph ユーザーが指定するランタイムコンフィグ */
 export type TsgRcScheme = z.infer<typeof tsgRcScheme>;
 
-let _config: TsgConfigScheme | undefined = undefined;
-
-export function config() {
-  if (_config) return _config;
-  _config = tsgConfigScheme.parse(tsgConfig);
-  return _config;
-}
+let mergedConfig: TsgConfigScheme | undefined = undefined;
 
 export function readRuntimeConfig(
   filePath: string = path.join(process.cwd(), '.tsgrc.json'),
@@ -31,4 +25,32 @@ export function readRuntimeConfig(
     console.error(e);
     return {};
   }
+}
+
+function mergeConfig(
+  config: TsgConfigScheme,
+  rc: TsgRcScheme,
+): TsgConfigScheme {
+  return {
+    ...config,
+    ...rc,
+    reservedMermaidKeywords: [
+      ...config.reservedMermaidKeywords,
+      ...(rc.reservedMermaidKeywords ?? []),
+    ],
+  };
+}
+
+export function setupConfig(
+  rcFilePath: string = path.join(process.cwd(), '.tsgrc.json'),
+) {
+  mergedConfig = mergeConfig(
+    tsgConfigScheme.parse(tsgConfig),
+    readRuntimeConfig(rcFilePath),
+  );
+}
+
+export function config(): TsgConfigScheme {
+  if (!mergedConfig) throw new Error('config() called before setupConfig()');
+  return mergedConfig;
 }

@@ -11,6 +11,7 @@ import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
 import { OptionValues } from './models';
 import { pipe } from 'remeda';
+import { setupConfig } from './config';
 
 const program = new Command();
 program
@@ -55,6 +56,8 @@ export async function main(
   dir: string,
   commandOptions: typeof opt & { executedScript: string },
 ) {
+  setupConfig(path.join(dir, '.tsgrc.json'));
+
   if (commandOptions.neo4j && commandOptions.clearDb) {
     await clearDatabase();
   }

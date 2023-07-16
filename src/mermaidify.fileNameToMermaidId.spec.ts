@@ -1,5 +1,8 @@
-import { expect, test } from 'vitest';
+import { beforeAll, expect, test } from 'vitest';
 import { fileNameToMermaidId } from './mermaidify';
+import { setupConfig } from './config';
+
+beforeAll(() => setupConfig());
 
 test.each([
   [

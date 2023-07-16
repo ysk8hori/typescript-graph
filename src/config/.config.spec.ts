@@ -1,5 +1,7 @@
-import { expect, test } from 'vitest';
-import { config, TsgConfigScheme } from '.';
+import { beforeAll, expect, test } from 'vitest';
+import { config, setupConfig, TsgConfigScheme } from '.';
+
+beforeAll(() => setupConfig());
 
 test('config', () => {
   expect(config()).toEqual({
