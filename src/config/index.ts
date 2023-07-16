@@ -8,4 +8,10 @@ const tsgConfigScheme = z.object({
 /** typescript-graph 内部で使用するコンフィグ */
 export type TsgConfigScheme = z.infer<typeof tsgConfigScheme>;
 
-export const config: TsgConfigScheme = tsgConfigScheme.parse(tsgConfig);
+let _config: TsgConfigScheme | undefined = undefined;
+
+export function config() {
+  if (_config) return _config;
+  _config = tsgConfigScheme.parse(tsgConfig);
+  return _config;
+}

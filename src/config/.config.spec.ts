@@ -1,8 +1,8 @@
 import { expect, test } from 'vitest';
-import { config, TsgConfigScheme } from './config';
+import { config, TsgConfigScheme } from '.';
 
 test('config', () => {
-  expect(config).toEqual({
+  expect(config()).toEqual({
     reservedMermaidKeywords: [
       ['/graph/', '/_graph_/'],
       ['style', 'style_'],
