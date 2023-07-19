@@ -187,6 +187,21 @@
       "changeStatus": "not_modified"
     },
     "to": {
+      "path": "src/includeFiles/excludeFiles/butInclude.ts",
+      "name": "butInclude.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": ";",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/a.ts",
+      "name": "a.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
       "path": "src/includeFiles/excludeFiles/style/style.ts",
       "name": "style.ts",
       "changeStatus": "not_modified"

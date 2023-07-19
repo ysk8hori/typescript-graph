@@ -70,6 +70,11 @@
     "changeStatus": "not_modified"
   },
   {
+    "path": "src/includeFiles/excludeFiles/butInclude.ts",
+    "name": "butInclude.ts",
+    "changeStatus": "not_modified"
+  },
+  {
     "path": "src/otherFiles/children/:id.json",
     "name": ":id.json",
     "changeStatus": "not_modified"
