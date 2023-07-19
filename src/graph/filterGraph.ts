@@ -7,13 +7,16 @@ import {
 import { extractUniqueNodes } from './utils';
 
 export function filterGraph(
-  include: string[] | undefined,
-  exclude: string[] | undefined,
+  _include: string[] | undefined,
+  _exclude: string[] | undefined,
   { nodes, relations }: Graph,
 ) {
   let tmpNodes = [...nodes];
   let tmpRelations = [...relations];
-  if (include && include.length !== 0) {
+  const include = _include ?? [];
+  const exclude = _exclude ?? [];
+
+  if (include.length !== 0) {
     tmpNodes = tmpNodes.filter(node =>
       include.some(word =>
         node.path.toLowerCase().includes(word.toLowerCase()),
@@ -27,15 +30,18 @@ export function filterGraph(
       ),
     );
   }
-  if (exclude && exclude.length !== 0) {
+  if (exclude.length !== 0) {
     tmpNodes = tmpNodes.filter(
       node =>
+        include.some(word => node.path === word) ||
         !exclude.some(word =>
           node.path.toLowerCase().includes(word.toLowerCase()),
         ),
     );
+
     tmpRelations = tmpRelations.filter(
       ({ from, to }) =>
+        include.some(word => from.path === word || to.path === word) ||
         !exclude.some(
           word =>
             from.path.toLowerCase().includes(word.toLowerCase()) ||

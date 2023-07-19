@@ -360,6 +360,11 @@ test('フルパスでinclude指定したものは、excludeに該当するファ
         },
         {
           "changeStatus": "not_modified",
+          "name": "butInclude.ts",
+          "path": "src/includeFiles/excludeFiles/butInclude.ts",
+        },
+        {
+          "changeStatus": "not_modified",
           "name": "childA.ts",
           "path": "src/includeFiles/abstractions/children/childA.ts",
         },
@@ -468,6 +473,21 @@ test('フルパスでinclude指定したものは、excludeに該当するファ
             "changeStatus": "not_modified",
             "name": "childA.ts",
             "path": "src/includeFiles/children/childA.ts",
+          },
+        },
+        {
+          "changeStatus": "not_modified",
+          "from": {
+            "changeStatus": "not_modified",
+            "name": "a.ts",
+            "path": "src/includeFiles/a.ts",
+          },
+          "fullText": ";",
+          "kind": "depends_on",
+          "to": {
+            "changeStatus": "not_modified",
+            "name": "butInclude.ts",
+            "path": "src/includeFiles/excludeFiles/butInclude.ts",
           },
         },
         {
