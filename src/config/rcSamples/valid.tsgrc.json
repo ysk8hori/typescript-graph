@@ -1,3 +1,4 @@
 {
-  "reservedMermaidKeywords": [["/graph/", "/_graph_/"]]
+  "reservedMermaidKeywords": [["foo", "foo_"]],
+  "exclude": ["node_modules"]
 }

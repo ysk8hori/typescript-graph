@@ -10,8 +10,9 @@ test('appConfigとrcConfigをマージする', () => {
       ['graph', 'graph_'],
       ['class', 'class_'],
       ['end', 'end_'],
-      ['/graph/', '/_graph_/'],
+      ['foo', 'foo_'],
     ],
+    exclude: ['node_modules'],
   });
 });
 test('rcFilePathのファイルが不正な場合は appConfig のみ返る', () => {
@@ -24,5 +25,6 @@ test('rcFilePathのファイルが不正な場合は appConfig のみ返る', ()
       ['class', 'class_'],
       ['end', 'end_'],
     ],
+    exclude: [],
   });
 });
