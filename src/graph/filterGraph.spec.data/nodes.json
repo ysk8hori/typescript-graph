@@ -1,0 +1,132 @@
+[
+  {
+    "path": "src/utils.ts",
+    "name": "utils.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/b.ts",
+    "name": "b.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/config.ts",
+    "name": "config.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/c.ts",
+    "name": "c.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/config.ts",
+    "name": "config.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/children/childA.ts",
+    "name": "childA.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/excludeFiles/style/style.ts",
+    "name": "style.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/excludeFiles/class/classA.ts",
+    "name": "classA.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/excludeFiles/i.ts",
+    "name": "i.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/d/d.ts",
+    "name": "d.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/d/index.ts",
+    "name": "index.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/a.ts",
+    "name": "a.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/excludeFiles/g.ts",
+    "name": "g.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/excludeFiles/h.ts",
+    "name": "h.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/otherFiles/children/:id.json",
+    "name": ":id.json",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/otherFiles/children/{id}.json",
+    "name": "{id}.json",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/otherFiles/children/childA.ts",
+    "name": "childA.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/otherFiles/d.ts",
+    "name": "d.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/otherFiles/f.ts",
+    "name": "f.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/otherFiles/e.ts",
+    "name": "e.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/abstractions/children/childA.ts",
+    "name": "childA.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "data.json",
+    "name": "data.json",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/abstractions/j.ts",
+    "name": "j.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/abstractions/l.ts",
+    "name": "l.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/includeFiles/abstractions/k.ts",
+    "name": "k.ts",
+    "changeStatus": "not_modified"
+  },
+  {
+    "path": "src/main.ts",
+    "name": "main.ts",
+    "changeStatus": "not_modified"
+  }
+]

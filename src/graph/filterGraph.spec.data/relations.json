@@ -1,0 +1,587 @@
+[
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/b.ts",
+      "name": "b.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/b.ts",
+      "name": "b.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/config.ts",
+      "name": "config.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ config }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/c.ts",
+      "name": "c.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/c.ts",
+      "name": "c.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/b.ts",
+      "name": "b.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "b",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/config.ts",
+      "name": "config.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/config.ts",
+      "name": "config.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/c.ts",
+      "name": "c.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "C",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/children/childA.ts",
+      "name": "childA.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/excludeFiles/i.ts",
+      "name": "i.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/d/index.ts",
+      "name": "index.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/d/d.ts",
+      "name": "d.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "* as d",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/a.ts",
+      "name": "a.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/children/childA.ts",
+      "name": "childA.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "childA",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/a.ts",
+      "name": "a.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/excludeFiles/g.ts",
+      "name": "g.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": ";",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/a.ts",
+      "name": "a.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/excludeFiles/i.ts",
+      "name": "i.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": ";",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/a.ts",
+      "name": "a.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/excludeFiles/style/style.ts",
+      "name": "style.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ style }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/a.ts",
+      "name": "a.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/excludeFiles/class/classA.ts",
+      "name": "classA.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "ClassA",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/a.ts",
+      "name": "a.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/excludeFiles/h.ts",
+      "name": "h.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "function",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/a.ts",
+      "name": "a.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/d/index.ts",
+      "name": "index.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "function",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/a.ts",
+      "name": "a.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/otherFiles/children/childA.ts",
+      "name": "childA.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/otherFiles/children/childA.ts",
+      "name": "childA.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/otherFiles/children/:id.json",
+      "name": ":id.json",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "id",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/otherFiles/children/childA.ts",
+      "name": "childA.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/otherFiles/children/{id}.json",
+      "name": "{id}.json",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "id2",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/otherFiles/d.ts",
+      "name": "d.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/otherFiles/children/childA.ts",
+      "name": "childA.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "childA",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/otherFiles/d.ts",
+      "name": "d.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/otherFiles/f.ts",
+      "name": "f.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/otherFiles/e.ts",
+      "name": "e.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/otherFiles/f.ts",
+      "name": "f.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "c",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/otherFiles/e.ts",
+      "name": "e.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/otherFiles/e.ts",
+      "name": "e.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/config.ts",
+      "name": "config.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ config }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/abstractions/j.ts",
+      "name": "j.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/abstractions/j.ts",
+      "name": "j.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/abstractions/children/childA.ts",
+      "name": "childA.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "childA",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/abstractions/j.ts",
+      "name": "j.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "data.json",
+      "name": "data.json",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "data",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/abstractions/l.ts",
+      "name": "l.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/abstractions/k.ts",
+      "name": "k.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/abstractions/l.ts",
+      "name": "l.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "c",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/includeFiles/abstractions/k.ts",
+      "name": "k.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/main.ts",
+      "name": "main.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/a.ts",
+      "name": "a.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "a",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/main.ts",
+      "name": "main.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/b.ts",
+      "name": "b.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "b",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/main.ts",
+      "name": "main.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/otherFiles/d.ts",
+      "name": "d.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "a2",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/main.ts",
+      "name": "main.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/otherFiles/e.ts",
+      "name": "e.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "b2",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/main.ts",
+      "name": "main.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/abstractions/j.ts",
+      "name": "j.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "a3",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/main.ts",
+      "name": "main.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/includeFiles/abstractions/k.ts",
+      "name": "k.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "b3",
+    "changeStatus": "not_modified"
+  },
+  {
+    "kind": "depends_on",
+    "from": {
+      "path": "src/main.ts",
+      "name": "main.ts",
+      "changeStatus": "not_modified"
+    },
+    "to": {
+      "path": "src/utils.ts",
+      "name": "utils.ts",
+      "changeStatus": "not_modified"
+    },
+    "fullText": "{ log }",
+    "changeStatus": "not_modified"
+  }
+]
