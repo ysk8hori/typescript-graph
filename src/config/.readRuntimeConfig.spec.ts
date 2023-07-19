@@ -27,6 +27,7 @@ test('正しいスキーマの場合はそれを返す', () => {
       path.join(process.cwd(), './src/config/rcSamples/valid.tsgrc.json'),
     ),
   ).toEqual({
-    reservedMermaidKeywords: [['/graph/', '/_graph_/']],
+    reservedMermaidKeywords: [['foo', 'foo_']],
+    exclude: ['node_modules'],
   });
 });

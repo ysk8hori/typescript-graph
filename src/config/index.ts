@@ -5,6 +5,7 @@ import tsgConfig from './config.json';
 
 const tsgConfigScheme = z.object({
   reservedMermaidKeywords: z.array(z.tuple([z.string(), z.string()])),
+  exclude: z.array(z.string()).optional(),
 });
 const tsgRcScheme = tsgConfigScheme.deepPartial();
 
@@ -38,6 +39,7 @@ function mergeConfig(
       ...config.reservedMermaidKeywords,
       ...(rc.reservedMermaidKeywords ?? []),
     ],
+    exclude: [...(config.exclude ?? []), ...(rc.exclude ?? [])],
   };
 }
 

@@ -11,7 +11,7 @@ import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
 import { OptionValues } from './models';
 import { pipe } from 'remeda';
-import { setupConfig } from './config';
+import { config, setupConfig } from './config';
 
 const program = new Command();
 program
@@ -66,7 +66,12 @@ export async function main(
 
   const graph = pipe(
     fullGraph,
-    graph => filterGraph(commandOptions.include, commandOptions.exclude, graph),
+    graph =>
+      filterGraph(
+        commandOptions.include,
+        [...(config().exclude ?? []), ...(commandOptions.exclude ?? [])],
+        graph,
+      ),
     graph => abstraction(commandOptions.abstraction, graph),
     graph => highlight(commandOptions.highlight, graph),
   );

@@ -1,7 +1,7 @@
 import { beforeAll, expect, test } from 'vitest';
 import { config, setupConfig, TsgConfigScheme } from '.';
 
-beforeAll(() => setupConfig());
+beforeAll(() => setupConfig('./src/config/rcSamples/valid.tsgrc.json'));
 
 test('config', () => {
   expect(config()).toEqual({
@@ -11,6 +11,8 @@ test('config', () => {
       ['graph', 'graph_'],
       ['class', 'class_'],
       ['end', 'end_'],
+      ['foo', 'foo_'],
     ],
+    exclude: ['node_modules'],
   } satisfies TsgConfigScheme);
 });
