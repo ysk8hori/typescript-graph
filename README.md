@@ -249,6 +249,10 @@ The dependencies of the directory specified by `--include` will be output as sho
 However, files that depend on files under the directory specified by `--include` will remain visible.
 If there are directories or files you are not interested in, use `--exclude` to exclude them.
 
+#### Exclude Exception via Full Path Specification (Experimental)
+
+There might be scenarios where you would want to ignore dependency relations for a certain folder using `exclude`, but within that folder, there may exist some files you wish to include in the graph. In such cases, you can use `--include` to specify the full path of a particular file, effectively removing it from the exclusion list. This ensures that the specified file is not left out despite the general exclusion of its parent folder.
+
 ### `--exclude`
 
 Directories and files to be excluded from the graph are excluded with the `--exclude` option.
