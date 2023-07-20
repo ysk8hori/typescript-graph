@@ -38,7 +38,6 @@ export function filterGraph(
           node.path.toLowerCase().includes(word.toLowerCase()),
         ),
     );
-    console.log(tmpNodes);
     tmpRelations = tmpRelations.filter(({ from, to }) => {
       if (include.some(word => to.path === word)) {
         // to が include に完全一致する場合は除外しない
