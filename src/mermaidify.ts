@@ -1,6 +1,6 @@
 import path from 'path';
 import { Graph, Node, OptionValues } from './models';
-import { config } from './config';
+import { getConfig } from './config';
 
 /** ディレクトリツリーを表現するオブジェクト */
 type DirAndNodesTree = {
@@ -194,7 +194,7 @@ function writeRelations(write: (arg: string) => void, graph: Graph) {
 }
 
 export function fileNameToMermaidId(fileName: string): string {
-  return config().reservedMermaidKeywords.reduce(
+  return getConfig().reservedMermaidKeywords.reduce(
     (prev, [from, to]) => prev.replaceAll(from, to),
     fileName.split(/@|\[|\]|-|>|<|{|}|\(|\)|=|&|\|~|,|"|%|\^|\*|_/).join('//'),
   );

@@ -10,6 +10,7 @@ export type OptionValues = {
   clearDb: boolean;
   LR: boolean;
   TB: boolean;
+  configFile: string;
 };
 
 type FileName = string;
