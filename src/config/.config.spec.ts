@@ -1,10 +1,10 @@
 import { beforeAll, expect, test } from 'vitest';
-import { config, setupConfig, TsgConfigScheme } from '.';
+import { getConfig, setupConfig, TsgConfigScheme } from '.';
 
 beforeAll(() => setupConfig('./src/config/rcSamples/valid.tsgrc.json'));
 
-test('config', () => {
-  expect(config()).toEqual({
+test('getConfig', () => {
+  expect(getConfig()).toEqual({
     reservedMermaidKeywords: [
       ['/graph/', '/_graph_/'],
       ['style', 'style_'],

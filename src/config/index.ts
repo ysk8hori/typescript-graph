@@ -19,7 +19,6 @@ let mergedConfig: TsgConfigScheme | undefined = undefined;
 export function readRuntimeConfig(
   filePath: string = path.join(process.cwd(), '.tsgrc.json'),
 ): TsgRcScheme {
-  if (!existsSync(filePath)) return {};
   try {
     return tsgRcScheme.parse(JSON.parse(readFileSync(filePath, 'utf-8')));
   } catch (e) {
@@ -52,7 +51,9 @@ export function setupConfig(
   );
 }
 
-export function config(): TsgConfigScheme {
-  if (!mergedConfig) throw new Error('config() called before setupConfig()');
+/** 通常は current working directory の `.tsgrc.json` を読み込みます。その他のファイルを読み込みたい場合は setupConfig に current working directory からの相対パスを指定してください。 */
+export function getConfig(): TsgConfigScheme {
+  if (!mergedConfig) setupConfig();
+  if (!mergedConfig) throw new Error('getConfig() called before setupConfig()');
   return mergedConfig;
 }

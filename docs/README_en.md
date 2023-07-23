@@ -75,12 +75,13 @@ Run the `tsg -h` for help
   -d, --dir <char>         Specify the TypeScript code base to be analyzed. if tsconfig.json is not found, specify the directory where tsconfig.json is located.
   --include <char...>      Specify paths and file names to be included in the graph
   --exclude <char...>      Specify the paths and file names to be excluded from the graph
-  --highlight <char...>    Specify the path and file name to highlight
   --abstraction <char...>  Specify the path to abstract
+  --highlight <char...>    Specify the path and file name to highlight
   --LR                     Specify Flowchart orientation Left-to-Right
   --TB                     Specify Flowchart orientation Top-to-Bottom
   --neo4j                  output to neo4j on localhost:7687
   --clear-db               clear neo4j database before output
+  --config-file            Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.
   -h, --help               display help for command
 ```
 

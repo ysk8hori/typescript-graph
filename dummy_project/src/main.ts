@@ -4,6 +4,7 @@ import a2 from './otherFiles/d';
 import b2 from './otherFiles/e';
 import a3 from './includeFiles/abstractions/j';
 import b3 from './includeFiles/abstractions/k';
+import ts from 'typescript';
 
 export default function main() {
   a();

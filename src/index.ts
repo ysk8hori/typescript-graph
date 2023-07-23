@@ -11,7 +11,7 @@ import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
 import { OptionValues } from './models';
 import { pipe } from 'remeda';
-import { config, setupConfig } from './config';
+import { getConfig, setupConfig } from './config';
 
 const program = new Command();
 program
@@ -47,7 +47,11 @@ program
   .option('--LR', 'Specify Flowchart orientation Left-to-Right')
   .option('--TB', 'Specify Flowchart orientation Top-to-Bottom')
   .option('--neo4j', 'output to neo4j on localhost:7687')
-  .option('--clear-db', 'clear neo4j database before output');
+  .option('--clear-db', 'clear neo4j database before output')
+  .option(
+    '--config-file',
+    'Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.',
+  );
 program.parse();
 
 const opt = program.opts<Partial<OptionValues>>();
@@ -56,7 +60,7 @@ export async function main(
   dir: string,
   commandOptions: typeof opt & { executedScript: string },
 ) {
-  setupConfig(path.join(dir, '.tsgrc.json'));
+  setupConfig(path.join(dir, commandOptions.configFile ?? '.tsgrc.json'));
 
   if (commandOptions.neo4j && commandOptions.clearDb) {
     await clearDatabase();
@@ -69,7 +73,7 @@ export async function main(
     graph =>
       filterGraph(
         commandOptions.include,
-        [...(config().exclude ?? []), ...(commandOptions.exclude ?? [])],
+        [...(getConfig().exclude ?? []), ...(commandOptions.exclude ?? [])],
         graph,
       ),
     graph => abstraction(commandOptions.abstraction, graph),
