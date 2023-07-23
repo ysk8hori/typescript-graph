@@ -46,18 +46,27 @@ export function filterGraph(
       node => isExactMatchSomeIncludes(node) || !isMatchSomeExcludes(node),
     );
     tmpRelations = tmpRelations.filter(({ from, to }) => {
-      if (isExactMatchSomeIncludes(to)) {
-        // to が include に完全一致する場合は除外しない
-        return true;
+      /** from が exclude に含まれるか */
+      const isFromMatchSomeExcludes = isMatchSomeExcludes(from);
+      /** to が exclude に含まれるか */
+      const isToMatchSomeExcludes = isMatchSomeExcludes(to);
+
+      // from と to が exclude に含まれる
+      if (isFromMatchSomeExcludes && isToMatchSomeExcludes) {
+        // from と to が 両方とも include に完全一致する場合は残し、そうでない場合は除外する
+        return isExactMatchSomeIncludes(from) && isExactMatchSomeIncludes(to);
       }
-      if (isMatchSomeExcludes(from)) {
-        // from が exclude に含まれる場合は除外する
-        return false;
+      // from が exclude に含まれる
+      if (isFromMatchSomeExcludes) {
+        // from が include に完全一致する場合は残し、そうでない場合は除外する
+        return isExactMatchSomeIncludes(from);
       }
-      if (isMatchSomeExcludes(to)) {
-        // to が exclude に含まれる場合は除外する
-        return false;
+      // to が exclude に含まれる
+      if (isToMatchSomeExcludes) {
+        // to が include に完全一致する場合は残し、そうでない場合は除外する
+        return isExactMatchSomeIncludes(to);
       }
+      // from と to が exclude に含まれない
       return true;
     });
   }

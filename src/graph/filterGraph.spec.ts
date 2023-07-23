@@ -1,12 +1,126 @@
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 import { filterGraph } from './filterGraph';
 import include from './filterGraph.spec.data/include.json';
 import exclude from './filterGraph.spec.data/exclude.json';
 import nodes from './filterGraph.spec.data/nodes.json';
 import relations from './filterGraph.spec.data/relations.json';
 import { Graph } from '../models';
+import { Node, Relation } from '../models';
+import { setupConfig } from '../config';
 
-test('filterGraph', () => {
+describe('シンプルなテスト', () => {
+  const mainNode = {
+    path: 'src/main.ts',
+    changeStatus: 'not_modified',
+    name: 'main.ts',
+  } satisfies Node;
+
+  const testNode = {
+    path: 'src/main.test.ts',
+    changeStatus: 'not_modified',
+    name: 'main.test.ts',
+  } satisfies Node;
+
+  const utilNode = {
+    path: 'src/util.ts',
+    changeStatus: 'not_modified',
+    name: 'util.ts',
+  } satisfies Node;
+
+  const testToMain = {
+    from: testNode,
+    to: mainNode,
+    changeStatus: 'not_modified',
+    fullText: '',
+    kind: 'depends_on',
+  } satisfies Relation;
+
+  const testToUtil = {
+    from: testNode,
+    to: utilNode,
+    changeStatus: 'not_modified',
+    fullText: '',
+    kind: 'depends_on',
+  } satisfies Relation;
+
+  const mainToUtil = {
+    from: mainNode,
+    to: utilNode,
+    changeStatus: 'not_modified',
+    fullText: '',
+    kind: 'depends_on',
+  } satisfies Relation;
+
+  const graph = {
+    nodes: [mainNode, testNode, utilNode],
+    relations: [mainToUtil, testToMain, testToUtil],
+  } satisfies Graph;
+
+  test('include も exclude も指定しない', () => {
+    setupConfig('./src/graph/filterGraph.spec.data/noconfig.json');
+    expect(filterGraph([], [], graph)).toEqual(graph);
+  });
+
+  test('include 指定せず test と utils を exclude できる', () => {
+    setupConfig('./src/graph/filterGraph.spec.data/noconfig.json');
+    expect(filterGraph([], ['.test.', 'util'], graph)).toEqual({
+      nodes: [mainNode],
+      relations: [],
+    } satisfies Graph);
+  });
+
+  test('すべてを含むゆるい include を 指定しても test と utils を exclude できる', () => {
+    setupConfig('./src/graph/filterGraph.spec.data/noconfig.json');
+    expect(filterGraph(['src'], ['.test.', 'util'], graph)).toEqual({
+      nodes: [mainNode],
+      relations: [],
+    } satisfies Graph);
+  });
+
+  test('exclude 対象外のファイルを include でフルパス指定しても test と utils を exclude できる', () => {
+    setupConfig('./src/graph/filterGraph.spec.data/noconfig.json');
+    expect(filterGraph([mainNode.path], ['.test.', 'util'], graph)).toEqual({
+      nodes: [mainNode],
+      relations: [],
+    } satisfies Graph);
+  });
+
+  describe('exclude 対象のファイルを include でフルパス指定すれば結果に含めることができるが、excludeからexcludeへのrelationは含めない', () => {
+    test('to (utilNode) を include でフルパス指定', () => {
+      setupConfig('./src/graph/filterGraph.spec.data/noconfig.json');
+      expect(filterGraph([utilNode.path], ['.test.', 'util'], graph)).toEqual({
+        nodes: [utilNode, mainNode], // main と util の順序は制御できていないが、現状ではどちらでも良い
+        relations: [mainToUtil],
+      } satisfies Graph);
+    });
+    test('from (testNode) を include でフルパス指定', () => {
+      setupConfig('./src/graph/filterGraph.spec.data/noconfig.json');
+      expect(filterGraph([testNode.path], ['.test.', 'util'], graph)).toEqual({
+        nodes: [testNode, mainNode], // main と util の順序は制御できていないが、現状ではどちらでも良い
+        relations: [testToMain],
+      } satisfies Graph);
+    });
+  });
+  test('exclude 対象のファイルを include でフルパス指定すれば結果に含めることができ、excludeからexcludeへのrelationも両方のノードをフルパス指定していれば含めることができる', () => {
+    setupConfig('./src/graph/filterGraph.spec.data/noconfig.json');
+    expect(
+      filterGraph([testNode.path, utilNode.path], ['.test.', 'util'], graph),
+    ).toEqual({
+      nodes: [testNode, utilNode, mainNode], // main と util の順序は制御できていないが、現状ではどちらでも良い
+      relations: [mainToUtil, testToMain, testToUtil], // main と util の順序は制御できていないが、現状ではどちらでも良い
+    } satisfies Graph);
+  });
+
+  test.skip('include 対象のテストを exclude できる', () => {
+    setupConfig('./src/graph/filterGraph.spec.data/noconfig.json');
+    expect(filterGraph(['src/a.ts'], ['test'], graph)).toEqual({
+      nodes: [mainNode],
+      relations: [],
+    } satisfies Graph);
+  });
+});
+
+test('サンプルに対するテスト', () => {
   expect(filterGraph(include, exclude, { nodes, relations } as Graph))
     .toMatchInlineSnapshot(`
     {
