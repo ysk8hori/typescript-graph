@@ -1,10 +1,24 @@
 import {
   Graph,
+  Node,
   getUniqueNodes,
   getUniqueRelations,
   isSameNode,
 } from '../models';
 import { extractUniqueNodes } from './utils';
+
+/** word に該当するか */
+const bindMatchFunc = (word: string) => (node: Node) =>
+  node.path.toLowerCase().includes(word.toLowerCase());
+/** word に完全一致するか */
+const bindExactMatchFunc = (word: string) => (node: Node) => node.path === word;
+/** 抽象的な判定関数 */
+const judge = (node: Node) => (f: (node: Node) => boolean) => f(node);
+
+const isMatchSome = (words: string[]) => (node: Node) =>
+  words.map(bindMatchFunc).some(judge(node));
+const isExactMatchSome = (words: string[]) => (node: Node) =>
+  words.map(bindExactMatchFunc).some(judge(node));
 
 export function filterGraph(
   _include: string[] | undefined,
@@ -16,45 +30,32 @@ export function filterGraph(
   const include = _include ?? [];
   const exclude = _exclude ?? [];
 
+  const isMatchSomeIncludes = isMatchSome(include);
+  const isExactMatchSomeIncludes = isExactMatchSome(include);
+  const isMatchSomeExcludes = isMatchSome(exclude);
+  // const isExactMatchSomeExcludes = isExactMatchSome(exclude);
+
   if (include.length !== 0) {
-    tmpNodes = tmpNodes.filter(node =>
-      include.some(word =>
-        node.path.toLowerCase().includes(word.toLowerCase()),
-      ),
-    );
-    tmpRelations = tmpRelations.filter(({ from, to }) =>
-      include.some(
-        word =>
-          from.path.toLowerCase().includes(word.toLowerCase()) ||
-          to.path.toLowerCase().includes(word.toLowerCase()),
-      ),
+    tmpNodes = tmpNodes.filter(isMatchSomeIncludes);
+    tmpRelations = tmpRelations.filter(
+      ({ from, to }) => isMatchSomeIncludes(from) || isMatchSomeIncludes(to),
     );
   }
   if (exclude.length !== 0) {
     tmpNodes = tmpNodes.filter(
-      node =>
-        include.some(word => node.path === word) ||
-        !exclude.some(word =>
-          node.path.toLowerCase().includes(word.toLowerCase()),
-        ),
+      node => isExactMatchSomeIncludes(node) || !isMatchSomeExcludes(node),
     );
     tmpRelations = tmpRelations.filter(({ from, to }) => {
-      if (include.some(word => to.path === word)) {
+      if (isExactMatchSomeIncludes(to)) {
         // to が include に完全一致する場合は除外しない
         return true;
       }
-      if (
-        exclude.some(word =>
-          from.path.toLowerCase().includes(word.toLowerCase()),
-        )
-      ) {
+      if (isMatchSomeExcludes(from)) {
         // from が exclude に含まれる場合は除外する
         return false;
       }
-      if (
+      if (isMatchSomeExcludes(to)) {
         // to が exclude に含まれる場合は除外する
-        exclude.some(word => to.path.toLowerCase().includes(word.toLowerCase()))
-      ) {
         return false;
       }
       return true;
