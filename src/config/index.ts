@@ -19,9 +19,12 @@ let mergedConfig: TsgConfigScheme | undefined = undefined;
 export function readRuntimeConfig(
   filePath: string = path.join(process.cwd(), '.tsgrc.json'),
 ): TsgRcScheme {
+  // ファイルがない場合は空オブジェクトを返す
+  if (!existsSync(filePath)) return {};
   try {
     return tsgRcScheme.parse(JSON.parse(readFileSync(filePath, 'utf-8')));
   } catch (e) {
+    // ファイルがJSONでない場合はその旨のエラーログを吐き、空オブジェクトを返す
     console.error(e);
     return {};
   }
