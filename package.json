@@ -67,7 +67,7 @@
     "danger": "^11.2.4",
     "danger-plugin-typescript-graph": "^1.6.0",
     "eslint": "^8.31.0",
-    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-prettier": "^9.0.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.0",
     "prettier": "^3.0.0",
