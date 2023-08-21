@@ -54,10 +54,10 @@
   "dependencies": {
     "commander": "^11.0.0",
     "remeda": "^1.12.0",
-    "zod": "3.21.4"
+    "zod": "3.22.2"
   },
   "devDependencies": {
-    "@total-typescript/ts-reset": "^0.4.2",
+    "@total-typescript/ts-reset": "^0.5.0",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
