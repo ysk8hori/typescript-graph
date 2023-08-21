@@ -7,7 +7,6 @@ import { filterGraph } from './graph/filterGraph';
 import { abstraction } from './graph/abstraction';
 import { highlight } from './graph/highlight';
 import { writeMarkdownFile } from './writeMarkdownFile';
-import { clearDatabase, neo4jfy } from './neo4jfy';
 import packagejson from '../package.json';
 import { OptionValues } from './models';
 import { pipe } from 'remeda';
@@ -46,8 +45,6 @@ program
   )
   .option('--LR', 'Specify Flowchart orientation Left-to-Right')
   .option('--TB', 'Specify Flowchart orientation Top-to-Bottom')
-  .option('--neo4j', 'output to neo4j on localhost:7687')
-  .option('--clear-db', 'clear neo4j database before output')
   .option(
     '--config-file',
     'Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.',
@@ -61,10 +58,6 @@ export async function main(
   commandOptions: typeof opt & { executedScript: string },
 ) {
   setupConfig(path.join(dir, commandOptions.configFile ?? '.tsgrc.json'));
-
-  if (commandOptions.neo4j && commandOptions.clearDb) {
-    await clearDatabase();
-  }
 
   const { graph: fullGraph, meta } = createGraph(dir);
 
@@ -85,10 +78,6 @@ export async function main(
     rootDir: meta.rootDir,
     executedScript: commandOptions.executedScript,
   });
-
-  if (commandOptions.neo4j) {
-    // await neo4jfy(graph);
-  }
 }
 
 const dir = path.resolve(opt.dir ?? './');
