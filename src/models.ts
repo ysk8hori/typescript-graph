@@ -6,8 +6,6 @@ export type OptionValues = {
   exclude: string[];
   abstraction: string[];
   highlight: string[];
-  neo4j: boolean;
-  clearDb: boolean;
   LR: boolean;
   TB: boolean;
   configFile: string;

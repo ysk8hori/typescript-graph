@@ -79,8 +79,6 @@ npm install --save-dev @ysk8hori/typescript-graph
   --highlight <char...>    Specify the path and file name to highlight
   --LR                     Specify Flowchart orientation Left-to-Right
   --TB                     Specify Flowchart orientation Top-to-Bottom
-  --neo4j                  output to neo4j on localhost:7687
-  --clear-db               clear neo4j database before output
   --config-file            Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.
   -h, --help               display help for command
 ```
