@@ -63,8 +63,6 @@
     "@typescript-eslint/parser": "^6.0.0",
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
-    "danger": "^11.2.4",
-    "danger-plugin-typescript-graph": "^1.6.0",
     "eslint": "^8.31.0",
     "eslint-config-prettier": "^9.0.0",
     "husky": "^8.0.3",
