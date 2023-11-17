@@ -11,7 +11,7 @@ type DirAndNodesTree = {
 type Options = Partial<OptionValues> & {
   rootDir: string;
 };
-
+// 🐥
 const indent = '    ';
 const CLASSNAME_DIR = 'dir';
 const CLASSNAME_HIGHLIGHT = 'highlight';
