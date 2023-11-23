@@ -59,10 +59,8 @@ flowchart
 ## Installation
 
 ```bash
-npm install --save-dev @ysk8hori/typescript-graph
+npm install --global @ysk8hori/typescript-graph
 ```
-
-or global install.
 
 ## Options
 
