@@ -52,7 +52,7 @@
   "author": "ysk8hori",
   "license": "ISC",
   "dependencies": {
-    "commander": "^11.0.0",
+    "commander": "^12.0.0",
     "remeda": "^1.12.0",
     "zod": "3.22.4"
   },
