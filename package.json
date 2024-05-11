@@ -44,7 +44,7 @@
     "test:watch": "vitest src",
     "test:integration": "vitest run ./integration",
     "test:integration:update": "vitest run -u ./integration",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "pnpm run build",
     "prepare": "husky install",
     "semantic-release": "semantic-release",
     "run:tsc:demo": "ts-node ./typescript-compiler-api-demo.ts"
@@ -82,7 +82,7 @@
   "lint-staged": {
     "*.@(ts|tsx)": [
       "eslint --fix",
-      "npm run prettier --",
+      "pnpm run prettier --",
       "git add"
     ]
   },
