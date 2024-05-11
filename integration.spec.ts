@@ -24,49 +24,49 @@ test('run:sample', async () => {
 
     \`\`\`mermaid
     flowchart
-        subgraph src[\\"src\\"]
-            src/utils.ts[\\"utils.ts\\"]
-            src/config.ts[\\"config.ts\\"]
-            src/main.ts[\\"main.ts\\"]
-            subgraph src/includeFiles[\\"/includeFiles\\"]
-                src/includeFiles/b.ts[\\"b.ts\\"]
-                src/includeFiles/c.ts[\\"c.ts\\"]
-                src/includeFiles/a.ts[\\"a.ts\\"]
-                subgraph src/includeFiles/children[\\"/children\\"]
-                    src/includeFiles/children/childA.ts[\\"childA.ts\\"]
+        subgraph src["src"]
+            src/utils.ts["utils.ts"]
+            src/config.ts["config.ts"]
+            src/main.ts["main.ts"]
+            subgraph src/includeFiles["/includeFiles"]
+                src/includeFiles/b.ts["b.ts"]
+                src/includeFiles/c.ts["c.ts"]
+                src/includeFiles/a.ts["a.ts"]
+                subgraph src/includeFiles/children["/children"]
+                    src/includeFiles/children/childA.ts["childA.ts"]
                 end
-                subgraph src/includeFiles/excludeFiles[\\"/excludeFiles\\"]
-                    src/includeFiles/excludeFiles/i.ts[\\"i.ts\\"]
-                    src/includeFiles/excludeFiles/g.ts[\\"g.ts\\"]
-                    src/includeFiles/excludeFiles/h.ts[\\"h.ts\\"]
-                    subgraph src/includeFiles/excludeFiles/style_[\\"/style\\"]
-                        src/includeFiles/excludeFiles/style_/style_.ts[\\"style.ts\\"]
+                subgraph src/includeFiles/excludeFiles["/excludeFiles"]
+                    src/includeFiles/excludeFiles/i.ts["i.ts"]
+                    src/includeFiles/excludeFiles/g.ts["g.ts"]
+                    src/includeFiles/excludeFiles/h.ts["h.ts"]
+                    subgraph src/includeFiles/excludeFiles/style_["/style"]
+                        src/includeFiles/excludeFiles/style_/style_.ts["style.ts"]
                     end
-                    subgraph src/includeFiles/excludeFiles/class_[\\"/class\\"]
-                        src/includeFiles/excludeFiles/class_/class_A.ts[\\"classA.ts\\"]
+                    subgraph src/includeFiles/excludeFiles/class_["/class"]
+                        src/includeFiles/excludeFiles/class_/class_A.ts["classA.ts"]
                     end
                 end
-                subgraph src/includeFiles/d[\\"/d\\"]
-                    src/includeFiles/d/d.ts[\\"d.ts\\"]
-                    src/includeFiles/d/index.ts[\\"index.ts\\"]
+                subgraph src/includeFiles/d["/d"]
+                    src/includeFiles/d/d.ts["d.ts"]
+                    src/includeFiles/d/index.ts["index.ts"]
                 end
-                subgraph src/includeFiles/abstractions[\\"/abstractions\\"]
-                    src/includeFiles/abstractions/j.ts[\\"j.ts\\"]
-                    src/includeFiles/abstractions/l.ts[\\"l.ts\\"]
-                    src/includeFiles/abstractions/k.ts[\\"k.ts\\"]
-                    subgraph src/includeFiles/abstractions/children[\\"/children\\"]
-                        src/includeFiles/abstractions/children/childA.ts[\\"childA.ts\\"]
+                subgraph src/includeFiles/abstractions["/abstractions"]
+                    src/includeFiles/abstractions/j.ts["j.ts"]
+                    src/includeFiles/abstractions/l.ts["l.ts"]
+                    src/includeFiles/abstractions/k.ts["k.ts"]
+                    subgraph src/includeFiles/abstractions/children["/children"]
+                        src/includeFiles/abstractions/children/childA.ts["childA.ts"]
                     end
                 end
             end
-            subgraph src/otherFiles[\\"/otherFiles\\"]
-                src/otherFiles/d.ts[\\"d.ts\\"]
-                src/otherFiles/f.ts[\\"f.ts\\"]
-                src/otherFiles/e.ts[\\"e.ts\\"]
-                subgraph src/otherFiles/children[\\"/children\\"]
-                    src/otherFiles/children/:id.json[\\":id.json\\"]
-                    src/otherFiles/children///id//.json[\\"{id}.json\\"]
-                    src/otherFiles/children/childA.ts[\\"childA.ts\\"]
+            subgraph src/otherFiles["/otherFiles"]
+                src/otherFiles/d.ts["d.ts"]
+                src/otherFiles/f.ts["f.ts"]
+                src/otherFiles/e.ts["e.ts"]
+                subgraph src/otherFiles/children["/children"]
+                    src/otherFiles/children/:id.json[":id.json"]
+                    src/otherFiles/children///id//.json["{id}.json"]
+                    src/otherFiles/children/childA.ts["childA.ts"]
                 end
             end
         end
@@ -127,43 +127,43 @@ test('run:sample:include', async () => {
 
     \`\`\`mermaid
     flowchart
-        subgraph src[\\"src\\"]
-            src/config.ts[\\"config.ts\\"]
-            src/utils.ts[\\"utils.ts\\"]
-            src/main.ts[\\"main.ts\\"]
-            subgraph src/includeFiles[\\"/includeFiles\\"]
-                src/includeFiles/b.ts[\\"b.ts\\"]
-                src/includeFiles/c.ts[\\"c.ts\\"]
-                src/includeFiles/a.ts[\\"a.ts\\"]
-                subgraph src/includeFiles/children[\\"/children\\"]
-                    src/includeFiles/children/childA.ts[\\"childA.ts\\"]
+        subgraph src["src"]
+            src/config.ts["config.ts"]
+            src/utils.ts["utils.ts"]
+            src/main.ts["main.ts"]
+            subgraph src/includeFiles["/includeFiles"]
+                src/includeFiles/b.ts["b.ts"]
+                src/includeFiles/c.ts["c.ts"]
+                src/includeFiles/a.ts["a.ts"]
+                subgraph src/includeFiles/children["/children"]
+                    src/includeFiles/children/childA.ts["childA.ts"]
                 end
-                subgraph src/includeFiles/excludeFiles[\\"/excludeFiles\\"]
-                    src/includeFiles/excludeFiles/i.ts[\\"i.ts\\"]
-                    src/includeFiles/excludeFiles/g.ts[\\"g.ts\\"]
-                    src/includeFiles/excludeFiles/h.ts[\\"h.ts\\"]
-                    subgraph src/includeFiles/excludeFiles/style_[\\"/style\\"]
-                        src/includeFiles/excludeFiles/style_/style_.ts[\\"style.ts\\"]
+                subgraph src/includeFiles/excludeFiles["/excludeFiles"]
+                    src/includeFiles/excludeFiles/i.ts["i.ts"]
+                    src/includeFiles/excludeFiles/g.ts["g.ts"]
+                    src/includeFiles/excludeFiles/h.ts["h.ts"]
+                    subgraph src/includeFiles/excludeFiles/style_["/style"]
+                        src/includeFiles/excludeFiles/style_/style_.ts["style.ts"]
                     end
-                    subgraph src/includeFiles/excludeFiles/class_[\\"/class\\"]
-                        src/includeFiles/excludeFiles/class_/class_A.ts[\\"classA.ts\\"]
+                    subgraph src/includeFiles/excludeFiles/class_["/class"]
+                        src/includeFiles/excludeFiles/class_/class_A.ts["classA.ts"]
                     end
                 end
-                subgraph src/includeFiles/d[\\"/d\\"]
-                    src/includeFiles/d/d.ts[\\"d.ts\\"]
-                    src/includeFiles/d/index.ts[\\"index.ts\\"]
+                subgraph src/includeFiles/d["/d"]
+                    src/includeFiles/d/d.ts["d.ts"]
+                    src/includeFiles/d/index.ts["index.ts"]
                 end
-                subgraph src/includeFiles/abstractions[\\"/abstractions\\"]
-                    src/includeFiles/abstractions/j.ts[\\"j.ts\\"]
-                    src/includeFiles/abstractions/l.ts[\\"l.ts\\"]
-                    src/includeFiles/abstractions/k.ts[\\"k.ts\\"]
-                    subgraph src/includeFiles/abstractions/children[\\"/children\\"]
-                        src/includeFiles/abstractions/children/childA.ts[\\"childA.ts\\"]
+                subgraph src/includeFiles/abstractions["/abstractions"]
+                    src/includeFiles/abstractions/j.ts["j.ts"]
+                    src/includeFiles/abstractions/l.ts["l.ts"]
+                    src/includeFiles/abstractions/k.ts["k.ts"]
+                    subgraph src/includeFiles/abstractions/children["/children"]
+                        src/includeFiles/abstractions/children/childA.ts["childA.ts"]
                     end
                 end
             end
-            subgraph src/otherFiles[\\"/otherFiles\\"]
-                src/otherFiles/e.ts[\\"e.ts\\"]
+            subgraph src/otherFiles["/otherFiles"]
+                src/otherFiles/e.ts["e.ts"]
             end
         end
         src/includeFiles/b.ts-->src/utils.ts
@@ -215,31 +215,31 @@ test('run:sample:exclude', async () => {
 
     \`\`\`mermaid
     flowchart
-        subgraph src[\\"src\\"]
-            src/config.ts[\\"config.ts\\"]
-            src/main.ts[\\"main.ts\\"]
-            subgraph src/includeFiles[\\"/includeFiles\\"]
-                src/includeFiles/b.ts[\\"b.ts\\"]
-                src/includeFiles/c.ts[\\"c.ts\\"]
-                src/includeFiles/a.ts[\\"a.ts\\"]
-                subgraph src/includeFiles/children[\\"/children\\"]
-                    src/includeFiles/children/childA.ts[\\"childA.ts\\"]
+        subgraph src["src"]
+            src/config.ts["config.ts"]
+            src/main.ts["main.ts"]
+            subgraph src/includeFiles["/includeFiles"]
+                src/includeFiles/b.ts["b.ts"]
+                src/includeFiles/c.ts["c.ts"]
+                src/includeFiles/a.ts["a.ts"]
+                subgraph src/includeFiles/children["/children"]
+                    src/includeFiles/children/childA.ts["childA.ts"]
                 end
-                subgraph src/includeFiles/d[\\"/d\\"]
-                    src/includeFiles/d/d.ts[\\"d.ts\\"]
-                    src/includeFiles/d/index.ts[\\"index.ts\\"]
+                subgraph src/includeFiles/d["/d"]
+                    src/includeFiles/d/d.ts["d.ts"]
+                    src/includeFiles/d/index.ts["index.ts"]
                 end
-                subgraph src/includeFiles/abstractions[\\"/abstractions\\"]
-                    src/includeFiles/abstractions/j.ts[\\"j.ts\\"]
-                    src/includeFiles/abstractions/l.ts[\\"l.ts\\"]
-                    src/includeFiles/abstractions/k.ts[\\"k.ts\\"]
-                    subgraph src/includeFiles/abstractions/children[\\"/children\\"]
-                        src/includeFiles/abstractions/children/childA.ts[\\"childA.ts\\"]
+                subgraph src/includeFiles/abstractions["/abstractions"]
+                    src/includeFiles/abstractions/j.ts["j.ts"]
+                    src/includeFiles/abstractions/l.ts["l.ts"]
+                    src/includeFiles/abstractions/k.ts["k.ts"]
+                    subgraph src/includeFiles/abstractions/children["/children"]
+                        src/includeFiles/abstractions/children/childA.ts["childA.ts"]
                     end
                 end
             end
-            subgraph src/otherFiles[\\"/otherFiles\\"]
-                src/otherFiles/e.ts[\\"e.ts\\"]
+            subgraph src/otherFiles["/otherFiles"]
+                src/otherFiles/e.ts["e.ts"]
             end
         end
         src/includeFiles/b.ts-->src/config.ts
@@ -276,24 +276,24 @@ test('run:sample:abstraction', async () => {
     \`\`\`mermaid
     flowchart
         classDef dir fill:#0000,stroke:#999
-        subgraph src[\\"src\\"]
-            src/config.ts[\\"config.ts\\"]
-            src/main.ts[\\"main.ts\\"]
-            subgraph src/includeFiles[\\"/includeFiles\\"]
-                src/includeFiles/b.ts[\\"b.ts\\"]
-                src/includeFiles/c.ts[\\"c.ts\\"]
-                src/includeFiles/a.ts[\\"a.ts\\"]
-                src/includeFiles/abstractions[\\"/abstractions\\"]:::dir
-                subgraph src/includeFiles/children[\\"/children\\"]
-                    src/includeFiles/children/childA.ts[\\"childA.ts\\"]
+        subgraph src["src"]
+            src/config.ts["config.ts"]
+            src/main.ts["main.ts"]
+            subgraph src/includeFiles["/includeFiles"]
+                src/includeFiles/b.ts["b.ts"]
+                src/includeFiles/c.ts["c.ts"]
+                src/includeFiles/a.ts["a.ts"]
+                src/includeFiles/abstractions["/abstractions"]:::dir
+                subgraph src/includeFiles/children["/children"]
+                    src/includeFiles/children/childA.ts["childA.ts"]
                 end
-                subgraph src/includeFiles/d[\\"/d\\"]
-                    src/includeFiles/d/d.ts[\\"d.ts\\"]
-                    src/includeFiles/d/index.ts[\\"index.ts\\"]
+                subgraph src/includeFiles/d["/d"]
+                    src/includeFiles/d/d.ts["d.ts"]
+                    src/includeFiles/d/index.ts["index.ts"]
                 end
             end
-            subgraph src/otherFiles[\\"/otherFiles\\"]
-                src/otherFiles/e.ts[\\"e.ts\\"]
+            subgraph src/otherFiles["/otherFiles"]
+                src/otherFiles/e.ts["e.ts"]
             end
         end
         src/includeFiles/b.ts-->src/config.ts
@@ -328,24 +328,24 @@ test('run:sample:highlight', async () => {
     flowchart
         classDef dir fill:#0000,stroke:#999
         classDef highlight fill:yellow,color:black
-        subgraph src[\\"src\\"]
-            src/config.ts[\\"config.ts\\"]:::highlight
-            src/main.ts[\\"main.ts\\"]
-            subgraph src/includeFiles[\\"/includeFiles\\"]
-                src/includeFiles/b.ts[\\"b.ts\\"]:::highlight
-                src/includeFiles/c.ts[\\"c.ts\\"]
-                src/includeFiles/a.ts[\\"a.ts\\"]
-                src/includeFiles/abstractions[\\"/abstractions\\"]:::dir
-                subgraph src/includeFiles/children[\\"/children\\"]
-                    src/includeFiles/children/childA.ts[\\"childA.ts\\"]
+        subgraph src["src"]
+            src/config.ts["config.ts"]:::highlight
+            src/main.ts["main.ts"]
+            subgraph src/includeFiles["/includeFiles"]
+                src/includeFiles/b.ts["b.ts"]:::highlight
+                src/includeFiles/c.ts["c.ts"]
+                src/includeFiles/a.ts["a.ts"]
+                src/includeFiles/abstractions["/abstractions"]:::dir
+                subgraph src/includeFiles/children["/children"]
+                    src/includeFiles/children/childA.ts["childA.ts"]
                 end
-                subgraph src/includeFiles/d[\\"/d\\"]
-                    src/includeFiles/d/d.ts[\\"d.ts\\"]
-                    src/includeFiles/d/index.ts[\\"index.ts\\"]
+                subgraph src/includeFiles/d["/d"]
+                    src/includeFiles/d/d.ts["d.ts"]
+                    src/includeFiles/d/index.ts["index.ts"]
                 end
             end
-            subgraph src/otherFiles[\\"/otherFiles\\"]
-                src/otherFiles/e.ts[\\"e.ts\\"]
+            subgraph src/otherFiles["/otherFiles"]
+                src/otherFiles/e.ts["e.ts"]
             end
         end
         src/includeFiles/b.ts-->src/config.ts
