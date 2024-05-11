@@ -1,8 +1,8 @@
 {
-  "extends": ["config:base"],
+  "extends": ["config:recommended"],
   "baseBranches": ["main"],
   "timezone": "Asia/Tokyo",
-  "schedule": ["after 5pm and before 10pm"],
+  "schedule": ["after 5pm and before 10pm on Thursday"],
   "rangeStrategy": "pin",
   "packageRules": [
     {
