@@ -3,6 +3,7 @@
   "baseBranches": ["main"],
   "timezone": "Asia/Tokyo",
   "schedule": ["after 5pm and before 10pm"],
+  "rangeStrategy": "pin",
   "packageRules": [
     {
       "matchUpdateTypes": ["major", "minor"],
