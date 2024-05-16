@@ -33,6 +33,7 @@
     "run:sample:highlight": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --LR --highlight config.ts b.ts",
     "run:sample:link": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --mermaid-link",
     "run:sample:README": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d /Users/horiyousuke/Documents/dev/numberplace --include src/components/atoms/ConfigMenu --exclude test stories node_modules",
+    "run:instability": "ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts --measure-instability",
     "build": "tsc",
     "build:re": "rm -r ./dist && tsc",
     "commit": "git-cz",
