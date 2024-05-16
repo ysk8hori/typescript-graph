@@ -59,7 +59,18 @@ export async function writeMarkdownFile(
             totalCoupling === 0 ? 0 : node.efferentCoupling / totalCoupling;
           return { ...node, instability };
         })
-        .toSorted((a, b) => b.instability - a.instability)
+        .toSorted((a, b) => {
+          return b.efferentCoupling - a.efferentCoupling;
+        })
+
+        .toSorted((a, b) => {
+          const totalCouplingA = a.afferentCoupling + a.efferentCoupling;
+          const totalCouplingB = b.afferentCoupling + b.efferentCoupling;
+          return totalCouplingB - totalCouplingA;
+        })
+        .toSorted((a, b) => {
+          return b.instability - a.instability;
+        })
         .forEach(node => {
           const totalCoupling = node.afferentCoupling + node.efferentCoupling;
           const instability =
