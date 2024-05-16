@@ -46,6 +46,10 @@ program
   .option('--LR', 'Specify Flowchart orientation Left-to-Right')
   .option('--TB', 'Specify Flowchart orientation Top-to-Bottom')
   .option(
+    '--measure-instability',
+    'Enable the beta feature to measure the instability of the modules',
+  )
+  .option(
     '--config-file',
     'Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.',
   );
@@ -61,6 +65,27 @@ export async function main(
 
   const { graph: fullGraph, meta } = createGraph(dir);
 
+  let couplingData: {
+    afferentCoupling: number;
+    efferentCoupling: number;
+    path: string;
+    name: string;
+    isDirectory?: boolean | undefined;
+  }[] = [];
+  if (commandOptions.measureInstability) {
+    console.time('coupling');
+    couplingData = fullGraph.nodes.map(node => {
+      const afferentCoupling = fullGraph.relations.filter(
+        r => r.kind === 'depends_on' && r.to.path === node.path,
+      ).length;
+      const efferentCoupling = fullGraph.relations.filter(
+        r => r.kind === 'depends_on' && r.from.path === node.path,
+      ).length;
+      return { ...node, afferentCoupling, efferentCoupling };
+    });
+    console.timeEnd('coupling');
+  }
+
   const graph = pipe(
     fullGraph,
     graph =>
@@ -73,11 +98,16 @@ export async function main(
     graph => highlight(commandOptions.highlight, graph),
   );
 
-  await writeMarkdownFile(commandOptions.md ?? 'typescript-graph', graph, {
-    ...commandOptions,
-    rootDir: meta.rootDir,
-    executedScript: commandOptions.executedScript,
-  });
+  await writeMarkdownFile(
+    commandOptions.md ?? 'typescript-graph',
+    graph,
+    {
+      ...commandOptions,
+      rootDir: meta.rootDir,
+      executedScript: commandOptions.executedScript,
+    },
+    couplingData,
+  );
 }
 
 const dir = path.resolve(opt.dir ?? './');

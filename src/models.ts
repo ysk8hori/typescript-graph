@@ -9,6 +9,7 @@ export type OptionValues = {
   LR: boolean;
   TB: boolean;
   configFile: string;
+  measureInstability: boolean;
 };
 
 type FileName = string;
