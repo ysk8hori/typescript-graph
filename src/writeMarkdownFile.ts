@@ -1,6 +1,6 @@
 import { createWriteStream } from 'fs';
 import mermaidify from './mermaidify';
-import { Graph, OptionValues } from './models';
+import { Graph, OptionValues, measureInstability } from './models';
 
 type Options = Partial<OptionValues> & {
   rootDir: string;
@@ -11,13 +11,7 @@ export async function writeMarkdownFile(
   markdownTitle: string,
   graph: Graph,
   options: Options,
-  couplingData: {
-    afferentCoupling: number;
-    efferentCoupling: number;
-    path: string;
-    name: string;
-    isDirectory?: boolean | undefined;
-  }[],
+  couplingData: ReturnType<typeof measureInstability>,
 ) {
   return new Promise((resolve, reject) => {
     const filename = markdownTitle.endsWith('.md')
@@ -47,38 +41,11 @@ export async function writeMarkdownFile(
       );
       ws.write('--|--|--|--\n');
 
-      couplingData
-        .filter(node => !node.isDirectory)
-        // node_modules 配下のモジュールを除外する
-        .filter(node => !node.path.includes('node_modules'))
-        // json ファイルを除外する
-        .filter(node => !node.path.endsWith('.json'))
-        .map(node => {
-          const totalCoupling = node.afferentCoupling + node.efferentCoupling;
-          const instability =
-            totalCoupling === 0 ? 0 : node.efferentCoupling / totalCoupling;
-          return { ...node, instability };
-        })
-        .toSorted((a, b) => {
-          return b.efferentCoupling - a.efferentCoupling;
-        })
-
-        .toSorted((a, b) => {
-          const totalCouplingA = a.afferentCoupling + a.efferentCoupling;
-          const totalCouplingB = b.afferentCoupling + b.efferentCoupling;
-          return totalCouplingB - totalCouplingA;
-        })
-        .toSorted((a, b) => {
-          return b.instability - a.instability;
-        })
-        .forEach(node => {
-          const totalCoupling = node.afferentCoupling + node.efferentCoupling;
-          const instability =
-            totalCoupling === 0 ? 0 : node.efferentCoupling / totalCoupling;
-          ws.write(
-            `${node.name} | ${node.afferentCoupling} | ${node.efferentCoupling} | ${instability.toFixed(2)}\n`,
-          );
-        });
+      couplingData.forEach(node => {
+        ws.write(
+          `${node.path} | ${node.afferentCoupling} | ${node.efferentCoupling} | ${node.instability.toFixed(2)}\n`,
+        );
+      });
     }
     ws.end();
 

@@ -23,6 +23,52 @@ export type Node = {
   highlight?: boolean;
   changeStatus: ChangeStatus;
 };
+export type NodeWithInstability = Node & {
+  afferentCoupling: number;
+  efferentCoupling: number;
+  instability: number;
+};
+
+export function measureInstability(graph: Graph): NodeWithInstability[] {
+  console.time('coupling');
+  const couplingData = graph.nodes
+    .filter(node => !node.isDirectory)
+    .filter(
+      node => !/node_modules|\.{test|spec|stories}\.|.json$/.test(node.path),
+    )
+    .map(node => {
+      // このノードに依存しているノードの数
+      const afferentCoupling = graph.relations.filter(
+        r => r.kind === 'depends_on' && r.to.path === node.path,
+      ).length;
+      // このノードが依存しているノードの数
+      const efferentCoupling = graph.relations.filter(
+        r => r.kind === 'depends_on' && r.from.path === node.path,
+      ).length;
+      return { ...node, afferentCoupling, efferentCoupling };
+    })
+    .map(node => {
+      const totalCoupling = node.afferentCoupling + node.efferentCoupling;
+      const instability =
+        totalCoupling === 0 ? 0 : node.efferentCoupling / totalCoupling;
+      return { ...node, instability };
+    })
+    .toSorted((a, b) => {
+      return b.efferentCoupling - a.efferentCoupling;
+    })
+
+    .toSorted((a, b) => {
+      const totalCouplingA = a.afferentCoupling + a.efferentCoupling;
+      const totalCouplingB = b.afferentCoupling + b.efferentCoupling;
+      return totalCouplingB - totalCouplingA;
+    })
+    .toSorted((a, b) => {
+      return b.instability - a.instability;
+    });
+  console.timeEnd('coupling');
+  return couplingData;
+}
+
 export type RelationType = 'depends_on' | 'rename_to';
 export type RelationOfDependsOn = {
   kind: 'depends_on';
