@@ -8,7 +8,7 @@ import { abstraction } from './graph/abstraction';
 import { highlight } from './graph/highlight';
 import { writeMarkdownFile } from './writeMarkdownFile';
 import packagejson from '../package.json';
-import { OptionValues } from './models';
+import { OptionValues, measureInstability } from './models';
 import { pipe } from 'remeda';
 import { getConfig, setupConfig } from './config';
 
@@ -65,24 +65,10 @@ export async function main(
 
   const { graph: fullGraph, meta } = createGraph(dir);
 
-  let couplingData: {
-    afferentCoupling: number;
-    efferentCoupling: number;
-    path: string;
-    name: string;
-    isDirectory?: boolean | undefined;
-  }[] = [];
+  let couplingData: ReturnType<typeof measureInstability> = [];
   if (commandOptions.measureInstability) {
     console.time('coupling');
-    couplingData = fullGraph.nodes.map(node => {
-      const afferentCoupling = fullGraph.relations.filter(
-        r => r.kind === 'depends_on' && r.to.path === node.path,
-      ).length;
-      const efferentCoupling = fullGraph.relations.filter(
-        r => r.kind === 'depends_on' && r.from.path === node.path,
-      ).length;
-      return { ...node, afferentCoupling, efferentCoupling };
-    });
+    couplingData = measureInstability(fullGraph);
     console.timeEnd('coupling');
   }
 
