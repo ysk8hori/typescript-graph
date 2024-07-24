@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # specify latest version
-      - uses: ysk8hori/delta-typescript-graph-action@v1.0.3 # specify latest version
+      - uses: ysk8hori/delta-typescript-graph-action@9e91a91a17b49cd65907c4c0617fe70e93c70a25 # specify latest version
