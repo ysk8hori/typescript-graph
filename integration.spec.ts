@@ -114,6 +114,94 @@ test('run:sample', async () => {
   `);
 });
 
+test('run:sample:argument-include', async () => {
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts includeFiles config -d './dummy_project' --md ${filepath}`;
+
+  const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
+  expect(file).toMatchInlineSnapshot(`
+    "# TypeScript Graph
+
+    \`\`\`bash
+    tsg includeFiles config -d ./dummy_project --md __tmp__/test.md
+    \`\`\`
+
+    \`\`\`mermaid
+    flowchart
+        subgraph src["src"]
+            src/config.ts["config.ts"]
+            src/utils.ts["utils.ts"]
+            src/main.ts["main.ts"]
+            subgraph src/includeFiles["/includeFiles"]
+                src/includeFiles/b.ts["b.ts"]
+                src/includeFiles/c.ts["c.ts"]
+                src/includeFiles/a.ts["a.ts"]
+                subgraph src/includeFiles/children["/children"]
+                    src/includeFiles/children/childA.ts["childA.ts"]
+                end
+                subgraph src/includeFiles/excludeFiles["/excludeFiles"]
+                    src/includeFiles/excludeFiles/i.ts["i.ts"]
+                    src/includeFiles/excludeFiles/g.ts["g.ts"]
+                    src/includeFiles/excludeFiles/h.ts["h.ts"]
+                    subgraph src/includeFiles/excludeFiles/style_["/style"]
+                        src/includeFiles/excludeFiles/style_/style_.ts["style.ts"]
+                    end
+                    subgraph src/includeFiles/excludeFiles/class_["/class"]
+                        src/includeFiles/excludeFiles/class_/class_A.ts["classA.ts"]
+                    end
+                end
+                subgraph src/includeFiles/d["/d"]
+                    src/includeFiles/d/d.ts["d.ts"]
+                    src/includeFiles/d/index.ts["index.ts"]
+                end
+                subgraph src/includeFiles/abstractions["/abstractions"]
+                    src/includeFiles/abstractions/j.ts["j.ts"]
+                    src/includeFiles/abstractions/l.ts["l.ts"]
+                    src/includeFiles/abstractions/k.ts["k.ts"]
+                    subgraph src/includeFiles/abstractions/children["/children"]
+                        src/includeFiles/abstractions/children/childA.ts["childA.ts"]
+                    end
+                end
+            end
+            subgraph src/otherFiles["/otherFiles"]
+                src/otherFiles/e.ts["e.ts"]
+            end
+        end
+        src/includeFiles/b.ts-->src/utils.ts
+        src/includeFiles/b.ts-->src/config.ts
+        src/includeFiles/c.ts-->src/utils.ts
+        src/includeFiles/c.ts-->src/includeFiles/b.ts
+        src/config.ts-->src/utils.ts
+        src/config.ts-->src/includeFiles/c.ts
+        src/includeFiles/children/childA.ts-->src/utils.ts
+        src/includeFiles/excludeFiles/i.ts-->src/utils.ts
+        src/includeFiles/d/index.ts-->src/includeFiles/d/d.ts
+        src/includeFiles/a.ts-->src/includeFiles/children/childA.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/g.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/i.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/style_/style_.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/class_/class_A.ts
+        src/includeFiles/a.ts-->src/includeFiles/excludeFiles/h.ts
+        src/includeFiles/a.ts-->src/includeFiles/d/index.ts
+        src/includeFiles/a.ts-->src/utils.ts
+        src/otherFiles/e.ts-->src/config.ts
+        src/includeFiles/abstractions/j.ts-->src/utils.ts
+        src/includeFiles/abstractions/j.ts-->src/includeFiles/abstractions/children/childA.ts
+        src/includeFiles/abstractions/j.ts-->data.json
+        src/includeFiles/abstractions/l.ts-->src/utils.ts
+        src/includeFiles/abstractions/k.ts-->src/includeFiles/abstractions/l.ts
+        src/includeFiles/abstractions/k.ts-->src/utils.ts
+        src/main.ts-->src/includeFiles/a.ts
+        src/main.ts-->src/includeFiles/b.ts
+        src/main.ts-->src/includeFiles/abstractions/j.ts
+        src/main.ts-->src/includeFiles/abstractions/k.ts
+        src/otherFiles/e.ts-->src/utils.ts
+        src/main.ts-->src/otherFiles/e.ts
+        src/main.ts-->src/utils.ts
+    \`\`\`
+    "
+  `);
+});
+
 test('run:sample:include', async () => {
   await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --md ${filepath}`;
 
