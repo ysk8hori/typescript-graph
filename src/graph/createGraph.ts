@@ -1,8 +1,18 @@
 import path from 'path';
 import * as ts from 'typescript';
-import { Graph, Meta, Node, Relation } from '../models';
+import { Graph, Meta, Node, OptionValues, Relation } from '../models';
+import { pipe, piped } from 'remeda';
 
-export function createGraph(dir: string): { graph: Graph; meta: Meta } {
+export function createGraph(
+  dir: string,
+  /**
+   * exclude で指定されたファイルの除外のみファイル読み込み時にも実施する。
+   *
+   * include をによる絞り込みを行わない理由は、include から参照される include 指定されていないファイルをここで除外したくないため。
+   * exclude は、ユーザーが明確に不要と指定しているため、たとえ include に含まれたり include 対象ファイルと関連をもつファイルであったとしても除外して良い。
+   **/
+  opt: Partial<Pick<OptionValues, 'exclude'>>,
+): { graph: Graph; meta: Meta } {
   const configPath = ts.findConfigFile(dir, ts.sys.fileExists);
   if (!configPath) {
     throw new Error('Could not find a valid "tsconfig.json".');
@@ -21,16 +31,27 @@ export function createGraph(dir: string): { graph: Graph; meta: Meta } {
   const program = ts.createProgram(fileNames, options);
   const nodes: Node[] = [];
   const relations: Relation[] = [];
+  const bindWords_isFileNameMatchSomeWords =
+    (array: string[]) => (filename: string) =>
+      array.some(word => filename.includes(word));
+
+  const isMatchSomeExclude = opt.exclude
+    ? bindWords_isFileNameMatchSomeWords(opt.exclude)
+    : () => false;
+  const isNotMatchSomeExclude = (filename: string) =>
+    !isMatchSomeExclude(filename);
+  function getFilePath(sourceFile: ts.SourceFile) {
+    return options.rootDir
+      ? sourceFile.fileName.replace(options.rootDir + '/', '')
+      : sourceFile.fileName;
+  }
 
   program
     .getSourceFiles()
     .filter(sourceFile => !sourceFile.fileName.includes('node_modules'))
+    .filter(piped(getFilePath, removeSlash, isNotMatchSomeExclude))
     .forEach(sourceFile => {
-      const filePath = removeSlash(
-        options.rootDir
-          ? sourceFile.fileName.replace(options.rootDir + '/', '')
-          : sourceFile.fileName,
-      );
+      const filePath = pipe(sourceFile, getFilePath, removeSlash);
       const fileName = getName(filePath);
       const fromNode: Node = {
         path: filePath,

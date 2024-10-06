@@ -10,7 +10,7 @@ A CLI to visualize the dependencies between files in the TypeScript codebase.
 For example, the following command in the base directory of https://github.com/ysk8hori/numberplace will produce the following results:
 
 ```bash
-tsg --include src/components/atoms/ConfigMenu --exclude test stories node_modules
+tsg src/components/atoms/ConfigMenu --exclude test stories node_modules
 ```
 
 ```mermaid
@@ -62,24 +62,29 @@ flowchart
 npm install --global @ysk8hori/typescript-graph
 ```
 
+## Arguments
+
+| Argument        | Description                                                                                                                         |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `include-files` | Specify file paths or parts of file paths to include in the graph (relative to the tsconfig directory, without `./`). (default: "") |
+
 ## Options
 
-Run the `tsg -h` for help
-
-```Options:
-  -V, --version            output the version number
-  --md <char>              Specify the name of the markdown file to be output. Default is typescript-graph.md.
-  --mermaid-link           Generates a link on node to open that file in VSCode.
-  -d, --dir <char>         Specify the TypeScript code base to be analyzed. if tsconfig.json is not found, specify the directory where tsconfig.json is located.
-  --include <char...>      Specify paths and file names to be included in the graph
-  --exclude <char...>      Specify the paths and file names to be excluded from the graph
-  --abstraction <char...>  Specify the path to abstract
-  --highlight <char...>    Specify the path and file name to highlight
-  --LR                     Specify Flowchart orientation Left-to-Right
-  --TB                     Specify Flowchart orientation Top-to-Bottom
-  --config-file            Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.
-  -h, --help               display help for command
-```
+| Option                    | Description                                                                                                                         |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `-V, --version`           | Output the version number                                                                                                           |
+| `--md <char>`             | Specify the name of the markdown file to be output. The default is typescript-graph.md.                                             |
+| `--mermaid-link`          | (experimental) Generates a link on a node to open the corresponding file in VSCode.                                                 |
+| `-d, --dir <char>`        | Specify the TypeScript codebase to be analyzed.                                                                                     |
+| `--include <char...>`     | Specify file paths or parts of file paths to include in the graph (relative to the tsconfig directory, without `./`).               |
+| `--exclude <char...>`     | Specify file paths or parts of file paths to exclude from the graph (relative to the tsconfig directory, without `./`).             |
+| `--abstraction <char...>` | Specify the paths of directories to be abstracted. Abstracted directories are treated as a single node.                             |
+| `--highlight <char...>`   | Specify the path and file names to be highlighted.                                                                                  |
+| `--LR`                    | Set the flowchart orientation to Left-to-Right.                                                                                     |
+| `--TB`                    | Set the flowchart orientation to Top-to-Bottom.                                                                                     |
+| `--measure-instability`   | Enable the beta feature to measure the instability of modules.                                                                      |
+| `--config-file`           | Specify the relative path to the config file (from the current directory or as specified by -d, --dir). The default is .tsgrc.json. |
+| `-h, --help`              | Display help for the command.                                                                                                       |
 
 ## usage
 
@@ -172,12 +177,12 @@ Also, for large repositories, Mermaid may exceed the maximum amount of data that
 
 In that case, you need to narrow down the directories to include in the graph.
 
-### `--include`
+### Arguments or `--include`
 
-Use the `--include` option to narrow down the directories and files to include in the graph.
+To narrow down the directories or files included in the graph, specify the paths or parts of the paths using either the argument or the `--include` option.
 
 ```bash
-tsg --include includeFiles config
+tsg src/includeFiles config
 ```
 
 ```mermaid
@@ -242,20 +247,18 @@ flowchart
     src/main.ts-->src/includeFiles/abstractions/k.ts
 ```
 
-The dependencies of the directory specified by `--include` will be output as shown in 👆.
-However, files that depend on files under the directory specified by `--include` will remain visible.
-If there are directories or files you are not interested in, use `--exclude` to exclude them.
+As mentioned above, only the dependencies of the directories specified by the argument or the `--include` option will be output. However, the dependencies of the files under the specified directories will still be displayed. If there are directories or files you are not interested in, use the `--exclude` option to exclude them.
 
 #### Exclude Exception via Full Path Specification (Experimental)
 
-There might be scenarios where you would want to ignore dependency relations for a certain folder using `exclude`, but within that folder, there may exist some files you wish to include in the graph. In such cases, you can use `--include` to specify the full path of a particular file, effectively removing it from the exclusion list. This ensures that the specified file is not left out despite the general exclusion of its parent folder.
+There might be scenarios where you would want to ignore dependency relations for a certain folder using `exclude`, but within that folder, there may exist some files you wish to include in the graph. In such cases, you can exclude a specific file from the exclusion list by specifying its full path in the argument or with the `--include` option.
 
 ### `--exclude`
 
 Directories and files to be excluded from the graph are excluded with the `--exclude` option.
 
 ```bash
-tsg --include includeFiles config --exclude excludeFiles utils
+tsg includeFiles config --exclude excludeFiles utils
 ```
 
 ```mermaid
@@ -307,7 +310,7 @@ Sometimes you may not be interested in the files in a directory, but wish to kee
 In such cases, use `--abstraction` to abstract the directory.
 
 ```bash
-tsg --include includeFiles config --exclude excludeFiles utils --abstraction abstractions
+tsg includeFiles config --exclude excludeFiles utils --abstraction abstractions
 ```
 
 ```mermaid
@@ -348,7 +351,7 @@ However, I would like to emphasize what I would like to see emphasized 🤔.
 Use `--highlight` to highlight nodes that need attention.
 
 ```bash
-tsg --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --LR
+tsg includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --LR
 ```
 
 ```mermaid
