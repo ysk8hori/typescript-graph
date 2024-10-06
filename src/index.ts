@@ -18,6 +18,11 @@ program
   .description(packagejson.description)
   .version(packagejson.version);
 program
+  .argument(
+    '[include-files]',
+    'Specify file paths or parts of file paths to include in the graph (relative to the tsconfig directory, without `./`).',
+    '',
+  )
   .option(
     '--md <char>',
     'Specify the name of the markdown file to be output. Default is typescript-graph.md.',
@@ -32,11 +37,11 @@ program
   )
   .option(
     '--include <char...>',
-    'Specify paths and file names to be included in the graph',
+    'Specify file paths or parts of file paths to include in the graph (relative to the tsconfig directory, without `./`).',
   )
   .option(
     '--exclude <char...>',
-    'Specify the paths and file names to be excluded from the graph',
+    'Specify file paths or parts of file paths to exclude from the graph (relative to the tsconfig directory, without `./`).',
   )
   .option('--abstraction <char...>', 'Specify the path to abstract')
   .option(
@@ -56,6 +61,9 @@ program
 program.parse();
 
 const opt = program.opts<Partial<OptionValues>>();
+// tsg の arguments と --include オプションをマージする
+opt.include = [...program.args, ...(opt.include ?? [])];
+opt.include = opt.include.length === 0 ? undefined : opt.include;
 
 export async function main(
   dir: string,
@@ -63,7 +71,7 @@ export async function main(
 ) {
   setupConfig(path.join(dir, commandOptions.configFile ?? '.tsgrc.json'));
 
-  const { graph: fullGraph, meta } = createGraph(dir);
+  const { graph: fullGraph, meta } = createGraph(dir, commandOptions);
 
   let couplingData: ReturnType<typeof measureInstability> = [];
   if (commandOptions.measureInstability) {
