@@ -10,7 +10,7 @@ TypeScript のコードベースにおけるファイル間の依存関係を可
 例えば、https://github.com/ysk8hori/numberplace のベースディレクトリで以下のコマンドを実行すると、以下のような結果が得られます。
 
 ```bash
-tsg --include src/components/atoms/ConfigMenu --exclude test stories node_modules
+tsg src/components/atoms/ConfigMenu --exclude test stories node_modules
 ```
 
 ```mermaid
@@ -59,29 +59,32 @@ flowchart
 ## Installation
 
 ```bash
-npm install --save-dev @ysk8hori/typescript-graph
+npm install --global @ysk8hori/typescript-graph
 ```
 
-または global install をしてください。
+## Arguments
+
+| 引数            | 説明                                                                                                                        |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `include-files` | グラフに含めるファイルパスやその一部を指定します（tsconfig ディレクトリからの相対パスで、`./`は不要です）。(デフォルト: "") |
 
 ## Options
 
-`tsg -h` でヘルプを表示します。
-
-```Options:
-  -V, --version            output the version number
-  --md <char>              Specify the name of the markdown file to be output. Default is typescript-graph.md.
-  --mermaid-link           Generates a link on node to open that file in VSCode.
-  -d, --dir <char>         Specify the TypeScript code base to be analyzed. if tsconfig.json is not found, specify the directory where tsconfig.json is located.
-  --include <char...>      Specify paths and file names to be included in the graph
-  --exclude <char...>      Specify the paths and file names to be excluded from the graph
-  --abstraction <char...>  Specify the path to abstract
-  --highlight <char...>    Specify the path and file name to highlight
-  --LR                     Specify Flowchart orientation Left-to-Right
-  --TB                     Specify Flowchart orientation Top-to-Bottom
-  --config-file            Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.
-  -h, --help               display help for command
-```
+| オプション                | 説明                                                                                                                               |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `-V, --version`           | バージョン番号を出力                                                                                                               |
+| `--md <char>`             | 出力するMarkdownファイルの名前を指定します。デフォルトは typescript-graph.md です。                                                |
+| `--mermaid-link`          | (experimental) ノードにリンクを生成し、そのファイルをVSCodeで開けるようにします。                                                  |
+| `-d, --dir <char>`        | 解析対象のTypeScriptコードベースを指定します。                                                                                     |
+| `--include <char...>`     | グラフに含めるファイルパスやその一部を指定します（tsconfig ディレクトリからの相対パスで、`./`は不要です）。                        |
+| `--exclude <char...>`     | グラフから除外するファイルパスやその一部を指定します（tsconfig ディレクトリからの相対パスで、`./`は不要です）。                    |
+| `--abstraction <char...>` | 抽象化したいディレクトリのパスを指定します。抽象化したディレクトリは一つのノードとして扱います。                                   |
+| `--highlight <char...>`   | 強調表示するパスとファイル名を指定します。                                                                                         |
+| `--LR`                    | フローチャートの向きを左から右に指定します。                                                                                       |
+| `--TB`                    | フローチャートの向きを上から下に指定します。                                                                                       |
+| `--measure-instability`   | モジュールの不安定性を測定するベータ機能を有効化します。                                                                           |
+| `--config-file`           | 設定ファイルへの相対パスを指定します（カレントディレクトリまたは -d, --dir で指定された場所から）。デフォルトは .tsgrc.json です。 |
+| `-h, --help`              | コマンドのヘルプを表示します。                                                                                                     |
 
 ## 使い方
 
@@ -174,12 +177,12 @@ flowchart
 
 その場合、グラフに含めるディレクトリを絞り込む必要があります。
 
-### `--include`
+### 引数または `--include` オプション
 
-グラフに含めるディレクトリやファイルを絞り込むには、 `--include` オプションを使用します。
+グラフに含めるディレクトリやファイルを絞り込むには、引数または `--include` オプションでパスまたはその一部を指定します。
 
 ```bash
-tsg --include includeFiles config
+tsg src/includeFiles config
 ```
 
 ```mermaid
@@ -244,21 +247,21 @@ flowchart
     src/main.ts-->src/includeFiles/abstractions/k.ts
 ```
 
-👆 のように `--include` で指定されたディレクトリの依存関係のみが、出力されるようになります。
-ただし、 `--include` で指定したディレクトリ配下のファイルの依存先は表示されたままになります。
+👆 のように引数または `--include` で指定したディレクトリの依存関係のみを、出力するようになります。
+ただし、ここで指定したディレクトリ配下のファイルの依存先は表示されたままになります。
 もし、興味のないディレクトリやファイルがある場合は、 `--exclude` を使って除外してください。
 
 #### フルパスを指定して除外対象外とする (experimental)
 
 あるフォルダに対して `exclude` を使用して依存関係を無視することが必要な場合がありますが、そのフォルダ内にグラフに含めたい一部のファイルが存在するといった状況も存在します。
-このような場合、特定のファイルについては `--include` でそのファイルの完全パスを指定することで、そのファイルを除外リストから除くことができます。
+このような場合、特定のファイルについては引数または `--include` でそのファイルの完全パスを指定することで、そのファイルを除外リストから除くことができます。
 
 ### `--exclude`
 
 グラフから除外するディレクトリやファイルは `--exclude` オプションで除外します。
 
 ```bash
-tsg --include includeFiles config --exclude excludeFiles utils
+tsg includeFiles config --exclude excludeFiles utils
 ```
 
 ```mermaid
@@ -310,7 +313,7 @@ flowchart
 そのような場合は、 `--abstraction` を使用して、ディレクトリを抽象化します。
 
 ```bash
-tsg --include includeFiles config --exclude excludeFiles utils --abstraction abstractions
+tsg includeFiles config --exclude excludeFiles utils --abstraction abstractions
 ```
 
 ```mermaid
@@ -351,7 +354,7 @@ flowchart
 注意が必要なノードを強調表示するには、`--highlight` を使用します。
 
 ```bash
-tsg --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --LR
+tsg includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --LR
 ```
 
 ```mermaid
