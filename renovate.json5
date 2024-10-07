@@ -23,5 +23,6 @@
       "excludePackageNames": ["typescript", "eslint", "eslint-config-prettier"],
       "excludePackagePatterns": ["^@typescript-eslint/", "^eslint-plugin"]
     }
-  ]
+  ],
+  "automerge": true,
 }
