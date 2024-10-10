@@ -54,15 +54,15 @@
   "license": "ISC",
   "dependencies": {
     "commander": "12.1.0",
-    "remeda": "2.14.0",
+    "remeda": "2.15.0",
     "zod": "3.23.8"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "0.6.1",
-    "@types/node": "20.16.10",
+    "@types/node": "20.16.11",
     "@typescript-eslint/eslint-plugin": "8.8.1",
     "@typescript-eslint/parser": "8.8.1",
-    "commitizen": "4.3.0",
+    "commitizen": "4.3.1",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "9.12.0",
     "eslint-config-prettier": "9.1.0",
