@@ -75,7 +75,8 @@ npm install --global @ysk8hori/typescript-graph
 | `-V, --version`           | バージョン番号を出力                                                                                                               |
 | `--md <char>`             | 出力するMarkdownファイルの名前を指定します。デフォルトは typescript-graph.md です。                                                |
 | `--mermaid-link`          | (experimental) ノードにリンクを生成し、そのファイルをVSCodeで開けるようにします。                                                  |
-| `-d, --dir <char>`        | 解析対象のTypeScriptコードベースを指定します。                                                                                     |
+| `-d, --dir <char>`        | 解析対象のTypeScriptプロジェクトのルートディレクトリを指定します。そこにある tsconfig.json を読み取り、解析します。                |
+| `--tsconfig <char>`       | 解析に使用する tsconfig ファイルのパスを指定します。これが指定された場合、`-d, --dir` を無視します。                               |
 | `--include <char...>`     | グラフに含めるファイルパスやその一部を指定します（tsconfig ディレクトリからの相対パスで、`./`は不要です）。                        |
 | `--exclude <char...>`     | グラフから除外するファイルパスやその一部を指定します（tsconfig ディレクトリからの相対パスで、`./`は不要です）。                    |
 | `--abstraction <char...>` | 抽象化したいディレクトリのパスを指定します。抽象化したディレクトリは一つのノードとして扱います。                                   |
