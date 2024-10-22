@@ -8,7 +8,7 @@ type DirAndNodesTree = {
   nodes: Node[];
   children: DirAndNodesTree[];
 };
-type Options = Partial<OptionValues> & {
+type Options = OptionValues & {
   rootDir: string;
 };
 
