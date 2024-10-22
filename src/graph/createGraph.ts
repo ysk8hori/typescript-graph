@@ -4,16 +4,15 @@ import { Graph, Meta, Node, OptionValues, Relation } from '../models';
 import { pipe, piped } from 'remeda';
 
 export function createGraph(
-  dir: string,
   /**
    * exclude で指定されたファイルの除外のみファイル読み込み時にも実施する。
    *
    * include をによる絞り込みを行わない理由は、include から参照される include 指定されていないファイルをここで除外したくないため。
    * exclude は、ユーザーが明確に不要と指定しているため、たとえ include に含まれたり include 対象ファイルと関連をもつファイルであったとしても除外して良い。
    **/
-  opt: Partial<Pick<OptionValues, 'exclude'>>,
+  opt: Pick<OptionValues, 'exclude' | 'dir' | 'tsconfig'>,
 ): { graph: Graph; meta: Meta } {
-  const configPath = ts.findConfigFile(dir, ts.sys.fileExists);
+  const configPath = ts.findConfigFile(opt.dir!, ts.sys.fileExists);
   if (!configPath) {
     throw new Error('Could not find a valid "tsconfig.json".');
   }
