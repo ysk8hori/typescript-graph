@@ -1,7 +1,8 @@
 export type OptionValues = {
   md?: string;
   mermaidLink?: boolean;
-  dir: string;
+  dir?: string;
+  tsconfig?: string;
   include?: string[];
   exclude?: string[];
   abstraction?: string[];

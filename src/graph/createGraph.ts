@@ -12,7 +12,9 @@ export function createGraph(
    **/
   opt: Pick<OptionValues, 'exclude' | 'dir' | 'tsconfig'>,
 ): { graph: Graph; meta: Meta } {
-  const configPath = ts.findConfigFile(opt.dir!, ts.sys.fileExists);
+  const configPath = opt.tsconfig
+    ? path.resolve(opt.tsconfig)
+    : ts.findConfigFile(path.resolve(opt.dir ?? './'), ts.sys.fileExists);
   if (!configPath) {
     throw new Error('Could not find a valid "tsconfig.json".');
   }

@@ -36,6 +36,10 @@ program
     'Specifies the root directory of the TypeScript project to analyze. It reads and uses the tsconfig.json file found in this directory.',
   )
   .option(
+    '--tsconfig <char>',
+    'Specifies the path to the tsconfig file to use for analysis. If this option is provided, -d, --dir will be ignored.',
+  )
+  .option(
     '--include <char...>',
     'Specify file paths or parts of file paths to include in the graph (relative to the tsconfig directory, without `./`).',
   )
@@ -69,7 +73,10 @@ export async function main(
   commandOptions: OptionValues & { executedScript: string },
 ) {
   setupConfig(
-    path.join(commandOptions.dir, commandOptions.configFile ?? '.tsgrc.json'),
+    path.join(
+      path.resolve(commandOptions.dir ?? './'),
+      commandOptions.configFile ?? '.tsgrc.json',
+    ),
   );
 
   const { graph: fullGraph, meta } = createGraph(commandOptions);
@@ -105,4 +112,4 @@ export async function main(
   );
 }
 const executedScript = `tsg ${process.argv.slice(2).join(' ')}`;
-main({ ...opt, dir: path.resolve(opt.dir ?? './'), executedScript });
+main({ ...opt, executedScript });
