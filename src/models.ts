@@ -1,15 +1,16 @@
 export type OptionValues = {
-  md: string;
-  mermaidLink: boolean;
-  dir: string;
-  include: string[];
-  exclude: string[];
-  abstraction: string[];
-  highlight: string[];
-  LR: boolean;
-  TB: boolean;
-  configFile: string;
-  measureInstability: boolean;
+  md?: string;
+  mermaidLink?: boolean;
+  dir?: string;
+  tsconfig?: string;
+  include?: string[];
+  exclude?: string[];
+  abstraction?: string[];
+  highlight?: string[];
+  LR?: boolean;
+  TB?: boolean;
+  configFile?: string;
+  measureInstability?: boolean;
 };
 
 type FileName = string;
