@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "0.6.1",
-    "@types/node": "20.17.4",
+    "@types/node": "22.8.5",
     "@typescript-eslint/eslint-plugin": "8.12.2",
     "@typescript-eslint/parser": "8.12.2",
     "commitizen": "4.3.1",
