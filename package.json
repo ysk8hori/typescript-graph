@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "0.6.1",
-    "@types/node": "22.8.5",
+    "@types/node": "22.9.0",
     "@typescript-eslint/eslint-plugin": "8.12.2",
     "@typescript-eslint/parser": "8.12.2",
     "commitizen": "4.3.1",
@@ -73,7 +73,7 @@
     "ts-node": "10.9.2",
     "typescript": "5.6.3",
     "vitest": "2.1.4",
-    "zx": "8.1.9"
+    "zx": "8.2.0"
   },
   "config": {
     "commitizen": {
