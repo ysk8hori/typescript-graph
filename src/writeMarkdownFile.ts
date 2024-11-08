@@ -2,7 +2,7 @@ import { createWriteStream } from 'fs';
 import mermaidify from './mermaidify';
 import { Graph, OptionValues, measureInstability } from './models';
 
-type Options = Partial<OptionValues> & {
+type Options = OptionValues & {
   rootDir: string;
   executedScript?: string;
 };

@@ -33,7 +33,11 @@ program
   )
   .option(
     '-d, --dir <char>',
-    'Specify the TypeScript code base to be analyzed. if tsconfig.json is not found, specify the directory where tsconfig.json is located.',
+    'Specifies the root directory of the TypeScript project to analyze. It reads and uses the tsconfig.json file found in this directory.',
+  )
+  .option(
+    '--tsconfig <char>',
+    'Specifies the path to the tsconfig file to use for analysis. If this option is provided, -d, --dir will be ignored.',
   )
   .option(
     '--include <char...>',
@@ -66,12 +70,16 @@ opt.include = [...program.args, ...(opt.include ?? [])];
 opt.include = opt.include.length === 0 ? undefined : opt.include;
 
 export async function main(
-  dir: string,
-  commandOptions: typeof opt & { executedScript: string },
+  commandOptions: OptionValues & { executedScript: string },
 ) {
-  setupConfig(path.join(dir, commandOptions.configFile ?? '.tsgrc.json'));
+  setupConfig(
+    path.join(
+      path.resolve(commandOptions.dir ?? './'),
+      commandOptions.configFile ?? '.tsgrc.json',
+    ),
+  );
 
-  const { graph: fullGraph, meta } = createGraph(dir, commandOptions);
+  const { graph: fullGraph, meta } = createGraph(commandOptions);
 
   let couplingData: ReturnType<typeof measureInstability> = [];
   if (commandOptions.measureInstability) {
@@ -103,7 +111,5 @@ export async function main(
     couplingData,
   );
 }
-
-const dir = path.resolve(opt.dir ?? './');
 const executedScript = `tsg ${process.argv.slice(2).join(' ')}`;
-main(dir, { ...opt, executedScript });
+main({ ...opt, executedScript });

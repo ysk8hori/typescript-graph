@@ -11,15 +11,17 @@ beforeAll(() => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 });
 
+// TODO 現状、--config-file で指定するパスは -d からの相対パスだが、将来的には -d をなくしたい。その移行のため --config-file での指定は、-d を無視したカレントディレクトリからの相対パスで設定ファイルを優先し、なければ -d からの相対パスで探すようにしたい。
+
 test('run:sample', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --md ${filepath}`;
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts --tsconfig './dummy_project/tsconfig.json' --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
     "# TypeScript Graph
 
     \`\`\`bash
-    tsg -d ./dummy_project --md __tmp__/test.md
+    tsg --tsconfig ./dummy_project/tsconfig.json --md __tmp__/test.md
     \`\`\`
 
     \`\`\`mermaid
@@ -115,14 +117,14 @@ test('run:sample', async () => {
 });
 
 test('run:sample:argument-include', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts includeFiles config -d './dummy_project' --md ${filepath}`;
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts includeFiles config --tsconfig './dummy_project/tsconfig.json' --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
     "# TypeScript Graph
 
     \`\`\`bash
-    tsg includeFiles config -d ./dummy_project --md __tmp__/test.md
+    tsg includeFiles config --tsconfig ./dummy_project/tsconfig.json --md __tmp__/test.md
     \`\`\`
 
     \`\`\`mermaid
@@ -203,14 +205,14 @@ test('run:sample:argument-include', async () => {
 });
 
 test('run:sample:include', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --md ${filepath}`;
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
     "# TypeScript Graph
 
     \`\`\`bash
-    tsg -d ./dummy_project --include includeFiles config --md __tmp__/test.md
+    tsg --tsconfig ./dummy_project/tsconfig.json --include includeFiles config --md __tmp__/test.md
     \`\`\`
 
     \`\`\`mermaid
@@ -291,14 +293,14 @@ test('run:sample:include', async () => {
 });
 
 test('run:sample:exclude', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --md ${filepath}`;
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
     "# TypeScript Graph
 
     \`\`\`bash
-    tsg -d ./dummy_project --include includeFiles config --exclude excludeFiles utils --md __tmp__/test.md
+    tsg --tsconfig ./dummy_project/tsconfig.json --include includeFiles config --exclude excludeFiles utils --md __tmp__/test.md
     \`\`\`
 
     \`\`\`mermaid
@@ -351,14 +353,14 @@ test('run:sample:exclude', async () => {
 });
 
 test('run:sample:abstraction', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --md ${filepath}`;
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
     "# TypeScript Graph
 
     \`\`\`bash
-    tsg -d ./dummy_project --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --md __tmp__/test.md
+    tsg --tsconfig ./dummy_project/tsconfig.json --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --md __tmp__/test.md
     \`\`\`
 
     \`\`\`mermaid
@@ -402,14 +404,14 @@ test('run:sample:abstraction', async () => {
 });
 
 test('run:sample:highlight', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts -d './dummy_project' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --md ${filepath}`;
+  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/index.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
     "# TypeScript Graph
 
     \`\`\`bash
-    tsg -d ./dummy_project --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --md __tmp__/test.md
+    tsg --tsconfig ./dummy_project/tsconfig.json --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --md __tmp__/test.md
     \`\`\`
 
     \`\`\`mermaid
