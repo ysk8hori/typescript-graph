@@ -64,7 +64,7 @@ export function abstraction(
 
 function abstractionNode(node: Node, absDirArrArr: string[][]): Node {
   const absDirArr = getAbstractionDirArr(absDirArrArr, node);
-  if (!absDirArr) return node;
+  if (!absDirArr || absDirArr.at(-1) === node.name) return node;
   return {
     name: `/${absDirArr.at(-1)!}`,
     path: abstractionPath(node.path, absDirArr),
