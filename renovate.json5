@@ -17,7 +17,7 @@
       "packagePatterns": ["^@typescript-eslint/", "^eslint-plugin"]
     },
     {
-      "groupName": "All minore and patch dependencies",
+      "groupName": "All minor and patch dependencies",
       "matchUpdateTypes": ["minor", "patch"],
       "labels": ["UPDATE-MINOR&PATCH"],
       "excludePackageNames": ["typescript", "eslint", "eslint-config-prettier"],
