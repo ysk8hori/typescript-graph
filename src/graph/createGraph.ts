@@ -1,4 +1,6 @@
 import path from 'path';
+import fs from 'fs';
+import { tmpdir } from 'os';
 import * as ts from 'typescript';
 import { Graph, Meta, Node, OptionValues, Relation } from '../models';
 import { pipe, piped } from 'remeda';
@@ -24,13 +26,6 @@ export function createGraph(
   const rootDir = splitedConfigPath
     .slice(0, splitedConfigPath.length - 1)
     .join('/');
-  const { options, fileNames } = ts.parseJsonConfigFileContent(
-    config,
-    ts.sys,
-    rootDir,
-  );
-  options.rootDir = rootDir;
-  const program = ts.createProgram(fileNames, options);
 
   const bindWords_isFileNameMatchSomeWords =
     (array: string[]) => (filename: string) =>
@@ -41,13 +36,99 @@ export function createGraph(
   const isNotMatchSomeExclude = (filename: string) =>
     !isMatchSomeExclude(filename);
 
+  if (false) {
+    const { options, fileNames: fullFilePaths } = ts.parseJsonConfigFileContent(
+      config,
+      ts.sys,
+      rootDir,
+    );
+    options.rootDir = rootDir;
+    const program = ts.createProgram(fullFilePaths, options);
+    const graphs = program
+      .getSourceFiles()
+      .filter(sourceFile => !sourceFile.fileName.includes('node_modules')) // node_modules 配下のファイルは除外
+      .filter(piped(getFilePath(options), removeSlash, isNotMatchSomeExclude))
+      .map(analyzeSoucreFile(options));
+    return { graph: mergeGraph(...graphs), meta: { rootDir } };
+  } else {
+    const graph = createGraphForVue(rootDir, config, isNotMatchSomeExclude);
+    return { graph, meta: { rootDir } };
+  }
+}
+
+function createGraphForVue(
+  rootDir: string,
+  config: any,
+  isNotMatchSomeExclude: (filename: string) => boolean,
+) {
+  const relativeRootDir = pipe(path.relative(process.cwd(), rootDir), str =>
+    str === '' ? './' : str,
+  );
+
+  // vue と TS ファイルのパスを保持する。その際、すでに *.vue.ts ファイルが存在している場合は対象外とする。
+  const vueAndTsFilePaths = getVueAndTsFilePathsRecursive(
+    relativeRootDir,
+  ).filter(path => !fs.existsSync(`${path}.ts`));
+
+  const tmpDir = fs.mkdtempSync(path.join(tmpdir(), 'tsg-vue-'));
+  console.log('tmpDir:', tmpDir);
+  vueAndTsFilePaths
+    .map(fullPath => path.relative(process.cwd(), fullPath))
+    .forEach(relativeFilePath => {
+      const tmpFilePath = path.join(
+        tmpDir,
+        // *.vue のファイルは *.vue.ts としてコピー
+        relativeFilePath.endsWith('.vue')
+          ? relativeFilePath + '.ts'
+          : relativeFilePath,
+      );
+      if (!tmpFilePath.startsWith(tmpDir)) {
+        // tmpDir 以外へのコピーを抑止する
+        return;
+      }
+      fs.mkdirSync(path.dirname(tmpFilePath), { recursive: true });
+      fs.copyFileSync(relativeFilePath, tmpFilePath);
+    });
+
+  const { options, fileNames: fullFilePaths } = ts.parseJsonConfigFileContent(
+    config,
+    ts.sys,
+    path.join(tmpDir, relativeRootDir),
+  );
+  // rootDir を設定しない場合、 tmpDir/rootDir である場合に `rootDir/` が node についてしまう
+  options.rootDir = path.join(tmpDir, relativeRootDir);
+  // ↑ここまでで、ファイルを tmp にコピーし、新たな fileNames と options を生成する
+  const program = ts.createProgram(fullFilePaths, options);
+  function renameNode(node: Node) {
+    return {
+      ...node,
+      path: node.path
+        .replace('.vue.ts', '.vue')
+        .replace(`${tmpDir.slice(1)}/`, ''),
+      name: node.name
+        .replace('.vue.ts', '.vue')
+        .replace(`${tmpDir.slice(1)}/`, ''),
+    };
+  }
   const graphs = program
     .getSourceFiles()
     .filter(sourceFile => !sourceFile.fileName.includes('node_modules')) // node_modules 配下のファイルは除外
     .filter(piped(getFilePath(options), removeSlash, isNotMatchSomeExclude))
-    .map(analyzeSoucreFile(options));
-
-  return { graph: mergeGraph(...graphs), meta: { rootDir } };
+    .map(analyzeSoucreFile(options))
+    .map(graph => {
+      // graph においては .vue.ts ファイルを .vue に戻す
+      return {
+        nodes: graph.nodes.map(renameNode),
+        relations: graph.relations.map(relation => {
+          return {
+            ...relation,
+            from: renameNode(relation.from),
+            to: renameNode(relation.to),
+          };
+        }),
+      };
+    });
+  return mergeGraph(...graphs);
 }
 
 function getName(filePath: string) {
@@ -104,10 +185,6 @@ function analyzeSoucreFile(
       const importPaths: (string | undefined)[] = [];
       function getModuleNameText(node: ts.Node) {
         if (ts.isImportDeclaration(node)) {
-          console.log(
-            'isImportDeclaration',
-            node.moduleSpecifier?.getText(sourceFile),
-          );
           importPaths.push(node.moduleSpecifier?.getText(sourceFile));
         } else if (ts.isCallExpression(node)) {
           const text = node.getText(sourceFile);
@@ -120,19 +197,12 @@ function analyzeSoucreFile(
         ts.forEachChild(node, getModuleNameText);
       }
       getModuleNameText(node);
-      console.log(importPaths);
 
       importPaths.forEach(moduleNameText => {
         if (!moduleNameText) {
-          console.log('moduleNameText is empty');
           return;
         }
         const moduleName = moduleNameText.slice(1, moduleNameText.length - 1); // import 文のクォート及びダブルクォートを除去
-        console.log(
-          'ts.resolveModuleName(moduleName, sourceFile.fileName, options, ts.sys).resolvedModule?.resolvedFileName = ',
-          ts.resolveModuleName(moduleName, sourceFile.fileName, options, ts.sys)
-            .resolvedModule?.resolvedFileName,
-        );
         const moduleFileFullName =
           ts.resolveModuleName(moduleName, sourceFile.fileName, options, ts.sys)
             .resolvedModule?.resolvedFileName ?? '';
@@ -142,7 +212,6 @@ function analyzeSoucreFile(
             : moduleFileFullName,
         );
         if (!moduleFilePath) {
-          console.log('moduleFilePath is empty');
           return;
         }
         const toNode: Node = {
@@ -164,4 +233,44 @@ function analyzeSoucreFile(
     });
     return { nodes, relations };
   };
+}
+
+function getVueAndTsFilePathsRecursive(
+  dir: string,
+  mut_filePaths: string[] = [],
+): string[] {
+  const files = fs.readdirSync(dir);
+  files.forEach(file => {
+    const filePath = path.join(dir, file);
+    if (
+      fs.statSync(filePath).isDirectory() &&
+      !filePath.includes('node_modules')
+    ) {
+      // ディレクトリの場合は再帰的に呼び出す
+      return getVueAndTsFilePathsRecursive(filePath, mut_filePaths);
+    }
+
+    if (
+      // ts.Extension and vue
+      [
+        '.ts',
+        '.tsx',
+        '.d.ts',
+        '.js',
+        '.jsx',
+        '.json',
+        '.tsbuildinfo',
+        '.mjs',
+        '.mts',
+        '.d.mts',
+        '.cjs',
+        '.cts',
+        '.d.cts',
+        '.vue',
+      ].some(ext => filePath.endsWith(ext))
+    ) {
+      mut_filePaths.push(filePath);
+    }
+  });
+  return mut_filePaths;
 }
