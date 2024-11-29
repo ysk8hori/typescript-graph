@@ -49,7 +49,7 @@
     "prepublishOnly": "npm run build",
     "prepare": "husky install",
     "semantic-release": "semantic-release",
-    "run:tsc:demo": "ts-node ./typescript-compiler-api-demo.ts"
+    "run:tsc:demo": "ts-node ./src/typescript-compiler-api-demo.ts"
   },
   "author": "ysk8hori",
   "license": "ISC",
