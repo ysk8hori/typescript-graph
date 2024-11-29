@@ -61,7 +61,8 @@ program
   .option(
     '--config-file',
     'Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.',
-  );
+  )
+  .option('--vue', '(experimental) Enable Vue.js support');
 program.parse();
 
 const opt = program.opts<Partial<OptionValues>>();

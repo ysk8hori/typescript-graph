@@ -13,7 +13,7 @@ export function createGraph(
    * include をによる絞り込みを行わない理由は、include から参照される include 指定されていないファイルをここで除外したくないため。
    * exclude は、ユーザーが明確に不要と指定しているため、たとえ include に含まれたり include 対象ファイルと関連をもつファイルであったとしても除外して良い。
    **/
-  opt: Pick<OptionValues, 'exclude' | 'dir' | 'tsconfig'>,
+  opt: Pick<OptionValues, 'exclude' | 'dir' | 'tsconfig' | 'vue'>,
 ): { graph: Graph; meta: Meta } {
   const configPath = opt.tsconfig
     ? path.resolve(opt.tsconfig)
@@ -36,7 +36,7 @@ export function createGraph(
   const isNotMatchSomeExclude = (filename: string) =>
     !isMatchSomeExclude(filename);
 
-  if (false) {
+  if (!opt.vue) {
     const { options, fileNames: fullFilePaths } = ts.parseJsonConfigFileContent(
       config,
       ts.sys,

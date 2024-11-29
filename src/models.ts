@@ -11,6 +11,7 @@ export type OptionValues = {
   TB?: boolean;
   configFile?: string;
   measureInstability?: boolean;
+  vue?: boolean;
 };
 
 type FileName = string;
