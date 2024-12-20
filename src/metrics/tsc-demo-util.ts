@@ -14,7 +14,7 @@ export function logAstNodes(sourceCode: string) {
           .getText(sourceFile)
           .replaceAll(/\r?\n/g, ' ')
           .replaceAll('|', '\\|'),
-        ts.SyntaxKind[node.kind],
+        `${ts.SyntaxKind[node.kind]}${node['operator'] ? ` (${ts.SyntaxKind[node['operator']]})` : ''}`,
         ts.NodeFlags[node.flags],
       ].join(' | '),
     );
