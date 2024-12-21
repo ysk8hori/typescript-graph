@@ -6,9 +6,11 @@ export function logAstNodes(sourceCode: string) {
     sourceCode,
     ts.ScriptTarget.ESNext,
   );
+  let no = 0;
   const visit = (depth: number) => (node: ts.Node) => {
     console.log(
       [
+        no++,
         depth,
         node
           .getText(sourceFile)
@@ -20,7 +22,7 @@ export function logAstNodes(sourceCode: string) {
     );
     ts.forEachChild(node, visit(depth + 1));
   };
-  console.log('depth | code | SyntaxKind | NodeFlags');
-  console.log('--|--|--|--');
+  console.log('No. | depth | code | SyntaxKind | NodeFlags');
+  console.log('--|--|--|--|--');
   visit(0)(sourceFile);
 }
