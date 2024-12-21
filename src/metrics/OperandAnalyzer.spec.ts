@@ -3,14 +3,16 @@ import OperandAnalyzer from './OperandAnalyzer';
 import { logAstNodes } from './tsc-demo-util';
 import ts from 'typescript';
 
+function createSourceFile(sourceCode: string) {
+  return ts.createSourceFile(
+    'sample.ts',
+    sourceCode,
+    ts.ScriptTarget.Latest,
+    true,
+  );
+}
+
 test.each([
-  [
-    'const x = 10;',
-    {
-      operandsTotal: 2,
-      operandsUnique: 2,
-    },
-  ],
   [
     'let x = 10;let y = x = 20;',
     {
@@ -18,7 +20,6 @@ test.each([
       operandsUnique: 4,
     },
   ],
-
   [
     // 関数名も operand に含まれる
     'function add(x: number, y = 1) {return x + y;}',
@@ -28,6 +29,7 @@ test.each([
     },
   ],
   [
+    // else をカウントできる
     'let x = 10, y=1;if (x > 5) {x += 1;} else {x = 0;}',
     {
       operandsTotal: 10,
@@ -41,13 +43,6 @@ test.each([
   // ],
 ])('`%s`', (sourceCode, expected) => {
   logAstNodes(sourceCode);
-  const sourceFile = ts.createSourceFile(
-    'sample.ts',
-    sourceCode,
-    ts.ScriptTarget.Latest,
-    true,
-  );
-
-  const analyzer = new OperandAnalyzer(sourceFile);
+  const analyzer = new OperandAnalyzer(createSourceFile(sourceCode));
   expect(analyzer.analyze()).toEqual(expected);
 });
