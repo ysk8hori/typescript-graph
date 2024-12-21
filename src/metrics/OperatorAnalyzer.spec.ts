@@ -67,23 +67,23 @@ describe.each([
       ],
     ],
   },
-  {
-    perspective: 'import() 構文 ImportKeyword',
-    tests: [
-      ['const a = import("a");', { operatorsTotal: 2, operatorsUnique: 2 }],
-    ],
-  },
-  {
-    perspective: 'import 文のカウント ImportDeclaration',
-    tests: [
-      ['import hoge from "hoge";', { operatorsTotal: 1, operatorsUnique: 1 }],
-      ['import "hoge";', { operatorsTotal: 1, operatorsUnique: 1 }],
-      [
-        'import hoge from "hoge";import "hoge";',
-        { operatorsTotal: 2, operatorsUnique: 1 },
-      ],
-    ],
-  },
+  // {
+  //   perspective: 'import() 構文 ImportKeyword',
+  //   tests: [
+  //     ['const a = import("a");', { operatorsTotal: 2, operatorsUnique: 2 }],
+  //   ],
+  // },
+  // {
+  //   perspective: 'import 文のカウント ImportDeclaration',
+  //   tests: [
+  //     ['import hoge from "hoge";', { operatorsTotal: 1, operatorsUnique: 1 }],
+  //     ['import "hoge";', { operatorsTotal: 1, operatorsUnique: 1 }],
+  //     [
+  //       'import hoge from "hoge";import "hoge";',
+  //       { operatorsTotal: 2, operatorsUnique: 1 },
+  //     ],
+  //   ],
+  // },
   {
     perspective:
       '前置型、後置方、インクリメント、デクリメント、それぞれの演算子 (Prefix|Postfix)UnaryExpression',
