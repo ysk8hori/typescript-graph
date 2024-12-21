@@ -393,6 +393,66 @@ describe.each([
       ],
     ],
   },
+  {
+    // return,break,continue,throw,if...else,switch,try...catch
+    perspective: '制御構文',
+    tests: [
+      [
+        // if...else を使用
+        'if(x){1;}else if(y){2;}else{3;}',
+        { operatorsTotal: 4, operatorsUnique: 2 },
+      ],
+      [
+        // switch を使用
+        'switch(x){case 1:1;break;case 2:2;break;default:3;}',
+        { operatorsTotal: 6, operatorsUnique: 4 },
+      ],
+      [
+        // for ループと continue を使用
+        'for(let i=0;i<5;i++){if(i===3){continue;}console.log(i);}',
+        { operatorsTotal: 7, operatorsUnique: 7 },
+      ],
+      [
+        // for...in ループを使用
+        'for(const prop in obj){console.log(`${prop}:${obj[prop]}`);}',
+        { operatorsTotal: 2, operatorsUnique: 2 },
+      ],
+      [
+        // for...of ループを使用
+        'for(const element of array){console.log(element);}',
+        { operatorsTotal: 2, operatorsUnique: 2 },
+      ],
+      [
+        // while ループを使用
+        'let i=0;while(i<5){console.log(i);i++;}',
+        { operatorsTotal: 4, operatorsUnique: 4 },
+      ],
+      [
+        // do...while ループを使用
+        'let i=0;do{console.log(i);i++;}while(i<5);',
+        { operatorsTotal: 4, operatorsUnique: 4 },
+      ],
+      [
+        // for await...of ループを使用
+        'for await(const element of asyncIterable){console.log(element);}',
+        { operatorsTotal: 3, operatorsUnique: 3 },
+      ],
+      [
+        // throw を使用
+        'try{throw new Error("");}catch(e){e;}finally{1;}',
+        { operatorsTotal: 5, operatorsUnique: 5 },
+      ],
+      [
+        'function handleNumbers(input:number):string{let result:string="";if(input<0){result="Negative number";}else if(input===0){result="Zero";}else{result="Positive number";}switch(input){case 1:console.log("Input is one");break;case 2:console.log("Input is two");break;default:console.log("Input is neither one nor two");}for(let i=0;i<5;i++){if(i===input){continue;}console.log(`Index: ${i}`);}try{if(input<0){throw new Error("Negative numbers are not allowed here!");}}catch(error){if(error instanceof Error){console.error("Caught an error:",error.message);return"Error occurred";}}return result;}',
+        { operatorsTotal: 33, operatorsUnique: 19 },
+      ],
+      [
+        // ラベル を使用
+        'outer:for(let i=0;i<5;i++){inner:for(let j=0;j<5;j++){if(i===j){if(i===4){break outer;}else{continue outer;}}}}',
+        { operatorsTotal: 17, operatorsUnique: 10 },
+      ],
+    ],
+  },
 ] satisfies OperatorTest[])('$perspective', ({ perspective, tests }) => {
   test.each(tests)(`${perspective} %s`, (sourceCode, expected) => {
     logAstNodes(sourceCode);
@@ -404,7 +464,7 @@ describe.each([
     );
 
     const analyzer = new OperatorAnalyzer(sourceFile);
-    expect(analyzer.analyze()).toEqual(expected);
+    expect(analyzer.metrics).toEqual(expected);
   });
 });
 
@@ -442,5 +502,5 @@ test.skip.each([
   );
 
   const analyzer = new OperatorAnalyzer(sourceFile);
-  expect(analyzer.analyze()).toEqual(expected);
+  expect(analyzer.metrics).toEqual(expected);
 });

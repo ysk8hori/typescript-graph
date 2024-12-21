@@ -34,7 +34,7 @@ function isOperator(kind: ts.SyntaxKind): boolean {
     ts.SyntaxKind.DeleteExpression,
     ts.SyntaxKind.VoidExpression,
     ts.SyntaxKind.TypeOfExpression,
-    ts.SyntaxKind.AwaitExpression,
+    ts.SyntaxKind.AwaitExpression, // 通常の await
     ts.SyntaxKind.AsteriskAsteriskToken,
     ts.SyntaxKind.FirstBinaryOperator,
     ts.SyntaxKind.LessThanEqualsToken,
@@ -75,23 +75,39 @@ function isOperator(kind: ts.SyntaxKind): boolean {
     ts.SyntaxKind.DotDotDotToken,
     ts.SyntaxKind.YieldExpression,
     ts.SyntaxKind.CommaToken,
-    // ts.SyntaxKind.IfStatement,
-    // ts.SyntaxKind.ReturnStatement,
+    // 以下制御構文の演算子カウントのためのもの
+    ts.SyntaxKind.IfStatement,
+    ts.SyntaxKind.SwitchStatement,
+    ts.SyntaxKind.ReturnStatement,
+    ts.SyntaxKind.CaseClause,
+    ts.SyntaxKind.BreakStatement,
+    ts.SyntaxKind.DefaultClause,
+    ts.SyntaxKind.ForStatement,
+    ts.SyntaxKind.ForInStatement,
+    ts.SyntaxKind.ForOfStatement,
+    ts.SyntaxKind.WhileStatement,
+    ts.SyntaxKind.DoStatement,
+    ts.SyntaxKind.ContinueStatement,
+    ts.SyntaxKind.AwaitKeyword, // for await...of で使用
+    ts.SyntaxKind.TryStatement,
+    ts.SyntaxKind.ThrowStatement,
+    ts.SyntaxKind.CatchClause,
+    ts.SyntaxKind.LabeledStatement,
   ];
   return operatorSyntaxKinds.includes(kind);
 }
 
 export default class OperatorAnalyzer {
-  constructor(sourceFile: ts.SourceFile) {
-    this.#sourceFile = sourceFile;
+  constructor(baseNode: ts.Node) {
+    this.#baseNode = baseNode;
   }
-  readonly #sourceFile: ts.SourceFile;
+  readonly #baseNode: ts.Node;
   readonly #operatorKinds: Set<
     ts.SyntaxKind | PostOperator | PreOperator | VariableDeclarationAndFlags
   > = new Set();
   #totalOperators: number = 0;
 
-  #visit(node: ts.Node = this.#sourceFile) {
+  #visit(node: ts.Node) {
     if (isOperator(node.kind)) {
       if (ts.isPostfixUnaryExpression(node)) {
         this.#totalOperators++;
@@ -120,7 +136,6 @@ export default class OperatorAnalyzer {
             ts.isYieldExpression(node.parent)
           )
         ) {
-          console.log(node);
           this.#totalOperators++;
           this.#operatorKinds.add(ts.SyntaxKind.SpreadElement);
         }
@@ -134,12 +149,17 @@ export default class OperatorAnalyzer {
         this.#totalOperators++;
         this.#operatorKinds.add(ts.SyntaxKind.ElseKeyword);
       }
+      if (ts.isTryStatement(node) && node.finallyBlock) {
+        // finally をカウントする
+        this.#totalOperators++;
+        this.#operatorKinds.add(ts.SyntaxKind.FinallyKeyword);
+      }
     }
     ts.forEachChild(node, node => this.#visit(node));
   }
 
-  analyze(): OperatorMetrics {
-    this.#visit();
+  get metrics(): OperatorMetrics {
+    this.#visit(this.#baseNode);
     return {
       operatorsTotal: this.#totalOperators,
       operatorsUnique: this.#operatorKinds.size,
