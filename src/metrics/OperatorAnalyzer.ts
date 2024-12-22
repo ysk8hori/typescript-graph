@@ -98,17 +98,26 @@ function isOperator(kind: ts.SyntaxKind): boolean {
 }
 
 export default class OperatorAnalyzer {
-  constructor(baseNode: ts.Node) {
-    this.#baseNode = baseNode;
+  constructor(source: ts.SourceFile) {
+    this.#baseNode = source;
   }
-  readonly #baseNode: ts.Node;
+  readonly #baseNode: ts.SourceFile;
   readonly #operatorKinds: Set<
     ts.SyntaxKind | PostOperator | PreOperator | VariableDeclarationAndFlags
   > = new Set();
   #totalOperators: number = 0;
 
   #visit(node: ts.Node) {
-    if (isOperator(node.kind)) {
+    if (ts.isJsxElement(node)) {
+      // JSX Element は子要素や属性を更に解析する
+      node.openingElement.attributes.forEachChild(node => this.#visit(node));
+      node.children.forEach(node => this.#visit(node));
+      return;
+    } else if (ts.isJsxSelfClosingElement(node)) {
+      // JSX Self-Closing Element は属性を更に解析する。子はない。
+      node.attributes.forEachChild(node => this.#visit(node));
+      return;
+    } else if (isOperator(node.kind)) {
       if (ts.isPostfixUnaryExpression(node)) {
         this.#totalOperators++;
         this.#operatorKinds.add(`Post${node.operator}`);
