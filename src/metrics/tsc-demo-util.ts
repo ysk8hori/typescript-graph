@@ -12,7 +12,7 @@ export function logAstNodes(sourceCode: string) {
   console.log('--|--|--|--|--');
   let no = 0;
   const visit = (depth: number) => (node: ts.Node) => {
-    log(no, depth, node, sourceFile);
+    log(no++, depth, node, sourceFile);
     if (ts.isJsxElement(node)) {
       node.openingElement.attributes.forEachChild(visit(depth + 1));
       node.children.forEach(visit(depth + 1));
@@ -33,7 +33,7 @@ function log(
 ) {
   console.log(
     [
-      no++,
+      no,
       depth,
       getText(node, sourceFile),
       getSyntaxKindText(node),
