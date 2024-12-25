@@ -146,7 +146,7 @@ export default class OperatorAnalyzer {
           )
         ) {
           this.#totalOperators++;
-          this.#operatorKinds.add(ts.SyntaxKind.SpreadElement);
+          this.#operatorKinds.add(node.kind);
         }
       } else {
         this.#totalOperators++;
