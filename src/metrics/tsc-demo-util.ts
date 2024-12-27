@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import AstVisitor from './AstVisitor';
 
 export function logAstNodes(sourceCode: string) {
   const sourceFile = ts.createSourceFile(
@@ -11,18 +12,13 @@ export function logAstNodes(sourceCode: string) {
   console.log('No. | depth | code | SyntaxKind | NodeFlags');
   console.log('--|--|--|--|--');
   let no = 0;
-  const visit = (depth: number) => (node: ts.Node) => {
-    log(no++, depth, node, sourceFile);
-    if (ts.isJsxElement(node)) {
-      node.openingElement.attributes.forEachChild(visit(depth + 1));
-      node.children.forEach(visit(depth + 1));
-    } else if (ts.isJsxSelfClosingElement(node)) {
-      node.attributes.forEachChild(visit(depth + 1));
-    } else {
-      ts.forEachChild(node, visit(depth + 1));
-    }
-  };
-  visit(0)(sourceFile);
+
+  const visitor = new AstVisitor({
+    visit: ({ node, depth }) => {
+      log(no++, depth, node, sourceFile);
+    },
+  });
+  visitor.traverse(sourceFile);
 }
 
 function log(
