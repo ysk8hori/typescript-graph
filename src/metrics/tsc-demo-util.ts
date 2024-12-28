@@ -1,50 +1,44 @@
 import ts from 'typescript';
-import AstVisitor from './AstVisitor';
+import type { AstVisitor, VisitProps } from './AstTraverser';
 
-export function logAstNodes(sourceCode: string) {
-  const sourceFile = ts.createSourceFile(
-    'sample.tsx',
-    sourceCode,
-    ts.ScriptTarget.ESNext,
-    false,
-    ts.ScriptKind.TSX,
-  );
-  console.log('No. | depth | code | SyntaxKind | NodeFlags');
-  console.log('--|--|--|--|--');
-  let no = 0;
+export class AstLogger implements AstVisitor {
+  visit({ node, depth, sourceFile }: VisitProps): void {
+    this.#addLog(this.#no++, depth, node, sourceFile);
+  }
 
-  const visitor = new AstVisitor({
-    visit: ({ node, depth }) => {
-      log(no++, depth, node, sourceFile);
-    },
-  });
-  visitor.traverse(sourceFile);
-}
+  /** visit したノードのインデックス番号を記録するカウンター */
+  #no: number = 0;
+  /** visit したノード1つにつき1行データを登録する */
+  #logList: string[] = [
+    'No. | depth | code | SyntaxKind | NodeFlags',
+    '--|--|--|--|--',
+  ];
 
-function log(
-  no: number,
-  depth: number,
-  node: ts.Node,
-  sourceFile: ts.SourceFile,
-) {
-  console.log(
-    [
-      no,
-      depth,
-      getText(node, sourceFile),
-      getSyntaxKindText(node),
-      ts.NodeFlags[node.flags],
-    ].join(' | '),
-  );
-}
+  #addLog(no: number, depth: number, node: ts.Node, sourceFile: ts.SourceFile) {
+    this.#logList.push(
+      [
+        no,
+        depth,
+        this.#getText(node, sourceFile),
+        this.#getSyntaxKindText(node),
+        ts.NodeFlags[node.flags],
+      ].join(' | '),
+    );
+  }
 
-function getText(node: ts.Node, sourceFile: ts.SourceFile) {
-  return node
-    .getText(sourceFile)
-    .replaceAll(/\r?\n/g, ' ')
-    .replaceAll('|', '\\|');
-}
+  #getText(node: ts.Node, sourceFile: ts.SourceFile) {
+    return node
+      .getText(sourceFile)
+      .replaceAll(/\r?\n/g, ' ')
+      .replaceAll('|', '\\|');
+  }
 
-function getSyntaxKindText(node: ts.Node) {
-  return `${ts.SyntaxKind[node.kind]}${node['operator'] ? ` (${ts.SyntaxKind[node['operator']]})` : ''}`;
+  #getSyntaxKindText(node: ts.Node) {
+    return `${ts.SyntaxKind[node.kind]}${node['operator'] ? ` (${ts.SyntaxKind[node['operator']]})` : ''}`;
+  }
+
+  /** 収集したログ文字列を取得する */
+  get log() {
+    return this.#logList.join('\n');
+  }
 }

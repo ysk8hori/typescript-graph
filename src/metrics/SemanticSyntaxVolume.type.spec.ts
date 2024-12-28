@@ -1,10 +1,11 @@
 import { test, expect, describe } from 'vitest';
-import { logAstNodes } from './tsc-demo-util';
+import { AstLogger } from './tsc-demo-util';
 import SemanticSyntaxVolume, {
   type SemanticSyntaxVolumeMetrics,
 } from './SemanticSyntaxVolume';
 import ts from 'typescript';
 import { readFileSync } from 'fs';
+import AstTraverser from './AstTraverser';
 
 type OperatorTest = {
   perspective: string;
@@ -120,7 +121,6 @@ describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
     `${ts.ScriptKind[scriptKind]} $perspective`,
     ({ perspective, tests }) => {
       test.each(tests)(`${perspective} %s`, (sourceCode, expected) => {
-        logAstNodes(sourceCode);
         const source = ts.createSourceFile(
           'sample.tsx',
           sourceCode,
@@ -129,6 +129,10 @@ describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
           true,
           scriptKind,
         );
+        const astLogger = new AstLogger();
+        const astTraverser = new AstTraverser(source, [astLogger]);
+        astTraverser.traverse();
+        console.log(astLogger.log);
         const volume = new SemanticSyntaxVolume(source);
         console.log(volume.volume);
         expect(volume.metrics).toEqual(expected);
