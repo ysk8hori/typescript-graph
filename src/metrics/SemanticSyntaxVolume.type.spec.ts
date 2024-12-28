@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'vitest';
-import { AstLogger } from './tsc-demo-util';
+import AstLogger from './AstLogger';
 import SemanticSyntaxVolume, {
   type SemanticSyntaxVolumeMetrics,
 } from './SemanticSyntaxVolume';

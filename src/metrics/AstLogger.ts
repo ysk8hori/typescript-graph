@@ -1,7 +1,7 @@
 import ts from 'typescript';
 import type { AstVisitor, VisitProps } from './AstTraverser';
 
-export class AstLogger implements AstVisitor {
+export default class AstLogger implements AstVisitor {
   visit({ node, depth, sourceFile }: VisitProps): void {
     this.#addLog(this.#no++, depth, node, sourceFile);
   }
