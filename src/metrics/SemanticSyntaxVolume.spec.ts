@@ -661,7 +661,7 @@ describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
       ],
     },
     {
-      perspective: '条件（三項）演算子 QuestionQuestionToken',
+      perspective: '条件（三項）演算子 ConditionalExpression',
       tests: [
         [
           'true ? true:false; a ? 1 : 2',
@@ -1161,7 +1161,6 @@ describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
         ],
       ],
     },
-    // TODO: RegularExpressionLiteral
     {
       perspective: 'RegularExpressionLiteral',
       tests: [
@@ -1185,7 +1184,6 @@ describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
         ],
       ],
     },
-    // TODO: コメント
     {
       perspective: 'コメント',
       tests: [

@@ -1,5 +1,6 @@
 import * as ts from 'typescript';
 import { AstVisitor, VisitProps } from './AstTraverser';
+import Metrics from './Metrics';
 
 export interface SemanticSyntaxVolumeMetrics {
   /** 演算子の総数 */
@@ -61,7 +62,9 @@ function isIgnoredSyntaxKind(kind: ts.SyntaxKind): boolean {
   return ignoredSyntaxKinds.includes(kind);
 }
 
-export default class SemanticSyntaxVolume implements AstVisitor {
+export default class SemanticSyntaxVolume
+  implements AstVisitor, Metrics<SemanticSyntaxVolumeMetrics>
+{
   visit({ node, sourceFile }: VisitProps) {
     if (isIgnoredSyntaxKind(node.kind)) return;
     if (isOperand(node.kind)) {
@@ -135,6 +138,7 @@ export default class SemanticSyntaxVolume implements AstVisitor {
     }
   }
 
+  // TODO: 本来 metrics として返すべきは volume なのでそのうち修正する
   get metrics(): SemanticSyntaxVolumeMetrics {
     return {
       semanticSyntaxTotal: this.#totalSemanticSyntax,
