@@ -1222,10 +1222,10 @@ describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
           scriptKind,
         );
         const astLogger = new AstLogger();
-        const astTraverser = new AstTraverser(source, [astLogger]);
+        const volume = new SemanticSyntaxVolume();
+        const astTraverser = new AstTraverser(source, [astLogger, volume]);
         astTraverser.traverse();
         console.log(astLogger.log);
-        const volume = new SemanticSyntaxVolume(source);
         console.log(volume.volume);
         expect(volume.metrics).toEqual(expected);
       });

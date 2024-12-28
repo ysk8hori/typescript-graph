@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import AstVisitor from './AstVisitor';
+import { AstVisitor, VisitProps } from './AstTraverser';
 
 export interface SemanticSyntaxVolumeMetrics {
   /** 演算子の総数 */
@@ -61,24 +61,15 @@ function isIgnoredSyntaxKind(kind: ts.SyntaxKind): boolean {
   return ignoredSyntaxKinds.includes(kind);
 }
 
-export default class SemanticSyntaxVolume {
-  constructor(sourceFile: ts.SourceFile) {
-    this.#sourceFile = sourceFile;
-    this.#astVisitor = new AstVisitor({
-      visit: ({ node }) => {
-        if (isIgnoredSyntaxKind(node.kind)) return;
-        if (isOperand(node.kind)) {
-          this.#handleOperand(node);
-        } else {
-          this.#handleSemanticSyntaxNode(node);
-        }
-      },
-    });
-    this.#astVisitor.traverse(this.#sourceFile);
+export default class SemanticSyntaxVolume implements AstVisitor {
+  visit({ node, sourceFile }: VisitProps) {
+    if (isIgnoredSyntaxKind(node.kind)) return;
+    if (isOperand(node.kind)) {
+      this.#handleOperand(node, sourceFile);
+    } else {
+      this.#handleSemanticSyntaxNode(node);
+    }
   }
-  #astVisitor: AstVisitor;
-
-  readonly #sourceFile: ts.SourceFile;
 
   readonly #uniqueSemanticSyntaxKinds: Set<SemanticSyntaxKind> = new Set();
   #totalSemanticSyntax: number = 0;
@@ -96,9 +87,9 @@ export default class SemanticSyntaxVolume {
     this.#totalOperands++;
   }
 
-  #handleOperand(node: ts.Node) {
+  #handleOperand(node: ts.Node, sourceFile: ts.SourceFile) {
     if (!isOperand(node.kind)) return;
-    this.#addOperand(node.getText(this.#sourceFile));
+    this.#addOperand(node.getText(sourceFile));
   }
 
   #handleSemanticSyntaxNode(node: ts.Node) {
