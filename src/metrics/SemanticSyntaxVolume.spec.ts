@@ -1207,6 +1207,67 @@ describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
         ],
       ],
     },
+    {
+      perspective: 'class',
+      tests: [
+        [
+          `
+class A {
+  method() {
+    if (true) {}
+  }
+}`,
+          {
+            operandsTotal: 3,
+            operandsUnique: 3,
+            semanticSyntaxTotal: 5,
+            semanticSyntaxUnique: 4,
+          },
+        ],
+        [
+          `
+class A {
+  #method() {
+    if (true) {}
+  }
+}`,
+          {
+            operandsTotal: 3,
+            operandsUnique: 3,
+            semanticSyntaxTotal: 5,
+            semanticSyntaxUnique: 4,
+          },
+        ],
+        [
+          `
+class A {
+  private method() {
+    if (true) {}
+  }
+}`,
+          {
+            operandsTotal: 3,
+            operandsUnique: 3,
+            semanticSyntaxTotal: 6,
+            semanticSyntaxUnique: 5,
+          },
+        ],
+        [
+          `
+class A {
+  public method() {
+    if (true) {}
+  }
+}`,
+          {
+            operandsTotal: 3,
+            operandsUnique: 3,
+            semanticSyntaxTotal: 6,
+            semanticSyntaxUnique: 5,
+          },
+        ],
+      ],
+    },
   ] satisfies OperatorTest[])(
     `${ts.ScriptKind[scriptKind]} $perspective`,
     ({ perspective, tests }) => {

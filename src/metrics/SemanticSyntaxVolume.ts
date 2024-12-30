@@ -27,6 +27,7 @@ type SemanticSyntaxKind =
 const isOperand = (kind: ts.SyntaxKind): boolean => {
   const operandSyntaxKinds: ts.SyntaxKind[] = [
     ts.SyntaxKind.Identifier,
+    ts.SyntaxKind.PrivateIdentifier,
     ts.SyntaxKind.FirstLiteralToken,
     ts.SyntaxKind.StringLiteral,
     ts.SyntaxKind.NumericLiteral,
