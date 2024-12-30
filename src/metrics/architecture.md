@@ -61,4 +61,8 @@ Halstead Volume はソースコード中のオペランドと演算子を用い�
 
 ## Cognitive Complexity
 
-[SonarSource](https://www.sonarsource.com)社のG. Ann Campbell氏によるホワイトペーパー「[A new way of measuring understandability](https://www.sonarsource.com/docs/CognitiveComplexity.pdf)」を元にして実装している。また、このプロジェクトは SonarSource 社と提携はしていない。
+[SonarSource](https://www.sonarsource.com)社のG. Ann Campbell氏によるホワイトペーパー「[A new way of measuring understandability](https://www.sonarsource.com/docs/CognitiveComplexity.pdf)」を元にして実装している。なお、このプロジェクトは SonarSource 社と提携はしていない。
+
+### SonarSource 社の Cognitive Complexity との差異
+
+- Class の代わりに用いられる宣言的な function におけるオブジェクトへの関数の代入について、SonarSource 社のものは「宣言的であるかどうか」を判定し宣言的でない場合のみネストレベルをインクリメントするが、本プロジェクトにおいては宣言的かどうかの判定をせずネストレベルをインクリメントする。

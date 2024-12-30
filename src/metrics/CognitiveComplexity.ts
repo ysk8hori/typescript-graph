@@ -57,6 +57,9 @@ const incrementNestMachers: ((node: ts.Node) => boolean)[] = [
   ts.isFunctionDeclaration,
   ts.isArrowFunction,
   ts.isFunctionExpression,
+  ts.isClassDeclaration,
+  // 自分自身はメソッドだが親がクラスでない場合はインクリメントする（単なるオブジェクトのメソッドなど）
+  node => ts.isMethodDeclaration(node) && !ts.isClassDeclaration(node.parent),
 ];
 
 const skipNestIncrementAtTopLevelMatchers: ((args: {
@@ -75,6 +78,9 @@ const skipNestIncrementAtTopLevelMatchers: ((args: {
     currentDepth - 3 === topLevelDepth &&
     ts.isFunctionExpression(node) &&
     ts.isParenthesizedExpression(node.parent),
+  ({ topLevelDepth, currentDepth, node }) =>
+    // 0:SourceFile>1:ClassDeclaration
+    currentDepth === topLevelDepth && ts.isClassDeclaration(node),
 ];
 
 export default class CognitiveComplexity

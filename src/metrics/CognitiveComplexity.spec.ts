@@ -289,12 +289,186 @@ outer: for (let i = 0; i < 5; i++) { // +1 nest++
   },
   {
     perspective:
+      '関数定義内のアロー関数定義はネストレベルをインクリメントする2',
+    tests: [`const x = ()=>()=>()=>()=>{if(true){}}`, 4],
+  },
+  {
+    perspective:
       'トップレベルの無名関数定義はネストレベルをインクリメントしない',
     tests: [`(function() { if(z) {} })()`, 1],
   },
   {
     perspective: '関数定義内の無名関数定義はネストレベルをインクリメントする',
     tests: [`(function() { if(true) {} (function () { if(true) {}})() })()`, 3],
+  },
+  {
+    perspective:
+      'オブジェクトのプロパティに定義された関数定義はネストレベルをインクリメントする',
+    tests: [
+      `
+const obj = {
+  x: function () {
+    if (true) {
+    }
+  },
+  y() {
+    if (true) {
+    }
+  },
+  z: () => {
+    if (true) {
+    }
+  },
+};
+      `,
+      6,
+    ],
+  },
+  {
+    perspective:
+      'トップレベルのクラスのメソッド定義はネストレベルをインクリメントしない',
+    tests: [
+      `
+class A {
+  method() {
+    if (true) {}
+  }
+}
+      `,
+      1,
+    ],
+  },
+  {
+    perspective:
+      'トップレベルのクラスの#メソッド定義はネストレベルをインクリメントしない',
+    tests: [
+      `
+class A {
+  #method() {
+    if (true) {}
+  }
+}
+      `,
+      1,
+    ],
+  },
+  {
+    perspective:
+      'トップレベルのクラスの private メソッド定義はネストレベルをインクリメントしない',
+    tests: [
+      `
+class A {
+  private method() {
+    if (true) {}
+  }
+}
+      `,
+      1,
+    ],
+  },
+  {
+    perspective:
+      'トップレベルのクラスの public メソッド定義はネストレベルをインクリメントしない',
+    tests: [
+      `
+class A {
+  public method() {
+    if (true) {}
+  }
+}
+      `,
+      1,
+    ],
+  },
+  {
+    perspective:
+      'トップレベルのクラスの getter/setter 定義はネストレベルをインクリメントしない',
+    tests: [
+      `
+class A {
+  get a() {
+    if (true) {}
+    return false
+  }
+  set a(b: boolean) {
+    if (b) {}
+  }
+}
+      `,
+      2,
+    ],
+  },
+  {
+    perspective:
+      'トップレベルではないクラスのメソッド定義はネストレベルをインクリメントする',
+    tests: [
+      `
+class A {
+  method() {
+    class B {
+      method() {
+        if (true) {}
+      }
+    }
+  }
+}
+      `,
+      2,
+    ],
+  },
+  {
+    perspective:
+      'トップレベルではないクラスの getter/setter 定義はネストレベルをインクリメントする',
+    tests: [
+      `
+class A {
+  method() {
+    class B {
+      get a() {
+        if (true) {}
+        return false
+      }
+      set a(b: boolean) {
+        if (b) {}
+      }
+    }
+  }
+}
+      `,
+      4,
+    ],
+  },
+  {
+    perspective:
+      'トップレベルのクラスの constructor 定義はネストレベルをインクリメントしない',
+    tests: [
+      `
+class A {
+  constructor() {
+    if (true) {}
+  }
+}
+      `,
+      1,
+    ],
+  },
+  {
+    perspective:
+      'トップレベルではないクラスの constructor 定義はネストレベルをインクリメントする',
+    tests: [
+      `
+class A {
+  method() {
+    class B {
+      constructor() {
+        if (true) {}
+      }
+    }
+  }
+}
+      `,
+      2,
+    ],
   },
 ] satisfies OperatorTest[])(
   `$perspective`,
