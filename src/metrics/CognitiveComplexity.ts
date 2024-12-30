@@ -13,13 +13,6 @@ function isElseOrElseIfStatement(node: ts.Node): boolean {
     node.parent &&
     ts.isIfStatement(node.parent)
   ) {
-    // console.log(
-    //   node.getText(node.getSourceFile()),
-    //   'node.parent.elseStatement: ',
-    //   node.parent.elseStatement === node,
-    //   node.parent.elseStatement?.getText(node.parent.getSourceFile()) ??
-    //     'no elseStatement',
-    // );
     return node.parent.elseStatement === node;
   }
   return false;
@@ -61,39 +54,64 @@ const incrementNestMachers: ((node: ts.Node) => boolean)[] = [
   ts.isDoStatement,
   ts.isCatchClause,
   ts.isConditionalTypeNode,
+  ts.isFunctionDeclaration,
+  ts.isArrowFunction,
+  ts.isFunctionExpression,
+];
+
+const skipNestIncrementAtTopLevelMatchers: ((args: {
+  topLevelDepth: number;
+  currentDepth: number;
+  node: ts.Node;
+}) => boolean)[] = [
+  ({ topLevelDepth, currentDepth, node }) =>
+    // 0:SourceFile>1:FunctionDeclaration
+    currentDepth === topLevelDepth && ts.isFunctionDeclaration(node),
+  ({ topLevelDepth, currentDepth, node }) =>
+    // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ArrowFunction
+    currentDepth - 3 === topLevelDepth && ts.isArrowFunction(node),
+  ({ topLevelDepth, currentDepth, node }) =>
+    // 0:SourceFile>1:ExpressionStatement>2:CallExpression>3:ParenthesizedExpression>4:FunctionExpression
+    currentDepth - 3 === topLevelDepth &&
+    ts.isFunctionExpression(node) &&
+    ts.isParenthesizedExpression(node.parent),
 ];
 
 export default class CognitiveComplexity
   implements AstVisitor, Metrics<number>
 {
-  visit({ node }: VisitProps) {
+  constructor(options?: { topLevelDepth?: number }) {
+    this.#topLevelDepth = options?.topLevelDepth ?? 1;
+  }
+  #topLevelDepth: number;
+
+  visit({ node, depth }: VisitProps) {
     this.#trackLogicalToken(node);
     if (incrementScoreMachers.some(matcher => matcher(node))) {
       this.#incrementScore();
-      // console.log(
-      //   'increment: ',
-      //   getText(node, node.getSourceFile()),
-      //   this.#nestLevel,
-      // );
+      // console.log(  'increment: ',  node.getText(node.getSourceFile()),  this.#nestLevel,);
     }
     if (simpleIncrementScoreMachers.some(matcher => matcher(node))) {
       this.#simpleIncrementScore();
-      // console.log('simple increment: ', getText(node, node.getSourceFile()), 1);
+      // console.log('simple increment: ', node.getText(node.getSourceFile()), 1);
     }
-    if (incrementNestMachers.some(matcher => matcher(node))) {
+    if (
+      !skipNestIncrementAtTopLevelMatchers.some(matcher =>
+        matcher({
+          topLevelDepth: this.#topLevelDepth,
+          currentDepth: depth,
+          node,
+        }),
+      ) &&
+      incrementNestMachers.some(matcher => matcher(node))
+    ) {
       this.#enterNest();
-      // console.log(
-      //   'enter: ',
-      //   getText(node, node.getSourceFile()),
-      //   this.#nestLevel,
-      // );
-      return () => {
-        // console.log(
-        //   'exit: ',
-        //   getText(node, node.getSourceFile()),
-        //   this.#nestLevel,
-        // );
-        this.#exitNest();
+      // console.log('enter: ',getText(node, node.getSourceFile()),this.#nestLevel,);
+      return {
+        leave: () => {
+          // console.log('exit: ',getText(node, node.getSourceFile()),this.#nestLevel,);
+          this.#exitNest();
+        },
       };
     }
   }

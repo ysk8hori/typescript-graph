@@ -3,6 +3,7 @@ import AstLogger from './AstLogger';
 import * as ts from 'typescript';
 import AstTraverser from './AstTraverser';
 import CognitiveComplexity from './CognitiveComplexity';
+import { readFileSync } from 'fs';
 
 type OperatorTest = {
   perspective: string;
@@ -263,9 +264,37 @@ outer: for (let i = 0; i < 5; i++) { // +1 nest++
     ],
   },
   {
+    perspective: 'highlight',
+    tests: [readFileSync('src/graph/highlight.ts', 'utf-8'), 4],
+  },
+  {
+    perspective: 'トップレベルの関数定義はネストレベルをインクリメントしない',
+    tests: [`function x() { if(z) {} }`, 1],
+  },
+  {
+    perspective: '関数定義内の関数定義はネストレベルをインクリメントする',
+    tests: [`function x() { if(true) {} function y() { if(true) {}} }`, 3],
+  },
+  {
     perspective:
-      'inner 関数はスコアを上げないがネストレベルをインクリメントする',
-    tests: [`funcion x() { function y() { if(z) {} }}`, 2],
+      'トップレベルのアロー関数定義はネストレベルをインクリメントしない',
+    tests: [`const x = () => { if(z) {} }`, 1],
+  },
+  {
+    perspective: '関数定義内のアロー関数定義はネストレベルをインクリメントする',
+    tests: [
+      `const x = () => { if(true) {} const y = () => { if(true) {}} }`,
+      3,
+    ],
+  },
+  {
+    perspective:
+      'トップレベルの無名関数定義はネストレベルをインクリメントしない',
+    tests: [`(function() { if(z) {} })()`, 1],
+  },
+  {
+    perspective: '関数定義内の無名関数定義はネストレベルをインクリメントする',
+    tests: [`(function() { if(true) {} (function () { if(true) {}})() })()`, 3],
   },
 ] satisfies OperatorTest[])(
   `$perspective`,

@@ -58,3 +58,7 @@ Halstead Volume はソースコード中のオペランドと演算子を用い�
 
 ここまでで述べたように計測の方法において Halstead Volume と Semantic Syntax Volume には差異がある。
 しかし、それによって得られる数値の質としては、どちらも「人がプログラムから受け取る情報量を表している」という点において差異はないと考える。
+
+## Cognitive Complexity
+
+[SonarSource](https://www.sonarsource.com)社のG. Ann Campbell氏によるホワイトペーパー「[A new way of measuring understandability](https://www.sonarsource.com/docs/CognitiveComplexity.pdf)」を元にして実装している。また、このプロジェクトは SonarSource 社と提携はしていない。
