@@ -6,7 +6,9 @@ export type VisitProps = {
   sourceFile: ts.SourceFile;
 };
 
-type Visit = (props: VisitProps) => void;
+type Leave = (props: VisitProps) => void;
+
+type Visit = (props: VisitProps) => void | Leave;
 
 export interface AstVisitor {
   visit: Visit;
@@ -21,7 +23,7 @@ export default class AstTraverser {
   }
 
   #traverse(node: ts.Node, depth: number) {
-    this.#visitors.forEach(visitor =>
+    const leaveFnList: (Leave | void)[] = this.#visitors.map(visitor =>
       visitor.visit({ node, depth, sourceFile: this.#sourceFile }),
     );
     const nextDepth = depth + 1;
@@ -40,6 +42,9 @@ export default class AstTraverser {
     } else {
       ts.forEachChild(node, node => this.#traverse(node, nextDepth));
     }
+    leaveFnList
+      .filter(fn => !!fn)
+      .forEach(fn => fn({ node, depth, sourceFile: this.#sourceFile }));
   }
 
   traverse() {

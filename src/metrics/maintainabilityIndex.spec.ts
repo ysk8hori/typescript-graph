@@ -1,17 +1,16 @@
-import { test, expect, describe } from 'vitest';
-import AstLogger from './AstLogger';
+import { test } from 'vitest';
 import * as ts from 'typescript';
 import AstTraverser from './AstTraverser';
 import CyclomaticComplexity from './CyclomaticComplexity';
-import SemanticSyntaxVolume, {
-  type SemanticSyntaxVolumeMetrics,
-} from './SemanticSyntaxVolume';
+import SemanticSyntaxVolume from './SemanticSyntaxVolume';
 import { readFileSync } from 'fs';
+import CognitiveComplexity from './CognitiveComplexity';
 
 test.each([
   'src/graph/createGraph.ts',
   'src/graph/highlight.ts',
   'src/metrics/CyclomaticComplexity.ts',
+  'src/metrics/CognitiveComplexity.ts',
   'src/metrics/SemanticSyntaxVolume.ts',
   'src/metrics/Metrics.ts',
   'src/metrics/AstTraverser.ts',
@@ -22,7 +21,7 @@ test.each([
   'src/graph/utils.ts',
   '../numberplace-generator/functions/createGame.ts',
 ])('%s', path => {
-  console.log('\n🐥 ', path);
+  console.log('\n🐥', path);
   const sourceCode = readFileSync(path, 'utf-8');
   const source = ts.createSourceFile(
     'sample.tsx',
@@ -34,8 +33,14 @@ test.each([
   );
   const cyclomaticComplexity = new CyclomaticComplexity();
   const volume = new SemanticSyntaxVolume();
-  const astTraverser = new AstTraverser(source, [volume, cyclomaticComplexity]);
+  const cognitiveComplexity = new CognitiveComplexity();
+  const astTraverser = new AstTraverser(source, [
+    volume,
+    cyclomaticComplexity,
+    cognitiveComplexity,
+  ]);
   astTraverser.traverse();
+  console.log('Cognitive Complexity:', cognitiveComplexity.metrics);
   console.log('Cyclomatic Complexity:', cyclomaticComplexity.metrics);
   console.log('Semantic Syntax Volume:', volume.volume);
   console.table(volume.metrics);

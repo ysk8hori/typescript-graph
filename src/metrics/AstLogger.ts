@@ -17,8 +17,8 @@ export default class AstLogger implements AstVisitor {
   #addLog(no: number, depth: number, node: ts.Node, sourceFile: ts.SourceFile) {
     this.#logList.push(
       [
-        no,
-        depth,
+        no.toString().padStart(3, ' '),
+        depth.toString().padEnd(depth, '>'),
         this.#getText(node, sourceFile),
         this.#getSyntaxKindText(node),
         ts.NodeFlags[node.flags],
