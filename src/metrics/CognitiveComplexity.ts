@@ -11,6 +11,8 @@ import {
   TopLevelMatcher,
 } from './astUtils';
 
+type NodeMatcher = (node: ts.Node) => boolean;
+
 function isNot<T, F extends (t: T) => boolean>(fn: F): (arg: T) => boolean {
   return (arg: T) => !fn(arg);
 }
@@ -31,7 +33,7 @@ function hasLabel(node: ts.Node): boolean {
 }
 
 /** nest level に影響を受けたインクリメントを行う node の判定 */
-const incrementScoreMachers: ((node: ts.Node) => boolean)[] = [
+const incrementScoreMachers: NodeMatcher[] = [
   ts.isConditionalExpression,
   allPass([ts.isIfStatement, isNot(isElseOrElseIfStatement)]),
   ts.isSwitchStatement,
@@ -46,12 +48,12 @@ const incrementScoreMachers: ((node: ts.Node) => boolean)[] = [
 ];
 
 /** nest level に影響を受けないインクリメントを行う node の判定 */
-const simpleIncrementScoreMachers: ((node: ts.Node) => boolean)[] = [
+const simpleIncrementScoreMachers: NodeMatcher[] = [
   allPass([anyPass([ts.isIfStatement, ts.isBlock]), isElseOrElseIfStatement]),
   allPass([ts.isBreakOrContinueStatement, hasLabel]),
 ];
 
-const incrementNestMachers: ((node: ts.Node) => boolean)[] = [
+const incrementNestMachers: NodeMatcher[] = [
   ts.isIfStatement,
   ts.isConditionalExpression,
   ts.isSwitchStatement,
