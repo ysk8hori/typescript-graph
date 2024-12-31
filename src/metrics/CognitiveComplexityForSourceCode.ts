@@ -4,7 +4,26 @@ import CognitiveComplexity, {
   CognitiveComplexityMetrics,
 } from './CognitiveComplexity';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
-import { isTopLevelFunction } from './astUtils';
+import {
+  getArrowFunctionName,
+  getFunctionName,
+  isTopLevelArrowFunction,
+  isTopLevelFunction,
+} from './astUtils';
+
+function createAdditionalVisitor(
+  topLevelDepth: number,
+  depth: number,
+  node: ts.Node,
+): CognitiveComplexity | undefined {
+  if (isTopLevelFunction(topLevelDepth, depth, node)) {
+    return new CognitiveComplexityForNormalNode(getFunctionName(node));
+  }
+  if (isTopLevelArrowFunction(topLevelDepth, depth, node)) {
+    return new CognitiveComplexityForNormalNode(getArrowFunctionName(node));
+  }
+  return undefined;
+}
 
 export default class CognitiveComplexityForSourceCode extends CognitiveComplexity {
   constructor(private name: string) {
@@ -12,28 +31,23 @@ export default class CognitiveComplexityForSourceCode extends CognitiveComplexit
   }
   visit({ node, depth, sourceFile }: VisitProps) {
     const superResult = super.visit({ node, depth, sourceFile });
-    if (
-      isTopLevelFunction({
-        topLevelDepth: this.topLevelDepth,
-        currentDepth: depth,
-        node,
-      })
-    ) {
-      const cognitiveComplexity = new CognitiveComplexityForNormalNode(
-        node
-          .getChildren()
-          .find(n => ts.isIdentifier(n))
-          ?.getText(node.getSourceFile()) ?? 'unknown name',
-      );
-      this.#additionalVisitors.push(cognitiveComplexity);
-      return {
-        leave: prop => {
-          superResult?.leave?.(prop);
-        },
-        additionalVisitors: [cognitiveComplexity],
-      };
+    const additionalVisitor = createAdditionalVisitor(
+      this.topLevelDepth,
+      depth,
+      node,
+    );
+
+    if (!additionalVisitor) {
+      return superResult;
     }
-    return superResult;
+
+    this.#additionalVisitors.push(additionalVisitor);
+    return {
+      leave: prop => {
+        superResult?.leave?.(prop);
+      },
+      additionalVisitors: [additionalVisitor],
+    };
   }
   #additionalVisitors: CognitiveComplexity[] = [];
 
