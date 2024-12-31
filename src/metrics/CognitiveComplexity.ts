@@ -18,6 +18,14 @@ function isElseOrElseIfStatement(node: ts.Node): boolean {
   return false;
 }
 
+// function isTopLevelObjectLiteral(
+//   topLevelDepth,
+//   objectLiteralDepth,
+//   node: ts.Node,
+// ): boolean {
+//   return ts.isObjectLiteralExpression(node) && ts.isSourceFile(node.parent);
+// }
+
 function hasLabel(node: ts.Node): boolean {
   return !!node['label'];
 }
@@ -58,8 +66,7 @@ const incrementNestMachers: ((node: ts.Node) => boolean)[] = [
   ts.isArrowFunction,
   ts.isFunctionExpression,
   ts.isClassDeclaration,
-  // 自分自身はメソッドだが親がクラスでない場合はインクリメントする（単なるオブジェクトのメソッドなど）
-  node => ts.isMethodDeclaration(node) && !ts.isClassDeclaration(node.parent),
+  ts.isObjectLiteralExpression,
 ];
 
 const skipNestIncrementAtTopLevelMatchers: ((args: {
@@ -68,19 +75,37 @@ const skipNestIncrementAtTopLevelMatchers: ((args: {
   node: ts.Node;
 }) => boolean)[] = [
   ({ topLevelDepth, currentDepth, node }) =>
+    // トップレベルに定義された関数はネストレベルをインクリメントしない
     // 0:SourceFile>1:FunctionDeclaration
     currentDepth === topLevelDepth && ts.isFunctionDeclaration(node),
   ({ topLevelDepth, currentDepth, node }) =>
+    // トップレベルに定義されたアロー関数はネストレベルをインクリメントしない
     // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ArrowFunction
     currentDepth - 3 === topLevelDepth && ts.isArrowFunction(node),
   ({ topLevelDepth, currentDepth, node }) =>
+    // トップレベルに定義された即時実行関数はネストレベルをインクリメントしない
     // 0:SourceFile>1:ExpressionStatement>2:CallExpression>3:ParenthesizedExpression>4:FunctionExpression
     currentDepth - 3 === topLevelDepth &&
     ts.isFunctionExpression(node) &&
     ts.isParenthesizedExpression(node.parent),
   ({ topLevelDepth, currentDepth, node }) =>
+    // トップレベルのクラスはネストレベルをインクリメントしない
     // 0:SourceFile>1:ClassDeclaration
     currentDepth === topLevelDepth && ts.isClassDeclaration(node),
+  ({ topLevelDepth, currentDepth, node }) =>
+    // トップレベルのオブジェクト定義はネストレベルをインクリメントしない
+    // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ObjectLiteralExpression
+    currentDepth - 3 <= topLevelDepth && ts.isObjectLiteralExpression(node),
+  ({ node }) =>
+    // オブジェクトに定義されたアローファンクションはネストレベルをインクリメントしない
+    // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ObjectLiteralExpression>5:PropertyAssignment>6:ArrowFunction
+    ts.isArrowFunction(node) &&
+    ts.isObjectLiteralExpression(node.parent.parent),
+  ({ node }) =>
+    // オブジェクトに定義された関数定義はネストレベルをインクリメントしない
+    // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ObjectLiteralExpression>5:PropertyAssignment>6:FunctionExpression
+    ts.isFunctionExpression(node) &&
+    ts.isObjectLiteralExpression(node.parent.parent),
 ];
 
 export default class CognitiveComplexity
