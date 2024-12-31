@@ -71,6 +71,89 @@ test.each([
       },
     ],
   },
+  {
+    perspective:
+      '全体のスコアとトップレベルのクラスとそのメソッドのスコアを計測できる',
+    tests: [
+      `
+class X {
+  method() {
+    if (z) {
+    }
+  }
+  #a() {
+    if (z) {
+    }
+  }
+  private privateMethod() {
+    if (z) {
+    }
+  }
+  public publicMethod() {
+    if (z) {
+    }
+  }
+  get b() {
+    if (z) {
+    }
+    if (z) {
+    }
+    return true;
+  }
+  set b(value: boolean) {
+    if (z) {
+    }
+  }
+}
+const y = () => {
+  if (z) {
+  }
+  if (z) {
+  }
+};
+      `,
+      {
+        name: 'sample.tsx',
+        score: 9,
+        children: [
+          {
+            name: 'X',
+            score: 7,
+            children: [
+              {
+                name: 'method',
+                score: 1,
+              },
+              {
+                name: '#a',
+                score: 1,
+              },
+              {
+                name: 'privateMethod',
+                score: 1,
+              },
+              {
+                name: 'publicMethod',
+                score: 1,
+              },
+              {
+                name: 'get b',
+                score: 2,
+              },
+              {
+                name: 'set b',
+                score: 1,
+              },
+            ],
+          },
+          {
+            name: 'y',
+            score: 2,
+          },
+        ],
+      },
+    ],
+  },
   // {
   //   perspective:
   //     'トップレベルの無名関数定義はネストレベルをインクリメントしない',

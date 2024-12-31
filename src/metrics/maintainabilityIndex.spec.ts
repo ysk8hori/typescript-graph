@@ -5,6 +5,7 @@ import CyclomaticComplexity from './CyclomaticComplexity';
 import SemanticSyntaxVolume from './SemanticSyntaxVolume';
 import { readFileSync } from 'fs';
 import CognitiveComplexityForSourceCode from './CognitiveComplexityForSourceCode';
+import { CognitiveComplexityMetrics } from './CognitiveComplexity';
 
 test.each([
   'src/graph/createGraph.ts',
@@ -41,7 +42,8 @@ test.each([
   ]);
   astTraverser.traverse();
   console.log('Cognitive Complexity:', cognitiveComplexity.metrics.score);
-  console.table(cognitiveComplexity.metrics.children);
+  logCognitiveComplexityMetrics(cognitiveComplexity.metrics);
+  // console.table(cognitiveComplexity.metrics.children);
   console.log('Cyclomatic Complexity:', cyclomaticComplexity.metrics);
   console.log('Semantic Syntax Volume:', volume.volume);
   console.table(volume.metrics);
@@ -58,3 +60,9 @@ test.each([
   );
   console.log('Maintainability Index:', maintainabilityIndex);
 });
+
+function logCognitiveComplexityMetrics(metrics: CognitiveComplexityMetrics) {
+  console.group(metrics.name, metrics.score);
+  metrics.children?.forEach(child => logCognitiveComplexityMetrics(child));
+  console.groupEnd();
+}

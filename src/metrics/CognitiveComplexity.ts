@@ -4,6 +4,7 @@ import Metrics from './Metrics';
 import { allPass, anyPass } from 'remeda';
 import {
   isTopLevelArrowFunction,
+  isTopLevelClass,
   isTopLevelFunction,
   isTopLevelIIFE,
   TopLevelMatcher,
@@ -74,10 +75,8 @@ const skipNestIncrementAtTopLevelMatchers: TopLevelMatcher[] = [
   isTopLevelArrowFunction,
   // トップレベルに定義された即時実行関数はネストレベルをインクリメントしない
   isTopLevelIIFE,
-  (topLevelDepth, currentDepth, node) =>
-    // トップレベルのクラスはネストレベルをインクリメントしない
-    // 0:SourceFile>1:ClassDeclaration
-    currentDepth === topLevelDepth && ts.isClassDeclaration(node),
+  // トップレベルのクラスはネストレベルをインクリメントしない
+  isTopLevelClass,
   (topLevelDepth, currentDepth, node) =>
     // トップレベルのオブジェクト定義はネストレベルをインクリメントしない
     // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ObjectLiteralExpression

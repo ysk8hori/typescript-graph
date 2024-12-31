@@ -1,11 +1,5 @@
 import ts from 'typescript';
 
-type TopLevelMatcherArgs = {
-  topLevelDepth: number;
-  currentDepth: number;
-  node: ts.Node;
-};
-
 export type TopLevelMatcher = (
   topLevelDepth: number,
   currentDepth: number,
@@ -37,13 +31,23 @@ export function isTopLevelIIFE(
   topLevelDepth: number,
   currentDepth: number,
   node: ts.Node,
-): node is ts.FunctionDeclaration {
+): node is ts.FunctionExpression {
   // 0:SourceFile>1:ExpressionStatement>2:CallExpression>3:ParenthesizedExpression>4:FunctionExpression
   return (
     currentDepth - 3 === topLevelDepth &&
     ts.isFunctionExpression(node) &&
     ts.isParenthesizedExpression(node.parent)
   );
+}
+
+/** トップレベルに定義されたクラスかどうかを判定する */
+export function isTopLevelClass(
+  topLevelDepth: number,
+  currentDepth: number,
+  node: ts.Node,
+): node is ts.ClassDeclaration {
+  // 0:SourceFile>1:ClassDeclaration
+  return currentDepth === topLevelDepth && ts.isClassDeclaration(node);
 }
 
 const ANONYMOUS_FUNCTION_NAME = 'anonymous function';
@@ -68,4 +72,40 @@ export function getArrowFunctionName(node: ts.ArrowFunction): string {
 
 export function getAnonymousFunctionName(): string {
   return ANONYMOUS_FUNCTION_NAME;
+}
+
+export function getClassName(node: ts.ClassDeclaration): string {
+  return (
+    node
+      .getChildren()
+      .find(n => ts.isIdentifier(n))
+      ?.getText(node.getSourceFile()) ?? 'anonymous class'
+  );
+}
+
+export function getMethodName(node: ts.MethodDeclaration): string {
+  return (
+    node
+      .getChildren()
+      .find(n => ts.isIdentifier(n) || ts.isPrivateIdentifier(n))
+      ?.getText(node.getSourceFile()) ?? 'anonymous method'
+  );
+}
+
+export function getGetAccessorName(node: ts.GetAccessorDeclaration): string {
+  const name =
+    node
+      .getChildren()
+      .find(n => ts.isIdentifier(n))
+      ?.getText(node.getSourceFile()) ?? 'anonymous get accessor';
+  return `get ${name}`;
+}
+
+export function getSetAccessorName(node: ts.SetAccessorDeclaration): string {
+  const name =
+    node
+      .getChildren()
+      .find(n => ts.isIdentifier(n))
+      ?.getText(node.getSourceFile()) ?? 'anonymous set accessor';
+  return `set ${name}`;
 }
