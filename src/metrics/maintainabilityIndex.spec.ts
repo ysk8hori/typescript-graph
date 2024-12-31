@@ -4,7 +4,7 @@ import AstTraverser from './AstTraverser';
 import CyclomaticComplexity from './CyclomaticComplexity';
 import SemanticSyntaxVolume from './SemanticSyntaxVolume';
 import { readFileSync } from 'fs';
-import CognitiveComplexity from './CognitiveComplexity';
+import CognitiveComplexityForSourceCode from './CognitiveComplexityForSourceCode';
 
 test.each([
   'src/graph/createGraph.ts',
@@ -24,7 +24,7 @@ test.each([
   console.log('\n🐥', path);
   const sourceCode = readFileSync(path, 'utf-8');
   const source = ts.createSourceFile(
-    'sample.tsx',
+    path,
     sourceCode,
     ts.ScriptTarget.ESNext,
     // parent を使うことがあるので true
@@ -33,14 +33,15 @@ test.each([
   );
   const cyclomaticComplexity = new CyclomaticComplexity();
   const volume = new SemanticSyntaxVolume();
-  const cognitiveComplexity = new CognitiveComplexity();
+  const cognitiveComplexity = new CognitiveComplexityForSourceCode(path);
   const astTraverser = new AstTraverser(source, [
     volume,
     cyclomaticComplexity,
     cognitiveComplexity,
   ]);
   astTraverser.traverse();
-  console.log('Cognitive Complexity:', cognitiveComplexity.metrics);
+  console.log('Cognitive Complexity:', cognitiveComplexity.metrics.score);
+  console.table(cognitiveComplexity.metrics.children);
   console.log('Cyclomatic Complexity:', cyclomaticComplexity.metrics);
   console.log('Semantic Syntax Volume:', volume.volume);
   console.table(volume.metrics);

@@ -1,7 +1,8 @@
 import * as ts from 'typescript';
-import { AstVisitor, VisitProps } from './AstTraverser';
+import { AstVisitor, VisitProps, VisitResult } from './AstTraverser';
 import Metrics from './Metrics';
 import { allPass, anyPass } from 'remeda';
+import { isTopLevelFunction, TopLevelMatcher } from './astUtils';
 
 function isNot<T, F extends (t: T) => boolean>(fn: F): (arg: T) => boolean {
   return (arg: T) => !fn(arg);
@@ -17,14 +18,6 @@ function isElseOrElseIfStatement(node: ts.Node): boolean {
   }
   return false;
 }
-
-// function isTopLevelObjectLiteral(
-//   topLevelDepth,
-//   objectLiteralDepth,
-//   node: ts.Node,
-// ): boolean {
-//   return ts.isObjectLiteralExpression(node) && ts.isSourceFile(node.parent);
-// }
 
 function hasLabel(node: ts.Node): boolean {
   return !!node['label'];
@@ -69,15 +62,9 @@ const incrementNestMachers: ((node: ts.Node) => boolean)[] = [
   ts.isObjectLiteralExpression,
 ];
 
-const skipNestIncrementAtTopLevelMatchers: ((args: {
-  topLevelDepth: number;
-  currentDepth: number;
-  node: ts.Node;
-}) => boolean)[] = [
-  ({ topLevelDepth, currentDepth, node }) =>
-    // トップレベルに定義された関数はネストレベルをインクリメントしない
-    // 0:SourceFile>1:FunctionDeclaration
-    currentDepth === topLevelDepth && ts.isFunctionDeclaration(node),
+const skipNestIncrementAtTopLevelMatchers: TopLevelMatcher[] = [
+  // トップレベルに定義された関数はネストレベルをインクリメントしない
+  isTopLevelFunction,
   ({ topLevelDepth, currentDepth, node }) =>
     // トップレベルに定義されたアロー関数はネストレベルをインクリメントしない
     // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ArrowFunction
@@ -108,15 +95,21 @@ const skipNestIncrementAtTopLevelMatchers: ((args: {
     ts.isObjectLiteralExpression(node.parent.parent),
 ];
 
-export default class CognitiveComplexity
-  implements AstVisitor, Metrics<number>
-{
-  constructor(options?: { topLevelDepth?: number }) {
-    this.#topLevelDepth = options?.topLevelDepth ?? 1;
-  }
-  #topLevelDepth: number;
+export interface CognitiveComplexityMetrics {
+  name: string;
+  score: number;
+  children?: CognitiveComplexityMetrics[];
+}
 
-  visit({ node, depth }: VisitProps) {
+export default abstract class CognitiveComplexity
+  implements AstVisitor, Metrics<CognitiveComplexityMetrics>
+{
+  constructor(param?: { topLevelDepth?: number }) {
+    this.topLevelDepth = param?.topLevelDepth ?? 1;
+  }
+  protected topLevelDepth: number;
+
+  visit({ node, depth }: VisitProps): VisitResult | void {
     this.#trackLogicalToken(node);
     if (incrementScoreMachers.some(matcher => matcher(node))) {
       this.#incrementScore();
@@ -129,7 +122,7 @@ export default class CognitiveComplexity
     if (
       !skipNestIncrementAtTopLevelMatchers.some(matcher =>
         matcher({
-          topLevelDepth: this.#topLevelDepth,
+          topLevelDepth: this.topLevelDepth,
           currentDepth: depth,
           node,
         }),
@@ -147,12 +140,12 @@ export default class CognitiveComplexity
     }
   }
 
-  #score: number = 0;
+  protected score: number = 0;
   #incrementScore() {
-    this.#score += this.#nestLevel;
+    this.score += this.#nestLevel;
   }
   #simpleIncrementScore() {
-    this.#score++;
+    this.score++;
   }
 
   #nestLevel: number = 1;
@@ -170,16 +163,6 @@ export default class CognitiveComplexity
    * 論理和においても同様です。
    */
   #trackLogicalToken(node: ts.Node) {
-    // デバッグ用ログ 残す
-    // if (ts.isIfStatement(node)) {
-    //   function hoge(node: ts.Node) {
-    //     const n = node['expression'] ?? node;
-    //     console.group(n.getText(n.getSourceFile()).replaceAll(/\r?\n/g, ' '));
-    //     n.forEachChild(hoge);
-    //     console.groupEnd();
-    //   }
-    //   hoge(node);
-    // }
     if (
       node.kind === ts.SyntaxKind.AmpersandAmpersandToken ||
       node.kind === ts.SyntaxKind.BarBarToken
@@ -206,7 +189,5 @@ export default class CognitiveComplexity
     }
   }
 
-  get metrics() {
-    return this.#score;
-  }
+  abstract get metrics(): CognitiveComplexityMetrics;
 }

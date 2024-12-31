@@ -8,24 +8,51 @@ export type VisitProps = {
 
 type Leave = (props: VisitProps) => void;
 
-type Visit = (props: VisitProps) => void | Leave;
+export interface VisitResult {
+  /**
+   * 当該ノードの子孫ノードの解析が全て終わり兄弟ノードまたは親ノードの解析へと移行する際に実行する処理。
+   */
+  leave?: Leave;
+  /** 当該ノードとその子孫ノードに対して Visitor を追加したい場合に指定する */
+  additionalVisitors?: AstVisitor[];
+}
+
+type Visit = (props: VisitProps) => void | VisitResult;
 
 export interface AstVisitor {
   visit: Visit;
 }
 
 export default class AstTraverser {
-  readonly #visitors: AstVisitor[];
   readonly #sourceFile: ts.SourceFile;
+
   constructor(sourceFile: ts.SourceFile, visitors: AstVisitor[]) {
     this.#sourceFile = sourceFile;
-    this.#visitors = visitors;
+    visitors.forEach(this.#setVisitor.bind(this));
+  }
+  readonly #visitors: Map<Symbol, AstVisitor> = new Map();
+  #setVisitor(visitor: AstVisitor) {
+    const key = Symbol();
+    this.#visitors.set(key, visitor);
+    return key;
   }
 
   #traverse(node: ts.Node, depth: number) {
-    const leaveFnList: (Leave | void)[] = this.#visitors.map(visitor =>
-      visitor.visit({ node, depth, sourceFile: this.#sourceFile }),
-    );
+    const visitResults: VisitResult[] = [];
+    let additionalVisitorIds: Symbol[] = [];
+
+    for (const visitor of this.#visitors.values()) {
+      const result = visitor.visit({
+        node,
+        depth,
+        sourceFile: this.#sourceFile,
+      });
+      if (result) visitResults.push(result);
+      additionalVisitorIds = additionalVisitorIds.concat(
+        result?.additionalVisitors?.map(this.#setVisitor.bind(this)) ?? [],
+      );
+    }
+
     const nextDepth = depth + 1;
     if (ts.isJsxElement(node)) {
       this.#traverse(node.openingElement, nextDepth);
@@ -42,9 +69,13 @@ export default class AstTraverser {
     } else {
       ts.forEachChild(node, node => this.#traverse(node, nextDepth));
     }
-    leaveFnList
+
+    // 後処理
+    visitResults
+      .map(result => result.leave)
       .filter(fn => !!fn)
       .forEach(fn => fn({ node, depth, sourceFile: this.#sourceFile }));
+    additionalVisitorIds.forEach(id => this.#visitors.delete(id));
   }
 
   traverse() {
