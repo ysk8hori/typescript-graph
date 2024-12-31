@@ -10,6 +10,7 @@ import {
   isTopLevelObjectLiteralExpression,
   TopLevelMatcher,
 } from './astUtils';
+import { VisitorFactory } from './VisitorFactory';
 
 type NodeMatcher = (node: ts.Node) => boolean;
 
@@ -100,10 +101,15 @@ export default abstract class CognitiveComplexity
 {
   constructor(
     protected name: string,
-    param?: { topLevelDepth?: number },
+    param?: {
+      topLevelDepth?: number;
+      visitorFactory?: VisitorFactory<CognitiveComplexity>;
+    },
   ) {
     this.topLevelDepth = param?.topLevelDepth ?? 1;
+    this.#visitorFactory = param?.visitorFactory;
   }
+  #visitorFactory?: VisitorFactory<CognitiveComplexity>;
   protected topLevelDepth: number;
 
   #visit({ node, depth }: VisitProps): VisitResult | void {
@@ -136,8 +142,10 @@ export default abstract class CognitiveComplexity
   visit({ node, depth, sourceFile }: VisitProps): VisitResult | void {
     const originalResult = this.#visit({ node, depth, sourceFile });
 
-    const additionalVisitor = this.createAdditionalVisitor(node, depth);
-    this.addVisitor(additionalVisitor);
+    const additionalVisitor = this.#visitorFactory?.createAdditionalVisitor(
+      node,
+      depth,
+    );
 
     return {
       ...originalResult,
@@ -194,22 +202,13 @@ export default abstract class CognitiveComplexity
     }
   }
 
-  #additionalVisitors: CognitiveComplexity[] = [];
-  protected addVisitor(visitor: CognitiveComplexity | undefined) {
-    if (!visitor) return;
-    this.#additionalVisitors.push(visitor);
-  }
-
-  abstract createAdditionalVisitor(
-    node: ts.Node,
-    depth: number,
-  ): CognitiveComplexity | undefined;
-
   get metrics(): CognitiveComplexityMetrics {
     return {
       name: this.name,
       score: this.score,
-      children: this.#additionalVisitors.map(visitor => visitor.metrics),
+      children: this.#visitorFactory?.additionalVisitors.map(
+        visitor => visitor.metrics,
+      ),
     };
   }
 }

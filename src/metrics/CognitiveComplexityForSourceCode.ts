@@ -1,26 +1,30 @@
-import ts from 'typescript';
 import CognitiveComplexity from './CognitiveComplexity';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import CognitiveComplexityForClass from './CognitiveComplexityForClass';
-import { TopLevelVisitorFactory } from './VisitorFactory';
+import { TopLevelVisitorFactory, VisitorFactory } from './VisitorFactory';
 
 export default class CognitiveComplexityForSourceCode extends CognitiveComplexity {
-  #factory = new TopLevelVisitorFactory<CognitiveComplexity>(
-    this.topLevelDepth,
-    {
-      createFunctionVisitor: name => new CognitiveComplexityForNormalNode(name),
-      createArrowFunctionVisitor: name =>
-        new CognitiveComplexityForNormalNode(name),
-      createIIFEVisitor: name => new CognitiveComplexityForNormalNode(name),
-      createClassVisitor: name => new CognitiveComplexityForClass(name),
-      createObjectLiteralExpressionVisitor: name =>
-        new CognitiveComplexityForNormalNode(name),
+  constructor(
+    name: string,
+    param?: {
+      topLevelDepth?: number;
+      visitorFactory?: VisitorFactory<CognitiveComplexity>;
     },
-  );
-  createAdditionalVisitor(
-    node: ts.Node,
-    depth: number,
-  ): CognitiveComplexity | undefined {
-    return this.#factory.createAdditionalVisitor(node, depth);
+  ) {
+    super(name, {
+      visitorFactory: new TopLevelVisitorFactory<CognitiveComplexity>(
+        param?.topLevelDepth ?? 1,
+        {
+          createFunctionVisitor: name =>
+            new CognitiveComplexityForNormalNode(name),
+          createArrowFunctionVisitor: name =>
+            new CognitiveComplexityForNormalNode(name),
+          createIIFEVisitor: name => new CognitiveComplexityForNormalNode(name),
+          createClassVisitor: name => new CognitiveComplexityForClass(name),
+          createObjectLiteralExpressionVisitor: name =>
+            new CognitiveComplexityForNormalNode(name),
+        },
+      ),
+    });
   }
 }
