@@ -29,7 +29,7 @@ export default class AstLogger implements AstVisitor {
   #getText(node: ts.Node, sourceFile: ts.SourceFile) {
     return node
       .getText(sourceFile)
-      .replaceAll(/\r?\n/g, ' ')
+      .replaceAll(/\r?\n */g, ' ')
       .replaceAll('|', '\\|');
   }
 
