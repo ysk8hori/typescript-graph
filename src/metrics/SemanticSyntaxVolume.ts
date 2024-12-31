@@ -3,6 +3,8 @@ import { AstVisitor, VisitProps } from './AstTraverser';
 import Metrics from './Metrics';
 
 export interface SemanticSyntaxVolumeMetrics {
+  /** 構文のボリューム */
+  volume: number;
   /** 演算子の総数 */
   semanticSyntaxTotal: number;
   /** ユニークな演算子の数 */
@@ -139,9 +141,9 @@ export default class SemanticSyntaxVolume
     }
   }
 
-  // TODO: 本来 metrics として返すべきは volume なのでそのうち修正する
   get metrics(): SemanticSyntaxVolumeMetrics {
     return {
+      volume: this.volume,
       semanticSyntaxTotal: this.#totalSemanticSyntax,
       semanticSyntaxUnique: this.#uniqueSemanticSyntaxKinds.size,
       operandsTotal: this.#totalOperands,
@@ -150,8 +152,8 @@ export default class SemanticSyntaxVolume
   }
 
   get volume(): number {
-    const N = this.metrics.semanticSyntaxTotal + this.metrics.operandsTotal;
-    const n = this.metrics.semanticSyntaxUnique + this.metrics.operandsUnique;
+    const N = this.#totalSemanticSyntax + this.#totalOperands;
+    const n = this.#uniqueSemanticSyntaxKinds.size + this.#uniqueOperands.size;
     return N * Math.log2(n);
   }
 }

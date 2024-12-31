@@ -41,13 +41,11 @@ test.each([
     cognitiveComplexity,
   ]);
   astTraverser.traverse();
-  console.log('Cognitive Complexity:', cognitiveComplexity.metrics.score);
+  console.log('Cognitive Complexity ▼');
   logCognitiveComplexityMetrics(cognitiveComplexity.metrics);
-  // console.table(cognitiveComplexity.metrics.children);
   console.log('Cyclomatic Complexity:', cyclomaticComplexity.metrics);
-  console.log('Semantic Syntax Volume:', volume.volume);
+  console.log('Semantic Syntax Volume ▼');
   console.table(volume.metrics);
-  // Maintainability Index = MAX(0,(171 - 5.2 * ln(Halstead Volume) - 0.23 * (Cyclomatic Complexity) - 16.2 * ln(Lines of Code))*100 / 171)
   const halsteadVolume = volume.volume;
   const maintainabilityIndex = Math.max(
     0,

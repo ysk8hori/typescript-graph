@@ -8,7 +8,7 @@ import AstTraverser from './AstTraverser';
 
 type OperatorTest = {
   perspective: string;
-  tests: [string, SemanticSyntaxVolumeMetrics][];
+  tests: [string, Omit<SemanticSyntaxVolumeMetrics, 'volume'>][];
 };
 describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
   describe.each([
@@ -1286,7 +1286,7 @@ class A {
         astTraverser.traverse();
         console.log(astLogger.log);
         console.log(volume.volume);
-        expect(volume.metrics).toEqual(expected);
+        expect(volume.metrics).toEqual(expect.objectContaining(expected));
       });
     },
   );

@@ -26,7 +26,7 @@ function Button({ flag }: { flag: boolean }) {
 `;
 type OperatorTest = {
   perspective: string;
-  tests: [string, SemanticSyntaxVolumeMetrics][];
+  tests: [string, Omit<SemanticSyntaxVolumeMetrics, 'volume'>][];
 };
 describe.each([ts.ScriptKind.TSX])(`%s`, scriptKind => {
   describe.each([
@@ -121,7 +121,7 @@ describe.each([ts.ScriptKind.TSX])(`%s`, scriptKind => {
         astTraverser.traverse();
         console.log(astLogger.log);
         console.log(volume.volume);
-        expect(volume.metrics).toEqual(expected);
+        expect(volume.metrics).toEqual(expect.objectContaining(expected));
       });
     },
   );
