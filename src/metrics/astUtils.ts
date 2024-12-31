@@ -95,6 +95,10 @@ export function getClassName(node: ts.ClassDeclaration): string {
   );
 }
 
+export function getConstructorName(): string {
+  return 'constructor';
+}
+
 export function getMethodName(node: ts.MethodDeclaration): string {
   return (
     node

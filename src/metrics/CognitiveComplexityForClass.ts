@@ -3,6 +3,7 @@ import { VisitProps, VisitResult } from './AstTraverser';
 import CognitiveComplexity from './CognitiveComplexity';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import {
+  getConstructorName,
   getGetAccessorName,
   getMethodName,
   getSetAccessorName,
@@ -19,6 +20,9 @@ function createAdditionalVisitor(
   }
   if (ts.isMethodDeclaration(node)) {
     return new CognitiveComplexityForNormalNode(getMethodName(node));
+  }
+  if (ts.isConstructorDeclaration(node)) {
+    return new CognitiveComplexityForNormalNode(getConstructorName());
   }
   return undefined;
 }

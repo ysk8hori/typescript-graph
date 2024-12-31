@@ -77,6 +77,10 @@ test.each([
     tests: [
       `
 class X {
+  constructor() {
+    if (z) {
+    }
+  }
   method() {
     if (z) {
     }
@@ -114,12 +118,16 @@ const y = () => {
       `,
       {
         name: 'sample.tsx',
-        score: 9,
+        score: 10,
         children: [
           {
             name: 'X',
-            score: 7,
+            score: 8,
             children: [
+              {
+                name: 'constructor',
+                score: 1,
+              },
               {
                 name: 'method',
                 score: 1,
