@@ -154,60 +154,26 @@ const y = () => {
       },
     ],
   },
-  // {
-  //   perspective:
-  //     'トップレベルの無名関数定義はネストレベルをインクリメントしない',
-  //   tests: [`(function() { if(z) {} })()`, 1],
-  // },
-  //   {
-  //     perspective:
-  //       'トップレベルではないオブジェクトはネストレベルをインクリメントする、オブジェクトのプロパティに定義された関数はネストレベルをインクリメントしない',
-  //     tests: [
-  //       `
-  // const obj = {
-  //   obj2: {
-  //     x: function () {
-  //       if (true) {
-  //       }
-  //     },
-  //     y() {
-  //       if (true) {
-  //       }
-  //     },
-  //     z: () => {
-  //       if (true) {
-  //       }
-  //     },
-  //   }
-  // };
-  //       `,
-  //       6,
-  //     ],
-  //   },
-  //   {
-  //     perspective:
-  //       '',
-  //     tests: [
-  //       `
-  // class A {
-  //   method() {
-  //     class A2 {
-  //       constructor() {
-  //         if (true) {}
-  //       }
-  //     }
-  //   }
-  // }
-  // class B {
-  //   method() {
-  //     if (true) {}
-  //     if (true) {}
-  //   }
-  // }
-  //       `,
-  //       2,
-  //     ],
-  //   },
+  {
+    perspective: '全体のスコアとトップレベルのオブジェクトのスコアを計測できる',
+    tests: [
+      `function x() { if(z) {} } const y = {z:() => { if(z) {} if(z) {} }};`,
+      {
+        name: 'sample.tsx',
+        score: 3,
+        children: [
+          {
+            name: 'x',
+            score: 1,
+          },
+          {
+            name: 'y',
+            score: 2,
+          },
+        ],
+      },
+    ],
+  },
 ] satisfies OperatorTest[])(
   `$perspective`,
   ({ tests: [sourceCode, expected] }) => {

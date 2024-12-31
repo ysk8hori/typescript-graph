@@ -9,10 +9,12 @@ import {
   getArrowFunctionName,
   getClassName,
   getFunctionName,
+  getObjectName,
   isTopLevelArrowFunction,
   isTopLevelClass,
   isTopLevelFunction,
   isTopLevelIIFE,
+  isTopLevelObjectLiteralExpression,
 } from './astUtils';
 import CognitiveComplexityForClass from './CognitiveComplexityForClass';
 
@@ -32,6 +34,9 @@ function createAdditionalVisitor(
   }
   if (isTopLevelClass(topLevelDepth, depth, node)) {
     return new CognitiveComplexityForClass(getClassName(node));
+  }
+  if (isTopLevelObjectLiteralExpression(topLevelDepth, depth, node)) {
+    return new CognitiveComplexityForClass(getObjectName(node));
   }
   return undefined;
 }

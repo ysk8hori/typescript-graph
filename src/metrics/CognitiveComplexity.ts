@@ -7,6 +7,7 @@ import {
   isTopLevelClass,
   isTopLevelFunction,
   isTopLevelIIFE,
+  isTopLevelObjectLiteralExpression,
   TopLevelMatcher,
 } from './astUtils';
 
@@ -69,18 +70,11 @@ const incrementNestMachers: ((node: ts.Node) => boolean)[] = [
 ];
 
 const skipNestIncrementAtTopLevelMatchers: TopLevelMatcher[] = [
-  // トップレベルに定義された関数はネストレベルをインクリメントしない
   isTopLevelFunction,
-  // トップレベルに定義されたアロー関数はネストレベルをインクリメントしない
   isTopLevelArrowFunction,
-  // トップレベルに定義された即時実行関数はネストレベルをインクリメントしない
   isTopLevelIIFE,
-  // トップレベルのクラスはネストレベルをインクリメントしない
   isTopLevelClass,
-  (topLevelDepth, currentDepth, node) =>
-    // トップレベルのオブジェクト定義はネストレベルをインクリメントしない
-    // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ObjectLiteralExpression
-    currentDepth - 3 <= topLevelDepth && ts.isObjectLiteralExpression(node),
+  isTopLevelObjectLiteralExpression,
   (_topLevelDepth, _currentDepth, node) =>
     // オブジェクトに定義されたアローファンクションはネストレベルをインクリメントしない
     // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ObjectLiteralExpression>5:PropertyAssignment>6:ArrowFunction

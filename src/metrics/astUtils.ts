@@ -50,6 +50,18 @@ export function isTopLevelClass(
   return currentDepth === topLevelDepth && ts.isClassDeclaration(node);
 }
 
+/** トップレベルに定義されたオブジェクトかどうかを判定する */
+export function isTopLevelObjectLiteralExpression(
+  topLevelDepth: number,
+  currentDepth: number,
+  node: ts.Node,
+): node is ts.ObjectLiteralExpression {
+  // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ObjectLiteralExpression
+  return (
+    currentDepth - 3 <= topLevelDepth && ts.isObjectLiteralExpression(node)
+  );
+}
+
 const ANONYMOUS_FUNCTION_NAME = 'anonymous function';
 
 export function getFunctionName(node: ts.FunctionDeclaration): string {
@@ -108,4 +120,13 @@ export function getSetAccessorName(node: ts.SetAccessorDeclaration): string {
       .find(n => ts.isIdentifier(n))
       ?.getText(node.getSourceFile()) ?? 'anonymous set accessor';
   return `set ${name}`;
+}
+
+export function getObjectName(node: ts.ObjectLiteralExpression): string {
+  return (
+    node.parent
+      .getChildren()
+      .find(n => ts.isIdentifier(n))
+      ?.getText(node.getSourceFile()) ?? 'anonymous object'
+  );
 }
