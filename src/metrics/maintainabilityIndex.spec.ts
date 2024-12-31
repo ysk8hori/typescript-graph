@@ -1,11 +1,11 @@
 import { test } from 'vitest';
 import * as ts from 'typescript';
 import AstTraverser from './AstTraverser';
-import CyclomaticComplexity from './CyclomaticComplexity';
 import SemanticSyntaxVolume from './SemanticSyntaxVolume';
 import { readFileSync } from 'fs';
 import CognitiveComplexityForSourceCode from './CognitiveComplexityForSourceCode';
 import { CognitiveComplexityMetrics } from './CognitiveComplexity';
+import CyclomaticComplexityForSourceCode from './CyclomaticComplexityForSourceCode';
 
 test.each([
   'src/graph/createGraph.ts',
@@ -32,7 +32,7 @@ test.each([
     true,
     ts.ScriptKind.TS,
   );
-  const cyclomaticComplexity = new CyclomaticComplexity();
+  const cyclomaticComplexity = new CyclomaticComplexityForSourceCode(path);
   const volume = new SemanticSyntaxVolume();
   const cognitiveComplexity = new CognitiveComplexityForSourceCode(path);
   const astTraverser = new AstTraverser(source, [
@@ -43,7 +43,8 @@ test.each([
   astTraverser.traverse();
   console.log('Cognitive Complexity ▼');
   logCognitiveComplexityMetrics(cognitiveComplexity.metrics);
-  console.log('Cyclomatic Complexity:', cyclomaticComplexity.metrics);
+  console.log('Cyclomatic Complexity ▼');
+  logCognitiveComplexityMetrics(cyclomaticComplexity.metrics);
   console.log('Semantic Syntax Volume ▼');
   console.table(volume.metrics);
   const halsteadVolume = volume.volume;
@@ -51,7 +52,7 @@ test.each([
     0,
     ((171 -
       5.2 * Math.log(halsteadVolume) -
-      0.23 * cyclomaticComplexity.metrics -
+      0.23 * cyclomaticComplexity.metrics.score -
       16.2 * Math.log(source.getLineAndCharacterOfPosition(source.end).line)) *
       100) /
       171,

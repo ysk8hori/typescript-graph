@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { AstVisitor, VisitProps } from './AstTraverser';
 import Metrics from './Metrics';
-import { allPass } from 'remeda';
+import { VisitorFactory } from './VisitorFactory';
 
 function kindMatcher(kind: ts.SyntaxKind) {
   return (node: ts.Node) => node.kind === kind;
@@ -9,7 +9,7 @@ function kindMatcher(kind: ts.SyntaxKind) {
 
 const cyclomaticNodeMatchers: ((node: ts.Node) => boolean)[] = [
   ts.isConditionalExpression,
-  allPass([ts.isPropertyAccessExpression, ts.isOptionalChain]),
+  ts.isQuestionDotToken,
   ts.isNullishCoalesce,
   kindMatcher(ts.SyntaxKind.QuestionQuestionEqualsToken),
   kindMatcher(ts.SyntaxKind.BarBarEqualsToken),
@@ -24,16 +24,39 @@ const cyclomaticNodeMatchers: ((node: ts.Node) => boolean)[] = [
   ts.isConditionalTypeNode,
 ];
 
-export default class CyclomaticComplexity
-  implements AstVisitor, Metrics<number>
-{
-  /** デバッグ用 */
-  #getText(node: ts.Node, sourceFile: ts.SourceFile) {
-    return node.getText(sourceFile).replaceAll(/\r?\n/g, ' ');
-  }
+export interface CyclomaticComplexityMetrics {
+  name: string;
+  score: number;
+  children?: CyclomaticComplexityMetrics[];
+}
 
-  visit({ node }: VisitProps) {
+export default abstract class CyclomaticComplexity
+  implements AstVisitor, Metrics<CyclomaticComplexityMetrics>
+{
+  constructor(
+    protected name: string,
+    param?: {
+      topLevelDepth?: number;
+      visitorFactory?: VisitorFactory<CyclomaticComplexity>;
+    },
+  ) {
+    this.topLevelDepth = param?.topLevelDepth ?? 1;
+    this.#visitorFactory = param?.visitorFactory;
+  }
+  #visitorFactory?: VisitorFactory<CyclomaticComplexity>;
+  protected topLevelDepth: number;
+
+  visit({ node, depth }: VisitProps) {
     if (cyclomaticNodeMatchers.some(matcher => matcher(node))) this.#addPath();
+
+    const additionalVisitor = this.#visitorFactory?.createAdditionalVisitor(
+      node,
+      depth,
+    );
+
+    return {
+      additionalVisitors: [additionalVisitor].filter(v => !!v),
+    };
   }
 
   #pathCount: number = 1;
@@ -42,7 +65,13 @@ export default class CyclomaticComplexity
     this.#pathCount++;
   }
 
-  get metrics() {
-    return this.#pathCount;
+  get metrics(): CyclomaticComplexityMetrics {
+    return {
+      name: this.name,
+      score: this.#pathCount,
+      children: this.#visitorFactory?.additionalVisitors
+        .filter(v => !!v)
+        .map(v => v.metrics),
+    };
   }
 }

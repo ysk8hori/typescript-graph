@@ -2,7 +2,7 @@ import { test, expect, describe } from 'vitest';
 import AstLogger from './AstLogger';
 import * as ts from 'typescript';
 import AstTraverser from './AstTraverser';
-import CyclomaticComplexity from './CyclomaticComplexity';
+import CyclomaticComplexityForSourceCode from './CyclomaticComplexityForSourceCode';
 
 type OperatorTest = {
   perspective: string;
@@ -16,7 +16,11 @@ test.each([
   },
   {
     perspective: 'オプショナルチェーン',
-    tests: ['const x = x?.y?.z?.foo', 4],
+    tests: ['const x = a.b.c.x?.y?.z?.foo', 4],
+  },
+  {
+    perspective: 'オプショナルチェーンからのプロパティアクセス',
+    tests: ['a?.b?.c.d', 3],
   },
   {
     perspective: 'Null 合体演算子 バイナリー論理演算子 QuestionQuestionToken',
@@ -88,10 +92,10 @@ test.each([
       ts.ScriptKind.TS,
     );
     const astLogger = new AstLogger();
-    const volume = new CyclomaticComplexity();
+    const volume = new CyclomaticComplexityForSourceCode('sample.tsx');
     const astTraverser = new AstTraverser(source, [astLogger, volume]);
     astTraverser.traverse();
     console.log(astLogger.log);
-    expect(volume.metrics).toEqual(expected);
+    expect(volume.metrics.score).toEqual(expected);
   },
 );
