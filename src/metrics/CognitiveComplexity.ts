@@ -177,28 +177,29 @@ export default abstract class CognitiveComplexity
    */
   #trackLogicalToken(node: ts.Node) {
     if (
-      node.kind === ts.SyntaxKind.AmpersandAmpersandToken ||
-      node.kind === ts.SyntaxKind.BarBarToken
+      node.kind !== ts.SyntaxKind.AmpersandAmpersandToken &&
+      node.kind !== ts.SyntaxKind.BarBarToken
     ) {
-      let parentFlg = false;
-      node.parent.parent.forEachChild(n => {
-        if (n === node.parent) {
-          parentFlg = true;
-          return;
-        }
-        if (parentFlg) {
-          parentFlg = false;
-          // console.log('parent next: ', getText(n, n.getSourceFile()));
-          // 親の兄弟ノードが自分の SyntaxKind と異なる場合、自分がその論理演算子の最後のノードであると判断し、スコアのインクリメントを行う
-          if (n.kind !== node.kind) {
-            this.#simpleIncrementScore();
-          }
-        }
-      });
-      if (parentFlg) {
-        // 親の兄弟がいなかった場合は自分がその論理演算子の最後のノードであると判断し、スコアのインクリメントを行う
-        this.#simpleIncrementScore();
+      return;
+    }
+    let parentFlg = false;
+    // 親の兄弟ノードが自分の SyntaxKind と異なる場合、自分がその論理演算子の最後のノードであると判断し、スコアのインクリメントを行う
+    node.parent.parent.forEachChild(n => {
+      if (n === node.parent) {
+        parentFlg = true;
+        return;
       }
+      if (parentFlg) {
+        parentFlg = false;
+        // console.log('parent next: ', getText(n, n.getSourceFile()));
+        if (n.kind !== node.kind) {
+          this.#simpleIncrementScore();
+        }
+      }
+    });
+    if (parentFlg) {
+      // 親の兄弟がいなかった場合は自分がその論理演算子の最後のノードであると判断し、スコアのインクリメントを行う
+      this.#simpleIncrementScore();
     }
   }
 
