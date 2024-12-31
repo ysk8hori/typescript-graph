@@ -180,5 +180,12 @@ export default abstract class CognitiveComplexity
     }
   }
 
-  abstract get metrics(): CognitiveComplexityMetrics;
+  protected additionalVisitors: CognitiveComplexity[] = [];
+  get metrics(): CognitiveComplexityMetrics {
+    return {
+      name: this.name,
+      score: this.score,
+      children: this.additionalVisitors.map(visitor => visitor.metrics),
+    };
+  }
 }

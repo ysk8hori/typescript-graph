@@ -1,8 +1,6 @@
 import ts from 'typescript';
 import { VisitProps, VisitResult } from './AstTraverser';
-import CognitiveComplexity, {
-  CognitiveComplexityMetrics,
-} from './CognitiveComplexity';
+import CognitiveComplexity from './CognitiveComplexity';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import {
   getAnonymousFunctionName,
@@ -54,21 +52,12 @@ export default class CognitiveComplexityForSourceCode extends CognitiveComplexit
       return superResult;
     }
 
-    this.#additionalVisitors.push(additionalVisitor);
+    this.additionalVisitors.push(additionalVisitor);
     return {
       leave: prop => {
         superResult?.leave?.(prop);
       },
       additionalVisitors: [additionalVisitor],
-    };
-  }
-  #additionalVisitors: CognitiveComplexity[] = [];
-
-  get metrics(): CognitiveComplexityMetrics {
-    return {
-      name: this.name,
-      score: this.score,
-      children: this.#additionalVisitors.map(visitor => visitor.metrics),
     };
   }
 }
