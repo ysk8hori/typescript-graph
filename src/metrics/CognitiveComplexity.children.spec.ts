@@ -51,14 +51,26 @@ test.each([
       },
     ],
   },
-  // {
-  //   perspective:
-  //     'トップレベルのアロー関数定義はネストレベルをインクリメントしない',
-  //   tests: [
-  //     `const x = () => { if(z) {} }; const y = () => { if(z) {} if(z) {} };`,
-  //     1,
-  //   ],
-  // },
+  {
+    perspective: '全体のスコアとトップレベルの無名関数のスコアを計測できる',
+    tests: [
+      `(function () { if(z) {} })() const y = () => { if(z) {} if(z) {} };`,
+      {
+        name: 'sample.tsx',
+        score: 3,
+        children: [
+          {
+            name: 'anonymous function',
+            score: 1,
+          },
+          {
+            name: 'y',
+            score: 2,
+          },
+        ],
+      },
+    ],
+  },
   // {
   //   perspective:
   //     'トップレベルの無名関数定義はネストレベルをインクリメントしない',

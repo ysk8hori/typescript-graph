@@ -5,10 +5,12 @@ import CognitiveComplexity, {
 } from './CognitiveComplexity';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import {
+  getAnonymousFunctionName,
   getArrowFunctionName,
   getFunctionName,
   isTopLevelArrowFunction,
   isTopLevelFunction,
+  isTopLevelIIFE,
 } from './astUtils';
 
 function createAdditionalVisitor(
@@ -21,6 +23,9 @@ function createAdditionalVisitor(
   }
   if (isTopLevelArrowFunction(topLevelDepth, depth, node)) {
     return new CognitiveComplexityForNormalNode(getArrowFunctionName(node));
+  }
+  if (isTopLevelIIFE(topLevelDepth, depth, node)) {
+    return new CognitiveComplexityForNormalNode(getAnonymousFunctionName());
   }
   return undefined;
 }

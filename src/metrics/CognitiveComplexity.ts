@@ -5,6 +5,7 @@ import { allPass, anyPass } from 'remeda';
 import {
   isTopLevelArrowFunction,
   isTopLevelFunction,
+  isTopLevelIIFE,
   TopLevelMatcher,
 } from './astUtils';
 
@@ -71,12 +72,8 @@ const skipNestIncrementAtTopLevelMatchers: TopLevelMatcher[] = [
   isTopLevelFunction,
   // トップレベルに定義されたアロー関数はネストレベルをインクリメントしない
   isTopLevelArrowFunction,
-  (topLevelDepth, currentDepth, node) =>
-    // トップレベルに定義された即時実行関数はネストレベルをインクリメントしない
-    // 0:SourceFile>1:ExpressionStatement>2:CallExpression>3:ParenthesizedExpression>4:FunctionExpression
-    currentDepth - 3 === topLevelDepth &&
-    ts.isFunctionExpression(node) &&
-    ts.isParenthesizedExpression(node.parent),
+  // トップレベルに定義された即時実行関数はネストレベルをインクリメントしない
+  isTopLevelIIFE,
   (topLevelDepth, currentDepth, node) =>
     // トップレベルのクラスはネストレベルをインクリメントしない
     // 0:SourceFile>1:ClassDeclaration
