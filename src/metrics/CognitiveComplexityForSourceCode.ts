@@ -1,5 +1,4 @@
 import ts from 'typescript';
-import { VisitProps, VisitResult } from './AstTraverser';
 import CognitiveComplexity from './CognitiveComplexity';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import {
@@ -8,56 +7,30 @@ import {
   getClassName,
   getFunctionName,
   getObjectName,
-  isTopLevelArrowFunction,
-  isTopLevelClass,
-  isTopLevelFunction,
-  isTopLevelIIFE,
-  isTopLevelObjectLiteralExpression,
 } from './astUtils';
 import CognitiveComplexityForClass from './CognitiveComplexityForClass';
-
-function createAdditionalVisitor(
-  topLevelDepth: number,
-  depth: number,
-  node: ts.Node,
-): CognitiveComplexity | undefined {
-  if (isTopLevelFunction(topLevelDepth, depth, node)) {
-    return new CognitiveComplexityForNormalNode(getFunctionName(node));
-  }
-  if (isTopLevelArrowFunction(topLevelDepth, depth, node)) {
-    return new CognitiveComplexityForNormalNode(getArrowFunctionName(node));
-  }
-  if (isTopLevelIIFE(topLevelDepth, depth, node)) {
-    return new CognitiveComplexityForNormalNode(getAnonymousFunctionName());
-  }
-  if (isTopLevelClass(topLevelDepth, depth, node)) {
-    return new CognitiveComplexityForClass(getClassName(node));
-  }
-  if (isTopLevelObjectLiteralExpression(topLevelDepth, depth, node)) {
-    return new CognitiveComplexityForClass(getObjectName(node));
-  }
-  return undefined;
-}
+import { TopLevelVisitorFactory } from './VisitorFactory';
 
 export default class CognitiveComplexityForSourceCode extends CognitiveComplexity {
-  visit({ node, depth, sourceFile }: VisitProps): void | VisitResult {
-    const superResult = super.visit({ node, depth, sourceFile });
-    const additionalVisitor = createAdditionalVisitor(
-      this.topLevelDepth,
-      depth,
-      node,
-    );
-
-    if (!additionalVisitor) {
-      return superResult;
-    }
-
-    this.additionalVisitors.push(additionalVisitor);
-    return {
-      leave: prop => {
-        superResult?.leave?.(prop);
-      },
-      additionalVisitors: [additionalVisitor],
-    };
+  #factory = new TopLevelVisitorFactory<CognitiveComplexity>(
+    this.topLevelDepth,
+    {
+      createFunctionVisitor: node =>
+        new CognitiveComplexityForNormalNode(getFunctionName(node)),
+      createArrowFunctionVisitor: node =>
+        new CognitiveComplexityForNormalNode(getArrowFunctionName(node)),
+      createIIFEVisitor: () =>
+        new CognitiveComplexityForNormalNode(getAnonymousFunctionName()),
+      createClassVisitor: node =>
+        new CognitiveComplexityForClass(getClassName(node)),
+      createObjectLiteralExpressionVisitor: node =>
+        new CognitiveComplexityForNormalNode(getObjectName(node)),
+    },
+  );
+  createAdditionalVisitor(
+    node: ts.Node,
+    depth: number,
+  ): CognitiveComplexity | undefined {
+    return this.#factory.createAdditionalVisitor(node, depth);
   }
 }

@@ -106,7 +106,7 @@ export default abstract class CognitiveComplexity
   }
   protected topLevelDepth: number;
 
-  visit({ node, depth }: VisitProps): VisitResult | void {
+  #visit({ node, depth }: VisitProps): VisitResult | void {
     this.#trackLogicalToken(node);
     if (incrementScoreMachers.some(matcher => matcher(node))) {
       this.#incrementScore();
@@ -131,6 +131,18 @@ export default abstract class CognitiveComplexity
         },
       };
     }
+  }
+
+  visit({ node, depth, sourceFile }: VisitProps): VisitResult | void {
+    const originalResult = this.#visit({ node, depth, sourceFile });
+
+    const additionalVisitor = this.createAdditionalVisitor(node, depth);
+    this.addVisitor(additionalVisitor);
+
+    return {
+      ...originalResult,
+      additionalVisitors: [additionalVisitor].filter(v => !!v),
+    };
   }
 
   protected score: number = 0;
@@ -182,12 +194,22 @@ export default abstract class CognitiveComplexity
     }
   }
 
-  protected additionalVisitors: CognitiveComplexity[] = [];
+  #additionalVisitors: CognitiveComplexity[] = [];
+  protected addVisitor(visitor: CognitiveComplexity | undefined) {
+    if (!visitor) return;
+    this.#additionalVisitors.push(visitor);
+  }
+
+  abstract createAdditionalVisitor(
+    node: ts.Node,
+    depth: number,
+  ): CognitiveComplexity | undefined;
+
   get metrics(): CognitiveComplexityMetrics {
     return {
       name: this.name,
       score: this.score,
-      children: this.additionalVisitors.map(visitor => visitor.metrics),
+      children: this.#additionalVisitors.map(visitor => visitor.metrics),
     };
   }
 }

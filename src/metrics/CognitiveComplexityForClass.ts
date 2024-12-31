@@ -1,5 +1,4 @@
 import ts from 'typescript';
-import { VisitProps, VisitResult } from './AstTraverser';
 import CognitiveComplexity from './CognitiveComplexity';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import {
@@ -8,40 +7,20 @@ import {
   getMethodName,
   getSetAccessorName,
 } from './astUtils';
-
-function createAdditionalVisitor(
-  node: ts.Node,
-): CognitiveComplexity | undefined {
-  if (ts.isGetAccessor(node)) {
-    return new CognitiveComplexityForNormalNode(getGetAccessorName(node));
-  }
-  if (ts.isSetAccessor(node)) {
-    return new CognitiveComplexityForNormalNode(getSetAccessorName(node));
-  }
-  if (ts.isMethodDeclaration(node)) {
-    return new CognitiveComplexityForNormalNode(getMethodName(node));
-  }
-  if (ts.isConstructorDeclaration(node)) {
-    return new CognitiveComplexityForNormalNode(getConstructorName());
-  }
-  return undefined;
-}
+import { ClassVisitorFactory } from './VisitorFactory';
 
 export default class CognitiveComplexityForClass extends CognitiveComplexity {
-  visit({ node, depth, sourceFile }: VisitProps): void | VisitResult {
-    const superResult = super.visit({ node, depth, sourceFile });
-    const additionalVisitor = createAdditionalVisitor(node);
-
-    if (!additionalVisitor) {
-      return superResult;
-    }
-
-    this.additionalVisitors.push(additionalVisitor);
-    return {
-      leave: prop => {
-        superResult?.leave?.(prop);
-      },
-      additionalVisitors: [additionalVisitor],
-    };
+  #factory = new ClassVisitorFactory({
+    createGetAccessorVisitor: node =>
+      new CognitiveComplexityForNormalNode(getGetAccessorName(node)),
+    createSetAccessorVisitor: node =>
+      new CognitiveComplexityForNormalNode(getSetAccessorName(node)),
+    createMethodVisitor: node =>
+      new CognitiveComplexityForNormalNode(getMethodName(node)),
+    createConstructorVisitor: () =>
+      new CognitiveComplexityForNormalNode(getConstructorName()),
+  });
+  createAdditionalVisitor(node: ts.Node): CognitiveComplexity | undefined {
+    return this.#factory.createAdditionalVisitor(node);
   }
 }
