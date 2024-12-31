@@ -96,7 +96,10 @@ export interface CognitiveComplexityMetrics {
 export default abstract class CognitiveComplexity
   implements AstVisitor, Metrics<CognitiveComplexityMetrics>
 {
-  constructor(param?: { topLevelDepth?: number }) {
+  constructor(
+    protected name: string,
+    param?: { topLevelDepth?: number },
+  ) {
     this.topLevelDepth = param?.topLevelDepth ?? 1;
   }
   protected topLevelDepth: number;

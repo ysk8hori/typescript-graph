@@ -26,9 +26,6 @@ function createAdditionalVisitor(
 }
 
 export default class CognitiveComplexityForClass extends CognitiveComplexity {
-  constructor(private name: string) {
-    super();
-  }
   visit({ node, depth, sourceFile }: VisitProps): void | VisitResult {
     const superResult = super.visit({ node, depth, sourceFile });
     const additionalVisitor = createAdditionalVisitor(node);
