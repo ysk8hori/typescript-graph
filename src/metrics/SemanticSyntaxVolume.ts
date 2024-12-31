@@ -125,7 +125,7 @@ export default class SemanticSyntaxVolume
       }
     } else {
       this.#addSemanticSyntaxKind(
-        node['operator'] ?? `${node.kind}/${node.flags}`,
+        (node as any)['operator'] ?? `${node.kind}/${node.flags}`,
       );
     }
 

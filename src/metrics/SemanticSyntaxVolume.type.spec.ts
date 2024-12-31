@@ -4,7 +4,6 @@ import SemanticSyntaxVolume, {
   type SemanticSyntaxVolumeMetrics,
 } from './SemanticSyntaxVolume';
 import ts from 'typescript';
-import { readFileSync } from 'fs';
 import AstTraverser from './AstTraverser';
 
 type OperatorTest = {

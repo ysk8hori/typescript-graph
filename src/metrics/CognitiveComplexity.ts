@@ -27,7 +27,7 @@ function isElseOrElseIfStatement(node: ts.Node): boolean {
 }
 
 function hasLabel(node: ts.Node): boolean {
-  return !!node['label'];
+  return !!(node as any)['label'];
 }
 
 /** nest level に影響を受けたインクリメントを行う node の判定 */
