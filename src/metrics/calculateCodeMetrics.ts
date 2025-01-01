@@ -96,7 +96,6 @@ export function calculateCodeMetrics(
       };
     })
     .map(convert);
-  data.forEach(d => console.table(JSON.stringify(d, null, '  ')));
   return data;
 }
 

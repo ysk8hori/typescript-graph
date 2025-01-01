@@ -11,6 +11,7 @@ import packagejson from '../package.json';
 import { OptionValues, measureInstability } from './models';
 import { pipe } from 'remeda';
 import { getConfig, setupConfig } from './config';
+import { calculateCodeMetrics } from './metrics/calculateCodeMetrics';
 
 const program = new Command();
 program
@@ -81,6 +82,9 @@ export async function main(
   );
 
   const { graph: fullGraph, meta } = createGraph(commandOptions);
+  console.time('calculateCodeMetrics');
+  const metrics = calculateCodeMetrics(commandOptions);
+  console.timeEnd('calculateCodeMetrics');
 
   let couplingData: ReturnType<typeof measureInstability> = [];
   if (commandOptions.measureInstability) {
@@ -110,6 +114,7 @@ export async function main(
       executedScript: commandOptions.executedScript,
     },
     couplingData,
+    metrics,
   );
 }
 const executedScript = `tsg ${process.argv.slice(2).join(' ')}`;
