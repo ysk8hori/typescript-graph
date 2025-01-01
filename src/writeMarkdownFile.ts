@@ -1,6 +1,7 @@
 import { createWriteStream } from 'fs';
 import mermaidify from './mermaidify';
 import { Graph, OptionValues, measureInstability } from './models';
+import { CodeMetrics } from './metrics/calculateCodeMetrics';
 
 type Options = OptionValues & {
   rootDir: string;
@@ -12,6 +13,7 @@ export async function writeMarkdownFile(
   graph: Graph,
   options: Options,
   couplingData: ReturnType<typeof measureInstability>,
+  metrics: CodeMetrics[],
 ) {
   return new Promise((resolve, reject) => {
     const filename = markdownTitle.endsWith('.md')
@@ -46,9 +48,113 @@ export async function writeMarkdownFile(
           `${node.path} | ${node.afferentCoupling} | ${node.efferentCoupling} | ${node.instability.toFixed(2)}\n`,
         );
       });
+      ws.write('\n');
+      ws.write('\n');
+    }
+
+    if (metrics.length !== 0) {
+      sortMetrics(metrics);
+      const flatten = metrics.map(m => flatMetrics(m)).flat();
+      ws.write('## Code Metrics\n');
+
+      ws.write('\n');
+      ws.write('<table>\n');
+      ws.write(
+        `<thead><tr><th scope="col">file</th><th scope="col">scope</th><th scope="col">name</th>${flatten[0].scores.map(({ name }) => `<th scope="col">${name}</th>`).join('')}</tr></thead>\n`,
+      );
+      ws.write(`<tbody>\n`);
+      flatten.forEach(m => {
+        ws.write(
+          `<tr><th scope="row">${m.fileName}</th><th scope="row">${m.scope}</th><th scope="row">${m.name}</th>${m.scores
+            .map(({ value, state }) => ({
+              score: Math.round(value * 100) / 100,
+              state,
+            }))
+            .map(v => `<td${getStyleByState(v.state)}>${v.score}</td$>`)
+            .join('')}</tr>\n`,
+        );
+      });
+      ws.write('</tbody></table>');
+
+      ws.write('\n');
+      ws.write('<details>\n');
+      ws.write('<summary>CSV</summary>\n');
+      ws.write('\n');
+      ws.write('```csv\n');
+      ws.write(
+        `file,scope,name,${flatten[0].scores.map(({ name }) => name).join(',')}\n`,
+      );
+      flatten.forEach(m => {
+        ws.write(
+          `${m.fileName},${m.scope},${m.name},${m.scores.map(({ value }) => value).join(',')}\n`,
+        );
+      });
+      ws.write('```\n');
+      ws.write('\n');
+      ws.write('</details>\n');
+
+      ws.write('\n');
+      ws.write('<details>\n');
+      ws.write('<summary>TSV</summary>\n');
+      ws.write('\n');
+      ws.write('```tsv\n');
+      ws.write(
+        `file\tscope\tname\t${flatten[0].scores.map(({ name }) => name).join('\t')}\n`,
+      );
+      flatten.forEach(m => {
+        ws.write(
+          `${m.fileName}\t${m.scope}\t${m.name}\t${m.scores.map(({ value }) => value).join('\t')}\n`,
+        );
+      });
+      ws.write('```\n');
+      ws.write('\n');
+      ws.write('</details>\n');
     }
     ws.end();
 
     console.log(filename);
   });
+}
+
+function flatMetrics(
+  metrics: CodeMetrics,
+  fileName?: string,
+): ({ fileName: string } & Pick<CodeMetrics, 'scope' | 'name' | 'scores'>)[] {
+  const children =
+    metrics.children?.map(c =>
+      fileName
+        ? flatMetrics({ ...c, name: `${metrics.name}.${c.name}` }, fileName) // クラスを想定。汎用的でない処理なので注意。
+        : flatMetrics(c, metrics.name),
+    ) ?? [];
+  return [
+    {
+      fileName: fileName ?? metrics.name,
+      scope: metrics.scope,
+      name: fileName ? metrics.name : '-',
+      scores: metrics.scores,
+    },
+    ...children,
+  ].flat();
+}
+
+export function getStyleByState(
+  state: CodeMetrics['scores'][number]['state'],
+): string {
+  switch (state) {
+    case 'critical':
+      return ' style="color:white;background-color:red;"';
+    case 'alert':
+      return ' style="color:black;background-color:yellow;"';
+    default:
+      return '';
+  }
+}
+
+function sortMetrics(list: CodeMetrics[]) {
+  list.sort(
+    (a, b) =>
+      (a.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0) -
+      (b.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0),
+  );
+  list.forEach(m => m.children && sortMetrics(m.children));
 }

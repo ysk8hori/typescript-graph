@@ -11,6 +11,10 @@ import packagejson from '../package.json';
 import { OptionValues, measureInstability } from './models';
 import { pipe } from 'remeda';
 import { getConfig, setupConfig } from './config';
+import {
+  calculateCodeMetrics,
+  CodeMetrics,
+} from './metrics/calculateCodeMetrics';
 
 const program = new Command();
 program
@@ -56,7 +60,11 @@ program
   .option('--TB', 'Specify Flowchart orientation Top-to-Bottom')
   .option(
     '--measure-instability',
-    'Enable the beta feature to measure the instability of the modules',
+    'Enable beta feature to measure module instability',
+  )
+  .option(
+    '--metrics',
+    'Enable beta feature to measures metrics such as Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity.',
   )
   .option(
     '--config-file',
@@ -81,6 +89,13 @@ export async function main(
   );
 
   const { graph: fullGraph, meta } = createGraph(commandOptions);
+
+  let metrics: CodeMetrics[] = [];
+  if (commandOptions.metrics) {
+    console.time('calculateCodeMetrics');
+    metrics = calculateCodeMetrics(commandOptions);
+    console.timeEnd('calculateCodeMetrics');
+  }
 
   let couplingData: ReturnType<typeof measureInstability> = [];
   if (commandOptions.measureInstability) {
@@ -110,6 +125,7 @@ export async function main(
       executedScript: commandOptions.executedScript,
     },
     couplingData,
+    metrics,
   );
 }
 const executedScript = `tsg ${process.argv.slice(2).join(' ')}`;

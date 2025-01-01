@@ -3,6 +3,7 @@ import path from 'path';
 import { z } from 'zod';
 import tsgConfig from './config.json';
 
+// TODO: 他の設定も追加する
 const tsgConfigScheme = z.object({
   reservedMermaidKeywords: z.array(z.tuple([z.string(), z.string()])),
   exclude: z.array(z.string()).optional(),
