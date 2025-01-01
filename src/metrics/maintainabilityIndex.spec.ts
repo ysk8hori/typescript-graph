@@ -48,6 +48,7 @@ test.each([
   console.log('Semantic Syntax Volume ▼');
   console.table(volume.metrics);
   const halsteadVolume = volume.volume;
+  console.log('lines:', source.getLineAndCharacterOfPosition(source.end).line);
   const maintainabilityIndex = Math.max(
     0,
     ((171 -
