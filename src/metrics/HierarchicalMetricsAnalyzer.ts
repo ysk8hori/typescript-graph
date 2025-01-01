@@ -51,6 +51,6 @@ export default abstract class HierarchicalMetricsAnalyzer<T>
     };
   }
 
-  abstract analyze(props: AnalyzeProps): Leave | void;
-  abstract score: T;
+  protected abstract analyze(props: AnalyzeProps): Leave | void;
+  protected abstract score: T;
 }

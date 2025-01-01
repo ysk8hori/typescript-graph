@@ -30,11 +30,11 @@ type Score = number;
 export type CyclomaticComplexityMetrics = HierarchicalMetris<Score>;
 
 export default abstract class CyclomaticComplexity extends HierarchicalMetricsAnalyzer<Score> {
-  analyze({ node }: AnalyzeProps) {
+  protected analyze({ node }: AnalyzeProps) {
     if (cyclomaticNodeMatchers.some(matcher => matcher(node))) this.#addScore();
   }
 
-  score: Score = 1;
+  protected score: Score = 1;
   #addScore() {
     this.score++;
   }

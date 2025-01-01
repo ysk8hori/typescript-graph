@@ -1,6 +1,5 @@
 import * as ts from 'typescript';
-import { AstVisitor, VisitProps, VisitResult } from './AstTraverser';
-import Metrics from './Metrics';
+import { Leave } from './AstTraverser';
 import { allPass, anyPass } from 'remeda';
 import {
   isTopLevelArrowFunction,
@@ -10,7 +9,10 @@ import {
   isTopLevelObjectLiteralExpression,
   TopLevelMatcher,
 } from './astUtils';
-import { VisitorFactory } from './VisitorFactory';
+import HierarchicalMetricsAnalyzer, {
+  AnalyzeProps,
+  HierarchicalMetris,
+} from './HierarchicalMetricsAnalyzer';
 
 type NodeMatcher = (node: ts.Node) => boolean;
 
@@ -90,29 +92,11 @@ const skipNestIncrementAtTopLevelMatchers: TopLevelMatcher[] = [
     ts.isObjectLiteralExpression(node.parent.parent),
 ];
 
-export interface CognitiveComplexityMetrics {
-  name: string;
-  score: number;
-  children?: CognitiveComplexityMetrics[];
-}
+type Score = number;
+export type CognitiveComplexityMetrics = HierarchicalMetris<Score>;
 
-export default abstract class CognitiveComplexity
-  implements AstVisitor, Metrics<CognitiveComplexityMetrics>
-{
-  constructor(
-    protected name: string,
-    param?: {
-      topLevelDepth?: number;
-      visitorFactory?: VisitorFactory<CognitiveComplexity>;
-    },
-  ) {
-    this.topLevelDepth = param?.topLevelDepth ?? 1;
-    this.#visitorFactory = param?.visitorFactory;
-  }
-  #visitorFactory?: VisitorFactory<CognitiveComplexity>;
-  protected topLevelDepth: number;
-
-  #visit({ node, depth }: VisitProps): VisitResult | void {
+export default abstract class CognitiveComplexity extends HierarchicalMetricsAnalyzer<Score> {
+  protected analyze({ node, depth }: AnalyzeProps): Leave | void {
     this.#trackLogicalToken(node);
     if (incrementScoreMachers.some(matcher => matcher(node))) {
       this.#incrementScore();
@@ -130,30 +114,14 @@ export default abstract class CognitiveComplexity
     ) {
       this.#enterNest();
       // console.log('enter: ',getText(node, node.getSourceFile()),this.#nestLevel,);
-      return {
-        leave: () => {
-          // console.log('exit: ',getText(node, node.getSourceFile()),this.#nestLevel,);
-          this.#exitNest();
-        },
+      return () => {
+        // console.log('exit: ',getText(node, node.getSourceFile()),this.#nestLevel,);
+        this.#exitNest();
       };
     }
   }
 
-  visit({ node, depth, sourceFile }: VisitProps): VisitResult | void {
-    const originalResult = this.#visit({ node, depth, sourceFile });
-
-    const additionalVisitor = this.#visitorFactory?.createAdditionalVisitor(
-      node,
-      depth,
-    );
-
-    return {
-      ...originalResult,
-      additionalVisitors: [additionalVisitor].filter(v => !!v),
-    };
-  }
-
-  protected score: number = 0;
+  protected score: Score = 0;
   #incrementScore() {
     this.score += this.#nestLevel;
   }
@@ -201,15 +169,5 @@ export default abstract class CognitiveComplexity
       // 親の兄弟がいなかった場合は自分がその論理演算子の最後のノードであると判断し、スコアのインクリメントを行う
       this.#simpleIncrementScore();
     }
-  }
-
-  get metrics(): CognitiveComplexityMetrics {
-    return {
-      name: this.name,
-      score: this.score,
-      children: this.#visitorFactory?.additionalVisitors.map(
-        visitor => visitor.metrics,
-      ),
-    };
   }
 }
