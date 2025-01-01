@@ -6,7 +6,7 @@ export type VisitProps = {
   sourceFile: ts.SourceFile;
 };
 
-type Leave = (props: VisitProps) => void;
+export type Leave = (props: VisitProps) => void;
 
 export interface VisitResult {
   /**

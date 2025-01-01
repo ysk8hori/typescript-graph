@@ -1,7 +1,8 @@
 import * as ts from 'typescript';
-import { AstVisitor, VisitProps } from './AstTraverser';
-import Metrics from './Metrics';
-import { VisitorFactory } from './VisitorFactory';
+import HierarchicalMetricsAnalyzer, {
+  AnalyzeProps,
+  HierarchicalMetris,
+} from './HierarchicalMetricsAnalyzer';
 
 function kindMatcher(kind: ts.SyntaxKind) {
   return (node: ts.Node) => node.kind === kind;
@@ -24,54 +25,17 @@ const cyclomaticNodeMatchers: ((node: ts.Node) => boolean)[] = [
   ts.isConditionalTypeNode,
 ];
 
-export interface CyclomaticComplexityMetrics {
-  name: string;
-  score: number;
-  children?: CyclomaticComplexityMetrics[];
-}
+type Score = number;
 
-export default abstract class CyclomaticComplexity
-  implements AstVisitor, Metrics<CyclomaticComplexityMetrics>
-{
-  constructor(
-    protected name: string,
-    param?: {
-      topLevelDepth?: number;
-      visitorFactory?: VisitorFactory<CyclomaticComplexity>;
-    },
-  ) {
-    this.topLevelDepth = param?.topLevelDepth ?? 1;
-    this.#visitorFactory = param?.visitorFactory;
-  }
-  #visitorFactory?: VisitorFactory<CyclomaticComplexity>;
-  protected topLevelDepth: number;
+export type CyclomaticComplexityMetrics = HierarchicalMetris<Score>;
 
-  visit({ node, depth }: VisitProps) {
-    if (cyclomaticNodeMatchers.some(matcher => matcher(node))) this.#addPath();
-
-    const additionalVisitor = this.#visitorFactory?.createAdditionalVisitor(
-      node,
-      depth,
-    );
-
-    return {
-      additionalVisitors: [additionalVisitor].filter(v => !!v),
-    };
+export default abstract class CyclomaticComplexity extends HierarchicalMetricsAnalyzer<Score> {
+  analyze({ node }: AnalyzeProps) {
+    if (cyclomaticNodeMatchers.some(matcher => matcher(node))) this.#addScore();
   }
 
-  #pathCount: number = 1;
-
-  #addPath() {
-    this.#pathCount++;
-  }
-
-  get metrics(): CyclomaticComplexityMetrics {
-    return {
-      name: this.name,
-      score: this.#pathCount,
-      children: this.#visitorFactory?.additionalVisitors
-        .filter(v => !!v)
-        .map(v => v.metrics),
-    };
+  score: Score = 1;
+  #addScore() {
+    this.score++;
   }
 }
