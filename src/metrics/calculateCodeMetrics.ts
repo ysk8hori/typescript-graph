@@ -16,6 +16,8 @@ interface Score {
   name: string;
   /** 計測した値 */
   value: number;
+  /** 判定結果 */
+  state: 'normal' | 'alert' | 'critical';
 }
 
 export interface CodeMetrics {
@@ -147,42 +149,52 @@ function convert({
       {
         name: 'Maintainability Index',
         value: maintainabilityIndex,
+        state: judgeMIStatus(maintainabilityIndex),
       },
       {
         name: 'Cyclomatic Complexity',
         value: cyclomaticComplexity.score,
+        state: 'normal',
       },
       {
-        name: 'Maintainability Index (with Cognitive Complexity)',
+        name: 'Maintainability Index (using Cognitive Complexity)',
         value: maintainabilityIndex2,
+        state: judgeMIStatus(maintainabilityIndex2),
       },
       {
         name: 'Cognitive Complexity',
         value: cognitiveComplexity.score,
+        state: 'normal',
       },
       {
         name: 'lines',
         value: semanticSyntaxVolume.score.lines,
+        state: 'normal',
       },
       {
         name: 'volume',
         value: semanticSyntaxVolume.score.volume,
+        state: 'normal',
       },
       {
         name: 'total operands',
         value: semanticSyntaxVolume.score.operandsTotal,
+        state: 'normal',
       },
       {
         name: 'unique operands',
         value: semanticSyntaxVolume.score.operandsUnique,
+        state: 'normal',
       },
       {
         name: 'total semantic syntax',
         value: semanticSyntaxVolume.score.semanticSyntaxTotal,
+        state: 'normal',
       },
       {
         name: 'unique semantic syntax',
         value: semanticSyntaxVolume.score.semanticSyntaxUnique,
+        state: 'normal',
       },
     ] as const,
     children: hoge(
@@ -232,4 +244,10 @@ function hoge(
         )(semanticSyntaxVolumeChildren, cyclomaticComplexityChildren),
       )
     : undefined;
+}
+
+function judgeMIStatus(score: number): Score['state'] {
+  if (score < 10) return 'critical';
+  if (score < 20) return 'alert';
+  return 'normal';
 }

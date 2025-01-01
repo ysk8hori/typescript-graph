@@ -68,8 +68,11 @@ export async function writeMarkdownFile(
       flatten.forEach(m => {
         ws.write(
           `<tr><th scope="row">${m.fileName}</th><th scope="row">${m.name}</th>${m.scores
-            .map(({ value }) => Math.round(value * 100) / 100)
-            .map(v => `<td>${v}</td>`)
+            .map(({ value, state }) => ({
+              score: Math.round(value * 100) / 100,
+              state,
+            }))
+            .map(v => `<td${getStyleByState(v.state)}>${v.score}</td$>`)
             .join('')}</tr>\n`,
         );
       });
@@ -133,4 +136,17 @@ function flatMetrics(
     },
     ...children,
   ].flat();
+}
+
+export function getStyleByState(
+  state: CodeMetrics['scores'][number]['state'],
+): string {
+  switch (state) {
+    case 'critical':
+      return ' style="color:white;background-color:red;"';
+    case 'alert':
+      return ' style="color:black;background-color:yellow;"';
+    default:
+      return '';
+  }
 }
