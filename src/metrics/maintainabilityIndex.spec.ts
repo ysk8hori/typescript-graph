@@ -1,11 +1,12 @@
 import { test } from 'vitest';
 import * as ts from 'typescript';
 import AstTraverser from './AstTraverser';
-import SemanticSyntaxVolume from './SemanticSyntaxVolume';
+import { SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolume';
 import { readFileSync } from 'fs';
 import CognitiveComplexityForSourceCode from './CognitiveComplexityForSourceCode';
 import { CognitiveComplexityMetrics } from './CognitiveComplexity';
 import CyclomaticComplexityForSourceCode from './CyclomaticComplexityForSourceCode';
+import SemanticSyntaxVolumeForSourceCode from './SemanticSyntaxVolumeForSourceCode';
 
 test.each([
   'src/graph/createGraph.ts',
@@ -33,7 +34,7 @@ test.each([
     ts.ScriptKind.TS,
   );
   const cyclomaticComplexity = new CyclomaticComplexityForSourceCode(path);
-  const volume = new SemanticSyntaxVolume();
+  const volume = new SemanticSyntaxVolumeForSourceCode(path);
   const cognitiveComplexity = new CognitiveComplexityForSourceCode(path);
   const astTraverser = new AstTraverser(source, [
     volume,
@@ -46,13 +47,12 @@ test.each([
   console.log('Cyclomatic Complexity ▼');
   logCognitiveComplexityMetrics(cyclomaticComplexity.metrics);
   console.log('Semantic Syntax Volume ▼');
-  console.table(volume.metrics);
-  const halsteadVolume = volume.volume;
+  logSemanticSyntaxVolumeMetrics(volume.metrics);
   console.log('lines:', source.getLineAndCharacterOfPosition(source.end).line);
   const maintainabilityIndex = Math.max(
     0,
     ((171 -
-      5.2 * Math.log(halsteadVolume) -
+      5.2 * Math.log(volume.volume) -
       0.23 * cyclomaticComplexity.metrics.score -
       16.2 * Math.log(source.getLineAndCharacterOfPosition(source.end).line)) *
       100) /
@@ -64,5 +64,12 @@ test.each([
 function logCognitiveComplexityMetrics(metrics: CognitiveComplexityMetrics) {
   console.group(metrics.name, metrics.score);
   metrics.children?.forEach(child => logCognitiveComplexityMetrics(child));
+  console.groupEnd();
+}
+
+function logSemanticSyntaxVolumeMetrics(metrics: SemanticSyntaxVolumeMetrics) {
+  console.group(metrics.name);
+  console.table(metrics.score);
+  metrics.children?.forEach(child => logSemanticSyntaxVolumeMetrics(child));
   console.groupEnd();
 }

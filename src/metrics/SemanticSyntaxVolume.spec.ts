@@ -1,14 +1,13 @@
 import { test, expect, describe } from 'vitest';
 import AstLogger from './AstLogger';
-import SemanticSyntaxVolume, {
-  type SemanticSyntaxVolumeMetrics,
-} from './SemanticSyntaxVolume';
+import { type SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolume';
 import ts from 'typescript';
 import AstTraverser from './AstTraverser';
+import SemanticSyntaxVolumeForSourceCode from './SemanticSyntaxVolumeForSourceCode';
 
 type OperatorTest = {
   perspective: string;
-  tests: [string, Omit<SemanticSyntaxVolumeMetrics, 'volume'>][];
+  tests: [string, Omit<SemanticSyntaxVolumeMetrics['score'], 'volume'>][];
 };
 describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
   describe.each([
@@ -1281,12 +1280,12 @@ class A {
           scriptKind,
         );
         const astLogger = new AstLogger();
-        const volume = new SemanticSyntaxVolume();
+        const volume = new SemanticSyntaxVolumeForSourceCode('sample.tsx');
         const astTraverser = new AstTraverser(source, [astLogger, volume]);
         astTraverser.traverse();
         console.log(astLogger.log);
         console.log(volume.volume);
-        expect(volume.metrics).toEqual(expect.objectContaining(expected));
+        expect(volume.metrics.score).toEqual(expect.objectContaining(expected));
       });
     },
   );

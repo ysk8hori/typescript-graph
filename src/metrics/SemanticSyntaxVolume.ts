@@ -1,8 +1,10 @@
 import * as ts from 'typescript';
-import { AstVisitor, VisitProps } from './AstTraverser';
-import Metrics from './Metrics';
+import HierarchicalMetricsAnalyzer, {
+  AnalyzeProps,
+  HierarchicalMetris,
+} from './HierarchicalMetricsAnalyzer';
 
-export interface SemanticSyntaxVolumeMetrics {
+export interface Score {
   /** 構文のボリューム */
   volume: number;
   /** 演算子の総数 */
@@ -14,6 +16,8 @@ export interface SemanticSyntaxVolumeMetrics {
   /** ユニークなオペランドの数 */
   operandsUnique: number;
 }
+
+export type SemanticSyntaxVolumeMetrics = HierarchicalMetris<Score>;
 
 /** `a++` や `a--` を見分けるための型 */
 type PostOperator = `Post${ts.SyntaxKind}`;
@@ -65,10 +69,8 @@ function isIgnoredSyntaxKind(kind: ts.SyntaxKind): boolean {
   return ignoredSyntaxKinds.includes(kind);
 }
 
-export default class SemanticSyntaxVolume
-  implements AstVisitor, Metrics<SemanticSyntaxVolumeMetrics>
-{
-  visit({ node, sourceFile }: VisitProps) {
+export default abstract class SemanticSyntaxVolume extends HierarchicalMetricsAnalyzer<Score> {
+  protected analyze({ node, sourceFile }: AnalyzeProps) {
     if (isIgnoredSyntaxKind(node.kind)) return;
     if (isOperand(node.kind)) {
       this.#handleOperand(node, sourceFile);
@@ -141,7 +143,7 @@ export default class SemanticSyntaxVolume
     }
   }
 
-  get metrics(): SemanticSyntaxVolumeMetrics {
+  protected get score(): Score {
     return {
       volume: this.volume,
       semanticSyntaxTotal: this.#totalSemanticSyntax,

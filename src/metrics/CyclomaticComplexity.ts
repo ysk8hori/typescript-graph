@@ -26,7 +26,6 @@ const cyclomaticNodeMatchers: ((node: ts.Node) => boolean)[] = [
 ];
 
 type Score = number;
-
 export type CyclomaticComplexityMetrics = HierarchicalMetris<Score>;
 
 export default abstract class CyclomaticComplexity extends HierarchicalMetricsAnalyzer<Score> {
