@@ -81,6 +81,7 @@ export class TopLevelVisitorFactory<T extends AstVisitor>
   }
 }
 
+// テストは CognitiveComplexity.children.spec.ts で行う
 export class ClassVisitorFactory<T extends AstVisitor>
   implements VisitorFactory<T>
 {

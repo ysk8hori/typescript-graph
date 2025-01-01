@@ -23,7 +23,11 @@ export function isTopLevelArrowFunction(
   node: ts.Node,
 ): node is ts.ArrowFunction {
   // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ArrowFunction
-  return currentDepth - 3 === topLevelDepth && ts.isArrowFunction(node);
+  return (
+    currentDepth - 3 === topLevelDepth &&
+    ts.isArrowFunction(node) &&
+    ts.isVariableDeclaration(node.parent)
+  );
 }
 
 /** トップレベルに定義されたIIFE(即時実行関数式)かどうかを判定する */
@@ -58,7 +62,9 @@ export function isTopLevelObjectLiteralExpression(
 ): node is ts.ObjectLiteralExpression {
   // 0:SourceFile>1:FirstStatement>2:VariableDeclarationList>3:VariableDeclaration>4:ObjectLiteralExpression
   return (
-    currentDepth - 3 <= topLevelDepth && ts.isObjectLiteralExpression(node)
+    currentDepth - 3 <= topLevelDepth &&
+    ts.isObjectLiteralExpression(node) &&
+    ts.isVariableDeclaration(node.parent)
   );
 }
 

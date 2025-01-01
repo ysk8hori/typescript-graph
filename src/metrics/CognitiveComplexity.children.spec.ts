@@ -182,6 +182,38 @@ const y = () => {
       },
     ],
   },
+  {
+    perspective: '関数を返すトップレベルの関数のスコアを計測できる',
+    tests: [
+      `function a():()=>void { return () => { if(z) {} }; }`,
+      {
+        name: 'sample.tsx',
+        score: 2,
+        children: [
+          {
+            name: 'a',
+            score: 2,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    perspective: '関数を返すトップレベルのアロー関数のスコアを計測できる',
+    tests: [
+      `const a:()=>()=>void=()=>()=>{if(z){}}`,
+      {
+        name: 'sample.tsx',
+        score: 2,
+        children: [
+          {
+            name: 'a',
+            score: 2,
+          },
+        ],
+      },
+    ],
+  },
 ] satisfies OperatorTest[])(
   `$perspective`,
   ({ tests: [sourceCode, expected] }) => {
