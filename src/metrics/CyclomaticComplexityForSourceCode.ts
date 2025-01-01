@@ -2,6 +2,7 @@ import CyclomaticComplexity from './CyclomaticComplexity';
 import CyclomaticComplexityForNormalNode from './CyclomaticComplexityForNormalNode';
 import CyclomaticComplexityForClass from './CyclomaticComplexityForClass';
 import { TopLevelVisitorFactory, VisitorFactory } from './VisitorFactory';
+import { MetricsScope } from './Metrics';
 
 export default class CyclomaticComplexityForSourceCode extends CyclomaticComplexity {
   constructor(
@@ -11,19 +12,20 @@ export default class CyclomaticComplexityForSourceCode extends CyclomaticComplex
       visitorFactory?: VisitorFactory<CyclomaticComplexity>;
     },
   ) {
-    super(name, {
+    super(name, 'file', {
       visitorFactory: new TopLevelVisitorFactory<CyclomaticComplexity>(
         param?.topLevelDepth ?? 1,
         {
-          createFunctionVisitor: name =>
-            new CyclomaticComplexityForNormalNode(name),
-          createArrowFunctionVisitor: name =>
-            new CyclomaticComplexityForNormalNode(name),
-          createIIFEVisitor: name =>
-            new CyclomaticComplexityForNormalNode(name),
-          createClassVisitor: name => new CyclomaticComplexityForClass(name),
-          createObjectLiteralExpressionVisitor: name =>
-            new CyclomaticComplexityForNormalNode(name),
+          createFunctionVisitor: (name, scope) =>
+            new CyclomaticComplexityForNormalNode(name, scope),
+          createArrowFunctionVisitor: (name, scope) =>
+            new CyclomaticComplexityForNormalNode(name, scope),
+          createIIFEVisitor: (name, scope) =>
+            new CyclomaticComplexityForNormalNode(name, scope),
+          createClassVisitor: (name, scope) =>
+            new CyclomaticComplexityForClass(name, scope),
+          createObjectLiteralExpressionVisitor: (name, scope) =>
+            new CyclomaticComplexityForNormalNode(name, scope),
         },
       ),
     });

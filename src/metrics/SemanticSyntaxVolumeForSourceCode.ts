@@ -1,3 +1,4 @@
+import { MetricsScope } from './Metrics';
 import SemanticSyntaxVolume from './SemanticSyntaxVolume';
 import SemanticSyntaxVolumeForClass from './SemanticSyntaxVolumeForClass';
 import SemanticSyntaxVolumeForNormalNode from './SemanticSyntaxVolumeForNormalNode';
@@ -11,19 +12,20 @@ export default class SemanticSyntaxVolumeForSourceCode extends SemanticSyntaxVol
       visitorFactory?: VisitorFactory<SemanticSyntaxVolume>;
     },
   ) {
-    super(name, {
+    super(name, 'file', {
       visitorFactory: new TopLevelVisitorFactory<SemanticSyntaxVolume>(
         param?.topLevelDepth ?? 1,
         {
-          createFunctionVisitor: name =>
-            new SemanticSyntaxVolumeForNormalNode(name),
-          createArrowFunctionVisitor: name =>
-            new SemanticSyntaxVolumeForNormalNode(name),
-          createIIFEVisitor: name =>
-            new SemanticSyntaxVolumeForNormalNode(name),
-          createClassVisitor: name => new SemanticSyntaxVolumeForClass(name),
-          createObjectLiteralExpressionVisitor: name =>
-            new SemanticSyntaxVolumeForNormalNode(name),
+          createFunctionVisitor: (name, scope) =>
+            new SemanticSyntaxVolumeForNormalNode(name, scope),
+          createArrowFunctionVisitor: (name, scope) =>
+            new SemanticSyntaxVolumeForNormalNode(name, scope),
+          createIIFEVisitor: (name, scope) =>
+            new SemanticSyntaxVolumeForNormalNode(name, scope),
+          createClassVisitor: (name, scope) =>
+            new SemanticSyntaxVolumeForClass(name, scope),
+          createObjectLiteralExpressionVisitor: (name, scope) =>
+            new SemanticSyntaxVolumeForNormalNode(name, scope),
         },
       ),
     });

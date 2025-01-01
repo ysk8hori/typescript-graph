@@ -53,21 +53,19 @@ export async function writeMarkdownFile(
     }
 
     if (metrics.length !== 0) {
-      const flatten = metrics
-        .toSorted((m, n) => m.scores[0].value - n.scores[0].value)
-        .map(m => flatMetrics(m))
-        .flat();
+      sortMetrics(metrics);
+      const flatten = metrics.map(m => flatMetrics(m)).flat();
       ws.write('## Code Metrics\n');
 
       ws.write('\n');
       ws.write('<table>\n');
       ws.write(
-        `<thead><tr><th scope="col">file</th><th scope="col">function, class, etc</th>${flatten[0].scores.map(({ name }) => `<th scope="col">${name}</th>`).join('')}</tr></thead>\n`,
+        `<thead><tr><th scope="col">file</th><th scope="col">scope</th><th scope="col">name</th>${flatten[0].scores.map(({ name }) => `<th scope="col">${name}</th>`).join('')}</tr></thead>\n`,
       );
       ws.write(`<tbody>\n`);
       flatten.forEach(m => {
         ws.write(
-          `<tr><th scope="row">${m.fileName}</th><th scope="row">${m.name}</th>${m.scores
+          `<tr><th scope="row">${m.fileName}</th><th scope="row">${m.scope}</th><th scope="row">${m.name}</th>${m.scores
             .map(({ value, state }) => ({
               score: Math.round(value * 100) / 100,
               state,
@@ -84,11 +82,11 @@ export async function writeMarkdownFile(
       ws.write('\n');
       ws.write('```csv\n');
       ws.write(
-        `file,"function, class, etc",${flatten[0].scores.map(({ name }) => name).join(',')}\n`,
+        `file,scope,name,${flatten[0].scores.map(({ name }) => name).join(',')}\n`,
       );
       flatten.forEach(m => {
         ws.write(
-          `${m.fileName},${m.name},${m.scores.map(({ value }) => value).join(',')}\n`,
+          `${m.fileName},${m.scope},${m.name},${m.scores.map(({ value }) => value).join(',')}\n`,
         );
       });
       ws.write('```\n');
@@ -101,11 +99,11 @@ export async function writeMarkdownFile(
       ws.write('\n');
       ws.write('```tsv\n');
       ws.write(
-        `file\t"function, class, etc",${flatten[0].scores.map(({ name }) => name).join('\t')}\n`,
+        `file\tscope\tname\t${flatten[0].scores.map(({ name }) => name).join('\t')}\n`,
       );
       flatten.forEach(m => {
         ws.write(
-          `${m.fileName}\t${m.name}\t${m.scores.map(({ value }) => value).join('\t')}\n`,
+          `${m.fileName}\t${m.scope}\t${m.name}\t${m.scores.map(({ value }) => value).join('\t')}\n`,
         );
       });
       ws.write('```\n');
@@ -121,7 +119,7 @@ export async function writeMarkdownFile(
 function flatMetrics(
   metrics: CodeMetrics,
   fileName?: string,
-): ({ fileName: string } & Pick<CodeMetrics, 'name' | 'scores'>)[] {
+): ({ fileName: string } & Pick<CodeMetrics, 'scope' | 'name' | 'scores'>)[] {
   const children =
     metrics.children?.map(c =>
       fileName
@@ -131,6 +129,7 @@ function flatMetrics(
   return [
     {
       fileName: fileName ?? metrics.name,
+      scope: metrics.scope,
       name: fileName ? metrics.name : '-',
       scores: metrics.scores,
     },
@@ -149,4 +148,13 @@ export function getStyleByState(
     default:
       return '';
   }
+}
+
+function sortMetrics(list: CodeMetrics[]) {
+  list.sort(
+    (a, b) =>
+      (a.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0) -
+      (b.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0),
+  );
+  list.forEach(m => m.children && sortMetrics(m.children));
 }

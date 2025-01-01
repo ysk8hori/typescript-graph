@@ -2,6 +2,7 @@ import CognitiveComplexity from './CognitiveComplexity';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import CognitiveComplexityForClass from './CognitiveComplexityForClass';
 import { TopLevelVisitorFactory, VisitorFactory } from './VisitorFactory';
+import { MetricsScope } from './Metrics';
 
 export default class CognitiveComplexityForSourceCode extends CognitiveComplexity {
   constructor(
@@ -11,18 +12,20 @@ export default class CognitiveComplexityForSourceCode extends CognitiveComplexit
       visitorFactory?: VisitorFactory<CognitiveComplexity>;
     },
   ) {
-    super(name, {
+    super(name, 'file', {
       visitorFactory: new TopLevelVisitorFactory<CognitiveComplexity>(
         param?.topLevelDepth ?? 1,
         {
-          createFunctionVisitor: name =>
-            new CognitiveComplexityForNormalNode(name),
-          createArrowFunctionVisitor: name =>
-            new CognitiveComplexityForNormalNode(name),
-          createIIFEVisitor: name => new CognitiveComplexityForNormalNode(name),
-          createClassVisitor: name => new CognitiveComplexityForClass(name),
-          createObjectLiteralExpressionVisitor: name =>
-            new CognitiveComplexityForNormalNode(name),
+          createFunctionVisitor: (name, scope) =>
+            new CognitiveComplexityForNormalNode(name, scope),
+          createArrowFunctionVisitor: (name, scope) =>
+            new CognitiveComplexityForNormalNode(name, scope),
+          createIIFEVisitor: (name, scope) =>
+            new CognitiveComplexityForNormalNode(name, scope),
+          createClassVisitor: (name, scope) =>
+            new CognitiveComplexityForClass(name, scope),
+          createObjectLiteralExpressionVisitor: (name, scope) =>
+            new CognitiveComplexityForNormalNode(name, scope),
         },
       ),
     });

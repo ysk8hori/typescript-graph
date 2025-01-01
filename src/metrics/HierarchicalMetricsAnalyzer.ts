@@ -1,9 +1,10 @@
 import { AstVisitor, Leave, VisitProps } from './AstTraverser';
-import Metrics from './Metrics';
+import Metrics, { MetricsScope } from './Metrics';
 import { VisitorFactory } from './VisitorFactory';
 
 export interface HierarchicalMetris<T> {
   name: string;
+  scope: MetricsScope;
   score: T;
   children?: HierarchicalMetris<T>[];
 }
@@ -15,6 +16,7 @@ export default abstract class HierarchicalMetricsAnalyzer<T>
 {
   constructor(
     protected name: string,
+    protected scope: MetricsScope,
     param?: {
       topLevelDepth?: number;
       visitorFactory?: VisitorFactory<HierarchicalMetricsAnalyzer<T>>;
@@ -43,6 +45,7 @@ export default abstract class HierarchicalMetricsAnalyzer<T>
   get metrics(): HierarchicalMetris<T> {
     return {
       name: this.name,
+      scope: this.scope,
       score: this.score,
       children: this.#visitorFactory?.additionalVisitors
         .filter(v => !!v)

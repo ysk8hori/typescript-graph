@@ -17,14 +17,17 @@ test.each([
       `function x() { if(z) {} } function y() { if(z) {} if(z) {} }`,
       {
         name: 'sample.tsx',
+        scope: 'file',
         score: 3,
         children: [
           {
             name: 'x',
+            scope: 'function',
             score: 1,
           },
           {
             name: 'y',
+            scope: 'function',
             score: 2,
           },
         ],
@@ -37,14 +40,17 @@ test.each([
       `function x() { if(z) {} } const y = () => { if(z) {} if(z) {} };`,
       {
         name: 'sample.tsx',
+        scope: 'file',
         score: 3,
         children: [
           {
             name: 'x',
+            scope: 'function',
             score: 1,
           },
           {
             name: 'y',
+            scope: 'function',
             score: 2,
           },
         ],
@@ -57,14 +63,17 @@ test.each([
       `(function () { if(z) {} })() const y = () => { if(z) {} if(z) {} };`,
       {
         name: 'sample.tsx',
+        scope: 'file',
         score: 3,
         children: [
           {
             name: 'anonymous function',
+            scope: 'function',
             score: 1,
           },
           {
             name: 'y',
+            scope: 'function',
             score: 2,
           },
         ],
@@ -118,44 +127,54 @@ const y = () => {
       `,
       {
         name: 'sample.tsx',
+        scope: 'file',
         score: 10,
         children: [
           {
             name: 'X',
+            scope: 'class',
             score: 8,
             children: [
               {
                 name: 'constructor',
+                scope: 'method',
                 score: 1,
               },
               {
                 name: 'method',
+                scope: 'method',
                 score: 1,
               },
               {
                 name: '#a',
+                scope: 'method',
                 score: 1,
               },
               {
                 name: 'privateMethod',
+                scope: 'method',
                 score: 1,
               },
               {
                 name: 'publicMethod',
+                scope: 'method',
                 score: 1,
               },
               {
                 name: 'get b',
+                scope: 'method',
                 score: 2,
               },
               {
                 name: 'set b',
+                scope: 'method',
                 score: 1,
               },
             ],
           },
           {
             name: 'y',
+            scope: 'function',
             score: 2,
           },
         ],
@@ -168,14 +187,17 @@ const y = () => {
       `function x() { if(z) {} } const y = {z:() => { if(z) {} if(z) {} }};`,
       {
         name: 'sample.tsx',
+        scope: 'file',
         score: 3,
         children: [
           {
             name: 'x',
+            scope: 'function',
             score: 1,
           },
           {
             name: 'y',
+            scope: 'object',
             score: 2,
           },
         ],
@@ -188,10 +210,12 @@ const y = () => {
       `function a():()=>void { return () => { if(z) {} }; }`,
       {
         name: 'sample.tsx',
+        scope: 'file',
         score: 2,
         children: [
           {
             name: 'a',
+            scope: 'function',
             score: 2,
           },
         ],
@@ -204,10 +228,12 @@ const y = () => {
       `const a:()=>()=>void=()=>()=>{if(z){}}`,
       {
         name: 'sample.tsx',
+        scope: 'file',
         score: 2,
         children: [
           {
             name: 'a',
+            scope: 'function',
             score: 2,
           },
         ],

@@ -16,6 +16,7 @@ import {
   isTopLevelIIFE,
   isTopLevelObjectLiteralExpression,
 } from './astUtils';
+import { MetricsScope } from './Metrics';
 
 export interface VisitorFactory<T extends AstVisitor> {
   createAdditionalVisitor(node: ts.Node, depth: number): T | undefined;
@@ -28,11 +29,14 @@ export class TopLevelVisitorFactory<T extends AstVisitor>
   constructor(
     private readonly topLevelDepth: number,
     private readonly factoryMethods: {
-      createFunctionVisitor: (name: string) => T;
-      createArrowFunctionVisitor: (name: string) => T;
-      createIIFEVisitor: (name: string) => T;
-      createClassVisitor: (name: string) => T;
-      createObjectLiteralExpressionVisitor: (name: string) => T;
+      createFunctionVisitor: (name: string, scope: MetricsScope) => T;
+      createArrowFunctionVisitor: (name: string, scope: MetricsScope) => T;
+      createIIFEVisitor: (name: string, scope: MetricsScope) => T;
+      createClassVisitor: (name: string, scope: MetricsScope) => T;
+      createObjectLiteralExpressionVisitor: (
+        name: string,
+        scope: MetricsScope,
+      ) => T;
     },
   ) {}
 
@@ -40,6 +44,7 @@ export class TopLevelVisitorFactory<T extends AstVisitor>
     if (isTopLevelFunction(this.topLevelDepth, depth, node)) {
       const visitor = this.factoryMethods.createFunctionVisitor(
         getFunctionName(node),
+        'function',
       );
       this.#addVisitor(visitor);
       return visitor;
@@ -47,6 +52,7 @@ export class TopLevelVisitorFactory<T extends AstVisitor>
     if (isTopLevelArrowFunction(this.topLevelDepth, depth, node)) {
       const visitor = this.factoryMethods.createArrowFunctionVisitor(
         getArrowFunctionName(node),
+        'function',
       );
       this.#addVisitor(visitor);
       return visitor;
@@ -54,6 +60,7 @@ export class TopLevelVisitorFactory<T extends AstVisitor>
     if (isTopLevelIIFE(this.topLevelDepth, depth, node)) {
       const visitor = this.factoryMethods.createIIFEVisitor(
         getAnonymousFunctionName(),
+        'function',
       );
       this.#addVisitor(visitor);
       return visitor;
@@ -61,6 +68,7 @@ export class TopLevelVisitorFactory<T extends AstVisitor>
     if (isTopLevelClass(this.topLevelDepth, depth, node)) {
       const visitor = this.factoryMethods.createClassVisitor(
         getClassName(node),
+        'class',
       );
       this.#addVisitor(visitor);
       return visitor;
@@ -68,6 +76,7 @@ export class TopLevelVisitorFactory<T extends AstVisitor>
     if (isTopLevelObjectLiteralExpression(this.topLevelDepth, depth, node)) {
       const visitor = this.factoryMethods.createObjectLiteralExpressionVisitor(
         getObjectName(node),
+        'object',
       );
       this.#addVisitor(visitor);
       return visitor;
@@ -87,10 +96,10 @@ export class ClassVisitorFactory<T extends AstVisitor>
 {
   constructor(
     private readonly factoryMethods: {
-      createGetAccessorVisitor: (name: string) => T;
-      createSetAccessorVisitor: (name: string) => T;
-      createMethodVisitor: (name: string) => T;
-      createConstructorVisitor: (name: string) => T;
+      createGetAccessorVisitor: (name: string, scope: MetricsScope) => T;
+      createSetAccessorVisitor: (name: string, scope: MetricsScope) => T;
+      createMethodVisitor: (name: string, scope: MetricsScope) => T;
+      createConstructorVisitor: (name: string, scope: MetricsScope) => T;
     },
   ) {}
 
@@ -98,6 +107,7 @@ export class ClassVisitorFactory<T extends AstVisitor>
     if (ts.isGetAccessor(node)) {
       const visitor = this.factoryMethods.createGetAccessorVisitor(
         getGetAccessorName(node),
+        'method',
       );
       this.#addVisitor(visitor);
       return visitor;
@@ -105,6 +115,7 @@ export class ClassVisitorFactory<T extends AstVisitor>
     if (ts.isSetAccessor(node)) {
       const visitor = this.factoryMethods.createSetAccessorVisitor(
         getSetAccessorName(node),
+        'method',
       );
       this.#addVisitor(visitor);
       return visitor;
@@ -112,13 +123,16 @@ export class ClassVisitorFactory<T extends AstVisitor>
     if (ts.isMethodDeclaration(node)) {
       const visitor = this.factoryMethods.createMethodVisitor(
         getMethodName(node),
+        'method',
       );
       this.#addVisitor(visitor);
       return visitor;
     }
     if (ts.isConstructorDeclaration(node)) {
-      const visitor =
-        this.factoryMethods.createConstructorVisitor(getConstructorName());
+      const visitor = this.factoryMethods.createConstructorVisitor(
+        getConstructorName(),
+        'method',
+      );
       this.#addVisitor(visitor);
       return visitor;
     }

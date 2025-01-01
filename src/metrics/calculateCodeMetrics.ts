@@ -10,6 +10,7 @@ import { CognitiveComplexityMetrics } from './CognitiveComplexity';
 import { SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolume';
 import { readFileSync } from 'fs';
 import { CyclomaticComplexityMetrics } from './CyclomaticComplexity';
+import Metrics, { MetricsScope } from './Metrics';
 
 interface Score {
   /** 計測した値の名前。 Maintainability Index など。 */
@@ -23,6 +24,7 @@ interface Score {
 export interface CodeMetrics {
   /** ファイル名や関数名など */
   name: string;
+  scope: MetricsScope;
   scores: Score[];
   children?: CodeMetrics[];
 }
@@ -129,37 +131,26 @@ function convert({
     0,
     ((171 -
       5.2 * Math.log(semanticSyntaxVolume.score.volume) -
-      0.23 * cyclomaticComplexity.score -
+      0.115 * cyclomaticComplexity.score -
+      0.115 * cognitiveComplexity.score -
       16.2 * Math.log(semanticSyntaxVolume.score.lines)) *
       100) /
       171,
   );
-  const maintainabilityIndex2 = Math.max(
-    0,
-    ((171 -
-      5.2 * Math.log(semanticSyntaxVolume.score.volume) -
-      0.23 * cognitiveComplexity.score -
-      16.2 * Math.log(semanticSyntaxVolume.score.lines)) *
-      100) /
-      171,
-  );
+  const scope = cognitiveComplexity.scope;
   return {
     name: cognitiveComplexity.name,
+    scope,
     scores: [
       {
         name: 'Maintainability Index',
         value: maintainabilityIndex,
-        state: judgeMIStatus(maintainabilityIndex),
+        state: getMarker(scope)(maintainabilityIndex),
       },
       {
         name: 'Cyclomatic Complexity',
         value: cyclomaticComplexity.score,
         state: 'normal',
-      },
-      {
-        name: 'Maintainability Index (using Cognitive Complexity)',
-        value: maintainabilityIndex2,
-        state: judgeMIStatus(maintainabilityIndex2),
       },
       {
         name: 'Cognitive Complexity',
@@ -172,7 +163,7 @@ function convert({
         state: 'normal',
       },
       {
-        name: 'volume',
+        name: 'semantic syntax volume',
         value: semanticSyntaxVolume.score.volume,
         state: 'normal',
       },
@@ -246,8 +237,31 @@ function hoge(
     : undefined;
 }
 
-function judgeMIStatus(score: number): Score['state'] {
+function getMarker(scope: MetricsScope) {
+  switch (scope) {
+    case 'class':
+      return getClassMIState;
+    case 'file':
+      return getFileMIState;
+    default:
+      return getMIState;
+  }
+}
+
+function getMIState(score: number): Score['state'] {
   if (score < 10) return 'critical';
   if (score < 20) return 'alert';
+  return 'normal';
+}
+
+function getClassMIState(score: number): Score['state'] {
+  if (score === 0) return 'critical';
+  if (score < 10) return 'alert';
+  return 'normal';
+}
+
+function getFileMIState(score: number): Score['state'] {
+  // if (score === 0) return 'critical'; // TypeScript においてファイル行数はかなり多くなる傾向があり、MI は
+  if (score < 5) return 'alert';
   return 'normal';
 }
