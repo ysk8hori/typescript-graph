@@ -7,7 +7,10 @@ import SemanticSyntaxVolumeForSourceCode from './SemanticSyntaxVolumeForSourceCo
 
 type OperatorTest = {
   perspective: string;
-  tests: [string, Omit<SemanticSyntaxVolumeMetrics['score'], 'volume'>][];
+  tests: [
+    string,
+    Omit<SemanticSyntaxVolumeMetrics['score'], 'volume' | 'lines'>,
+  ][];
 };
 describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
   describe.each([

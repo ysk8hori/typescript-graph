@@ -1,4 +1,3 @@
-import * as ts from 'typescript';
 import { AstVisitor, Leave, VisitProps } from './AstTraverser';
 import Metrics from './Metrics';
 import { VisitorFactory } from './VisitorFactory';

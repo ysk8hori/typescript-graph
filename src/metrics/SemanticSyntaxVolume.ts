@@ -15,6 +15,8 @@ export interface Score {
   operandsTotal: number;
   /** ユニークなオペランドの数 */
   operandsUnique: number;
+  /** 対象の行数 */
+  lines: number;
 }
 
 export type SemanticSyntaxVolumeMetrics = HierarchicalMetris<Score>;
@@ -71,12 +73,27 @@ function isIgnoredSyntaxKind(kind: ts.SyntaxKind): boolean {
 
 export default abstract class SemanticSyntaxVolume extends HierarchicalMetricsAnalyzer<Score> {
   protected analyze({ node, sourceFile }: AnalyzeProps) {
+    this.#setLineCountFromNode(node);
     if (isIgnoredSyntaxKind(node.kind)) return;
     if (isOperand(node.kind)) {
       this.#handleOperand(node, sourceFile);
     } else {
       this.#handleSemanticSyntaxNode(node);
     }
+  }
+
+  /**
+   * 解析対象とするソースコードの行数を格納する。
+   * ソースコードは、ファイル全体となる場合や1つの関数となる場合など様々なので、
+   * 解析開始時点で一番最初に解析対象となったノードの行数を格納する。
+   */
+  #lineCount: number = -1;
+  #setLineCountFromNode(node: ts.Node) {
+    if (this.#lineCount !== -1) return;
+    this.#lineCount = node.getText(node.getSourceFile()).split('\n').length;
+  }
+  get lines(): number {
+    return this.#lineCount;
   }
 
   readonly #uniqueSemanticSyntaxKinds: Set<SemanticSyntaxKind> = new Set();
@@ -150,6 +167,7 @@ export default abstract class SemanticSyntaxVolume extends HierarchicalMetricsAn
       semanticSyntaxUnique: this.#uniqueSemanticSyntaxKinds.size,
       operandsTotal: this.#totalOperands,
       operandsUnique: this.#uniqueOperands.size,
+      lines: this.lines,
     };
   }
 
