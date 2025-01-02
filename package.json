@@ -54,6 +54,7 @@
   "author": "ysk8hori",
   "license": "ISC",
   "dependencies": {
+    "chokidar": "4.0.3",
     "commander": "12.1.0",
     "remeda": "2.19.0",
     "zod": "3.24.1"
