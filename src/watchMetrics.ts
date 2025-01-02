@@ -21,11 +21,9 @@ type FlattenMatericsWithDiff = FlattenMaterics & {
   status?: 'added' | 'deleted';
 };
 
-export function watchMetrics(opt: Pick<OptionValues, 'dir' | 'watchMetrics'>) {
+export function watchMetrics(opt: Pick<OptionValues, 'watchMetrics'>) {
   const target =
-    typeof opt.watchMetrics === 'boolean'
-      ? [path.resolve(opt.dir ?? './')]
-      : opt.watchMetrics;
+    typeof opt.watchMetrics === 'boolean' ? ['./'] : opt.watchMetrics;
 
   // Initialize watcher.
   const watcher = chokidar.watch(target, {
