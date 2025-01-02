@@ -1,7 +1,6 @@
 import path from 'path';
 import { OptionValues } from './models';
 import chokidar from 'chokidar';
-import ts from 'typescript';
 import {
   convertRowToCodeMetrics,
   flatMetrics as flatCodeMetrics,
@@ -19,50 +18,37 @@ type ScoreWithDiff = Score & {
 };
 type FlattenMatericsWithDiff = FlattenMaterics & {
   scores: ScoreWithDiff[];
+  status?: 'added' | 'deleted';
 };
 
-export function watchMetrics(opt: OptionValues) {
-  const target = (() => {
-    if (typeof opt.watchMetrics === 'boolean') {
-      const configPath = opt.tsconfig
-        ? path.resolve(opt.tsconfig)
-        : ts.findConfigFile(path.resolve(opt.dir ?? './'), ts.sys.fileExists);
-      if (!configPath) {
-        throw new Error('Could not find a valid "tsconfig.json".');
-      }
-      const { config } = ts.readConfigFile(configPath, ts.sys.readFile);
-      const splitedConfigPath = configPath.split('/');
-      const rootDir = splitedConfigPath
-        .slice(0, splitedConfigPath.length - 1)
-        .join('/');
-      const { fileNames: fullFilePaths } = ts.parseJsonConfigFileContent(
-        config,
-        ts.sys,
-        rootDir,
-      );
-      return fullFilePaths;
-    } else {
-      return opt.watchMetrics;
-    }
-  })();
-
-  console.log('target', target);
-
-  target.forEach(saveInitialMetrics);
+export function watchMetrics(opt: Pick<OptionValues, 'dir' | 'watchMetrics'>) {
+  const target =
+    typeof opt.watchMetrics === 'boolean'
+      ? [path.resolve(opt.dir ?? './')]
+      : opt.watchMetrics;
 
   // Initialize watcher.
   const watcher = chokidar.watch(target, {
-    ignored: (path, stats) => !!stats?.isFile() && !isTsFile(path),
+    ignored: (path, stats) =>
+      (!!stats?.isFile() && !isTsFile(path)) || path.includes('node_modules'),
     persistent: true,
   });
 
-  watcher.on('add', piped(tap(path => console.log('add', path)))).on(
-    'change',
-    piped(
-      tap(path => console.log('change', path)),
-      consoleMetrics,
-    ),
-  );
+  watcher
+    .on(
+      'add',
+      piped(
+        tap(path => console.log('start watching', path)),
+        saveInitialMetrics,
+      ),
+    )
+    .on(
+      'change',
+      piped(
+        tap(path => console.log('change', path)),
+        consoleMetrics,
+      ),
+    );
 }
 
 const MAINTAINABILITY_COLUMN = 'Maintainability';
@@ -93,7 +79,7 @@ function consoleMetrics(path: string) {
     });
     p.printTable();
   } catch (e) {
-    // console.error(e);
+    console.error(e);
   }
 }
 
@@ -164,21 +150,38 @@ function injectScoreDiffToOneFileData(
 ): FlattenMatericsWithDiff[] {
   const initialMetrics = initialMetricsMap.get(oneFileData[0].fileName);
   if (!initialMetrics) return oneFileData;
+  const dataNames = new Set(
+    oneFileData.map(m => m.name).concat(initialMetrics.map(m => m.name)),
+  );
 
-  const scoresWithDiff = oneFileData.map((flatten, flattenIndex) => {
-    return {
-      ...flatten,
-      scores: flatten.scores.map((score, scoreIndex) => {
-        return {
-          ...score,
-          diff: round(
-            round(score.value) -
-              round(initialMetrics[flattenIndex].scores[scoreIndex].value),
-          ),
-        };
-      }),
-    };
-  });
+  const scoresWithDiff: FlattenMatericsWithDiff[] = [];
+  for (const name of dataNames) {
+    const current = oneFileData.find(flatten => flatten.name === name);
+    const initial = initialMetrics.find(m => m.name === name);
+
+    if (current && initial) {
+      scoresWithDiff.push({
+        ...current,
+        scores: current.scores.map((score, scoreIndex) => {
+          return {
+            ...score,
+            diff: round(
+              round(score.value) - round(initial.scores[scoreIndex].value),
+            ),
+          };
+        }),
+      });
+    } else if (current) {
+      scoresWithDiff.push({ ...current, status: 'added' });
+    }
+    // else if (initial) {
+    //   scoresWithDiff.push({
+    //     ...initial,
+    //     name: `${initial?.name} (deleted)`,
+    //     status: 'deleted',
+    //   });
+    // }
+  }
 
   return scoresWithDiff;
 }
