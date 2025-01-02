@@ -13,6 +13,5 @@ export function isTsFile(path: string) {
     '.cjs',
     '.cts',
     '.d.cts',
-    '.vue',
   ].some(ext => path.endsWith(ext));
 }
