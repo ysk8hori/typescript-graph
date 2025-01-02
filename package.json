@@ -54,8 +54,10 @@
   "author": "ysk8hori",
   "license": "ISC",
   "dependencies": {
+    "chalk": "4.1.2",
     "chokidar": "4.0.3",
     "commander": "12.1.0",
+    "console-table-printer": "2.12.1",
     "remeda": "2.19.0",
     "zod": "3.24.1"
   },

@@ -11,6 +11,8 @@ import {
 } from './metrics/calculateCodeMetrics';
 import { pipe, piped, tap } from 'remeda';
 import { isTsFile } from './tsc-utils';
+import { Table } from 'console-table-printer';
+import chalk from 'chalk';
 
 export function watchMetrics(opt: OptionValues) {
   console.log('watch', opt.watchMetrics);
@@ -64,15 +66,42 @@ function consoleMetrics(path: string) {
     flatCodeMetrics,
     convertToWatchData,
   );
-  console.table(metrics);
+  const p = new Table({
+    columns: [
+      { name: 'name', alignment: 'left' },
+      { name: 'scope', alignment: 'left' },
+      { name: 'Maintainability Index', alignment: 'right' },
+      { name: 'Cyclomatic Complexity', alignment: 'right' },
+      { name: 'Cognitive Complexity', alignment: 'right' },
+    ],
+    rows: metrics,
+  });
+  p.printTable();
 }
 
 function convertToWatchData(codeMetrics: FlattenMaterics[]) {
   return codeMetrics.map(m => ({
     name: m.name,
     scope: m.scope,
-    'Maintainability Index': Math.round(m.scores[0].value * 100) / 100,
+    'Maintainability Index': getChalkedValue(
+      m.scores[0],
+      (Math.round(m.scores[0].value * 100) / 100).toFixed(2),
+    ),
     'Cyclomatic Complexity': m.scores[1].value,
     'Cognitive Complexity': m.scores[2].value,
   }));
+}
+
+function getChalkedValue(
+  score: FlattenMaterics['scores'][number],
+  displayValue?: string,
+) {
+  switch (score.state) {
+    case 'alert':
+      return `💣 ${chalk.yellow(displayValue ?? score.value)}`;
+    case 'critical':
+      return `💥 ${chalk.red(displayValue ?? score.value)}`;
+    default:
+      return displayValue ?? score.value;
+  }
 }

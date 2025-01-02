@@ -265,8 +265,8 @@ function getClassMIState(score: number): Score['state'] {
 }
 
 function getFileMIState(score: number): Score['state'] {
-  // if (score === 0) return 'critical'; // TypeScript においてファイル行数はかなり多くなる傾向があり、MI は
-  if (score < 5) return 'alert';
+  if (score === 0) return 'critical';
+  if (score < 10) return 'alert';
   return 'normal';
 }
 
