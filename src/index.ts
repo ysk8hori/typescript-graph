@@ -1,20 +1,10 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import path from 'path';
-import { createGraph } from './graph/createGraph';
-import { filterGraph } from './graph/filterGraph';
-import { abstraction } from './graph/abstraction';
-import { highlight } from './graph/highlight';
-import { writeMarkdownFile } from './writeMarkdownFile';
 import packagejson from '../package.json';
-import { OptionValues, measureInstability } from './models';
-import { pipe } from 'remeda';
-import { getConfig, setupConfig } from './config';
-import {
-  calculateCodeMetrics,
-  CodeMetrics,
-} from './metrics/calculateCodeMetrics';
+import { OptionValues } from './models';
+import { main } from './main';
+import { watchMetrics } from './watchMetrics';
 
 const program = new Command();
 program
@@ -66,6 +56,7 @@ program
     '--metrics',
     'Enable beta feature to measures metrics such as Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity.',
   )
+  .option('--watch-metrics [char...]', 'watch metrics', '')
   .option(
     '--config-file',
     'Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.',
@@ -73,60 +64,14 @@ program
   .option('--vue', '(experimental) Enable Vue.js support');
 program.parse();
 
-const opt = program.opts<Partial<OptionValues>>();
+const opt = program.opts<OptionValues>();
 // tsg の arguments と --include オプションをマージする
 opt.include = [...program.args, ...(opt.include ?? [])];
 opt.include = opt.include.length === 0 ? undefined : opt.include;
 
-export async function main(
-  commandOptions: OptionValues & { executedScript: string },
-) {
-  setupConfig(
-    path.join(
-      path.resolve(commandOptions.dir ?? './'),
-      commandOptions.configFile ?? '.tsgrc.json',
-    ),
-  );
-
-  const { graph: fullGraph, meta } = createGraph(commandOptions);
-
-  let metrics: CodeMetrics[] = [];
-  if (commandOptions.metrics) {
-    console.time('calculateCodeMetrics');
-    metrics = calculateCodeMetrics(commandOptions);
-    console.timeEnd('calculateCodeMetrics');
-  }
-
-  let couplingData: ReturnType<typeof measureInstability> = [];
-  if (commandOptions.measureInstability) {
-    console.time('coupling');
-    couplingData = measureInstability(fullGraph);
-    console.timeEnd('coupling');
-  }
-
-  const graph = pipe(
-    fullGraph,
-    graph =>
-      filterGraph(
-        commandOptions.include,
-        [...(getConfig().exclude ?? []), ...(commandOptions.exclude ?? [])],
-        graph,
-      ),
-    graph => abstraction(commandOptions.abstraction, graph),
-    graph => highlight(commandOptions.highlight, graph),
-  );
-
-  await writeMarkdownFile(
-    commandOptions.md ?? 'typescript-graph',
-    graph,
-    {
-      ...commandOptions,
-      rootDir: meta.rootDir,
-      executedScript: commandOptions.executedScript,
-    },
-    couplingData,
-    metrics,
-  );
+if (opt.watchMetrics) {
+  watchMetrics(opt);
+} else {
+  const executedScript = `tsg ${process.argv.slice(2).join(' ')}`;
+  main({ ...opt, executedScript });
 }
-const executedScript = `tsg ${process.argv.slice(2).join(' ')}`;
-main({ ...opt, executedScript });

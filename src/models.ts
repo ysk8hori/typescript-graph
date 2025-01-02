@@ -13,6 +13,7 @@ export type OptionValues = {
   measureInstability?: boolean;
   vue?: boolean;
   metrics?: boolean;
+  watchMetrics: boolean | string[];
 };
 
 type FileName = string;

@@ -75,31 +75,9 @@ export function calculateCodeMetrics(
     )
     .map(_source => {
       const name = pipe(_source, getFilePath(options), removeSlash);
-      const sourceCode = readFileSync(_source.fileName, 'utf-8');
-      const source = ts.createSourceFile(
-        _source.fileName,
-        sourceCode,
-        ts.ScriptTarget.ESNext,
-        // parent を使うことがあるので true
-        true,
-        ts.ScriptKind.TS,
-      );
-      const cyclomaticComplexity = new CyclomaticComplexityForSourceCode(name);
-      const semanticSyntaxVolume = new SemanticSyntaxVolumeForSourceCode(name);
-      const cognitiveComplexity = new CognitiveComplexityForSourceCode(name);
-      const astTraverser = new AstTraverser(source, [
-        semanticSyntaxVolume,
-        cyclomaticComplexity,
-        cognitiveComplexity,
-      ]);
-      astTraverser.traverse();
-      return {
-        semanticSyntaxVolume: semanticSyntaxVolume.metrics,
-        cyclomaticComplexity: cyclomaticComplexity.metrics,
-        cognitiveComplexity: cognitiveComplexity.metrics,
-      };
+      return getMetricsRowData(name);
     })
-    .map(convert);
+    .map(convertRowToCodeMetrics);
   return data;
 }
 
@@ -122,7 +100,33 @@ interface ConvertProps {
   cognitiveComplexity: CognitiveComplexityMetrics;
 }
 
-function convert({
+export function getMetricsRowData(path: string) {
+  const sourceCode = readFileSync(path, 'utf-8');
+  const source = ts.createSourceFile(
+    path,
+    sourceCode,
+    ts.ScriptTarget.ESNext,
+    // parent を使うことがあるので true
+    true,
+    ts.ScriptKind.TS,
+  );
+  const cyclomaticComplexity = new CyclomaticComplexityForSourceCode(path);
+  const semanticSyntaxVolume = new SemanticSyntaxVolumeForSourceCode(path);
+  const cognitiveComplexity = new CognitiveComplexityForSourceCode(path);
+  const astTraverser = new AstTraverser(source, [
+    semanticSyntaxVolume,
+    cyclomaticComplexity,
+    cognitiveComplexity,
+  ]);
+  astTraverser.traverse();
+  return {
+    semanticSyntaxVolume: semanticSyntaxVolume.metrics,
+    cyclomaticComplexity: cyclomaticComplexity.metrics,
+    cognitiveComplexity: cognitiveComplexity.metrics,
+  };
+}
+
+export function convertRowToCodeMetrics({
   semanticSyntaxVolume,
   cognitiveComplexity,
   cyclomaticComplexity,
@@ -192,7 +196,7 @@ function convert({
       semanticSyntaxVolume.children,
       cyclomaticComplexity.children,
       cognitiveComplexity.children,
-    )?.map(convert),
+    )?.map(convertRowToCodeMetrics),
   };
 }
 
@@ -264,4 +268,41 @@ function getFileMIState(score: number): Score['state'] {
   // if (score === 0) return 'critical'; // TypeScript においてファイル行数はかなり多くなる傾向があり、MI は
   if (score < 5) return 'alert';
   return 'normal';
+}
+
+export function sortMetrics(list: CodeMetrics[]) {
+  list.sort(
+    (a, b) =>
+      (a.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0) -
+      (b.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0),
+  );
+  list.forEach(m => m.children && sortMetrics(m.children));
+}
+
+export type FlattenMaterics = { fileName: string } & Pick<
+  CodeMetrics,
+  'scope' | 'name' | 'scores'
+>;
+export function flatMetrics<T extends CodeMetrics | CodeMetrics[]>(
+  metrics: T,
+  fileName?: string,
+): FlattenMaterics[] {
+  if (Array.isArray(metrics)) {
+    return metrics.map(m => flatMetrics(m)).flat();
+  }
+  const children =
+    metrics.children?.map(c =>
+      fileName
+        ? flatMetrics({ ...c, name: `${metrics.name}.${c.name}` }, fileName) // クラスを想定。汎用的でない処理なので注意。
+        : flatMetrics(c, metrics.name),
+    ) ?? [];
+  return [
+    {
+      fileName: fileName ?? metrics.name,
+      scope: metrics.scope,
+      name: fileName ? metrics.name : '-',
+      scores: metrics.scores,
+    },
+    ...children,
+  ].flat();
 }
