@@ -10,15 +10,17 @@ import { CognitiveComplexityMetrics } from './CognitiveComplexity';
 import { SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolume';
 import { readFileSync } from 'fs';
 import { CyclomaticComplexityMetrics } from './CyclomaticComplexity';
-import Metrics, { MetricsScope } from './Metrics';
+import { MetricsScope } from './Metrics';
 
-interface Score {
+export interface Score {
   /** 計測した値の名前。 Maintainability Index など。 */
   name: string;
   /** 計測した値 */
   value: number;
   /** 判定結果 */
   state: 'normal' | 'alert' | 'critical';
+  /** 値が高いほど良いか低いほど良いか */
+  betterDirection: 'higher' | 'lower' | 'none';
 }
 
 export interface CodeMetrics {
@@ -150,46 +152,55 @@ export function convertRowToCodeMetrics({
         name: 'Maintainability Index',
         value: maintainabilityIndex,
         state: getMarker(scope)(maintainabilityIndex),
+        betterDirection: 'higher',
       },
       {
         name: 'Cyclomatic Complexity',
         value: cyclomaticComplexity.score,
         state: 'normal',
+        betterDirection: 'lower',
       },
       {
         name: 'Cognitive Complexity',
         value: cognitiveComplexity.score,
         state: 'normal',
+        betterDirection: 'lower',
       },
       {
         name: 'lines',
         value: semanticSyntaxVolume.score.lines,
         state: 'normal',
+        betterDirection: 'lower',
       },
       {
         name: 'semantic syntax volume',
         value: semanticSyntaxVolume.score.volume,
         state: 'normal',
+        betterDirection: 'lower',
       },
       {
         name: 'total operands',
         value: semanticSyntaxVolume.score.operandsTotal,
         state: 'normal',
+        betterDirection: 'lower',
       },
       {
         name: 'unique operands',
         value: semanticSyntaxVolume.score.operandsUnique,
         state: 'normal',
+        betterDirection: 'lower',
       },
       {
         name: 'total semantic syntax',
         value: semanticSyntaxVolume.score.semanticSyntaxTotal,
         state: 'normal',
+        betterDirection: 'lower',
       },
       {
         name: 'unique semantic syntax',
         value: semanticSyntaxVolume.score.semanticSyntaxUnique,
         state: 'normal',
+        betterDirection: 'lower',
       },
     ] as const,
     children: hoge(
@@ -298,10 +309,10 @@ export function flatMetrics<T extends CodeMetrics | CodeMetrics[]>(
     ) ?? [];
   return [
     {
+      // CodeMetrics を拡張した CodeMetricsWithDiff にも対応するためスプレッド構文でもマージすること
+      ...(metrics as CodeMetrics), // CodeMetrics[] の可能性は排除しているが as を使わないと型エラーとなる
       fileName: fileName ?? metrics.name,
-      scope: metrics.scope,
       name: fileName ? metrics.name : '-',
-      scores: metrics.scores,
     },
     ...children,
   ].flat();
