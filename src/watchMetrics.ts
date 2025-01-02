@@ -78,19 +78,23 @@ const COLUMNS = [
 ] as const;
 
 function consoleMetrics(path: string) {
-  const metrics = pipe(
-    path,
-    getMetricsRowData,
-    convertRowToCodeMetrics,
-    flatCodeMetrics,
-    injectScoreDiffToOneFileData,
-    convertToWatchData,
-  );
-  const p = new Table({
-    columns: [...COLUMNS],
-    rows: metrics,
-  });
-  p.printTable();
+  try {
+    const metrics = pipe(
+      path,
+      getMetricsRowData,
+      convertRowToCodeMetrics,
+      flatCodeMetrics,
+      injectScoreDiffToOneFileData,
+      convertToWatchData,
+    );
+    const p = new Table({
+      columns: [...COLUMNS],
+      rows: metrics,
+    });
+    p.printTable();
+  } catch (e) {
+    // console.error(e);
+  }
 }
 
 function convertToWatchData(codeMetrics: FlattenMatericsWithDiff[]) {
