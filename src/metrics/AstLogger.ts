@@ -34,7 +34,8 @@ export default class AstLogger implements AstVisitor {
   }
 
   #getSyntaxKindText(node: ts.Node) {
-    return `${ts.SyntaxKind[node.kind]}${node['operator'] ? ` (${ts.SyntaxKind[node['operator']]})` : ''}`;
+    const operator = (node as any)['operator'];
+    return `${ts.SyntaxKind[node.kind]}${operator ? ` (${ts.SyntaxKind[operator]})` : ''}`;
   }
 
   /** 収集したログ文字列を取得する */
