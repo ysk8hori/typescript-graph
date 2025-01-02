@@ -3,7 +3,6 @@ import { OptionValues } from './models';
 import chokidar from 'chokidar';
 import ts from 'typescript';
 import {
-  CodeMetrics,
   convertRowToCodeMetrics,
   flatMetrics as flatCodeMetrics,
   FlattenMaterics,
@@ -126,20 +125,22 @@ function getChalkedValue(
   }
 }
 
-function getDiffString(score: ScoreWithDiff) {
-  if (score.diff === undefined || score.diff === 0) return '';
-  return getChalkForDiff(score)(
-    score.diff > 0 ? `(+${score.diff})` : `(${score.diff})`,
-  );
+function getDiffString(score: ScoreWithDiff): string {
+  if (!score.diff) return '';
+  const diffFromInit = getChalkedDiff(score.betterDirection, score.diff);
+  return chalk.gray`(${diffFromInit}) `;
 }
 
-function getChalkForDiff(score: ScoreWithDiff) {
-  if (score.betterDirection === 'lower') {
-    if ((score.diff ?? 0) < 0) return chalk.green;
-    return chalk.red;
-  }
-  if (0 < (score.diff ?? 0)) return chalk.green;
-  return chalk.red;
+function getChalkedDiff(
+  betterDirection: ScoreWithDiff['betterDirection'],
+  diff: number | undefined,
+): string | undefined {
+  if (diff === undefined) return '';
+  if (betterDirection === 'lower' && diff < 0) return chalk.green(`${diff}`);
+  if (betterDirection === 'lower' && 0 < diff) return chalk.red(`+${diff}`);
+  if (betterDirection === 'higher' && diff < 0) return chalk.red(`${diff}`);
+  if (betterDirection === 'higher' && 0 < diff) return chalk.green(`+${diff}`);
+  return '0';
 }
 
 const initialMetricsMap: Map<string, FlattenMaterics[]> = new Map();
