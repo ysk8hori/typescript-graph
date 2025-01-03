@@ -396,7 +396,7 @@ flowchart LR
 
 ## コードメトリクスの測定
 
-保守性指数（Maintainability Index）、サイクロマティック複雑度（Cyclomatic Complexity）、認知的複雑度（Cognitive Complexity）などのコード・メトリクスを測定するベータ機能です。このメトリクスは一般にメジャーですが、TypeScript に当てはめた場合には信頼性が高いものではありません。それでも、コードの品質について考える際の指標にはなりうると考えています。
+保守性指数（Maintainability Index）、サイクロマティック複雑度（Cyclomatic Complexity）、認知的複雑度（Cognitive Complexity）などのコード・メトリクスを測定するベータ機能です。これらのメトリクスは一般的に知られていますが、TypeScript に当てはめた場合には信頼性が高いものではありません。それでも、コードの品質について考える際の指標にはなりうると考えています。
 
 例えば、 `typescript-graph/dummy_project_for_metrics` に移動し以下のコマンドを実行します。
 
