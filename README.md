@@ -84,7 +84,8 @@ npm install --global @ysk8hori/typescript-graph
 | `--LR`                    | Set the flowchart orientation to Left-to-Right.                                                                                                                                                                                                                                                                         |
 | `--TB`                    | Set the flowchart orientation to Top-to-Bottom.                                                                                                                                                                                                                                                                         |
 | `--measure-instability`   | Enable the beta feature to measure the instability of modules.                                                                                                                                                                                                                                                          |
-| `--metrics`               | Enable beta feature to measures metrics such as Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity.                                                                                                                                                                                                 |
+| `--metrics`               | Enables a beta feature to measure code metrics such as Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity. This can be used as an analytical tool to quantitatively evaluate code quality.                                                                                                          |
+| `--watch-metrics`         | Monitors file changes in real-time and displays metrics such as Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity whenever changes occur. Ideal for continuous quality monitoring.                                                                                                                 |
 | `--config-file`           | Specify the relative path to the config file (from the current directory or as specified by -d, --dir). The default is .tsgrc.json.                                                                                                                                                                                     |
 | `--vue` (experimental)    | `.vue` files are also included in the analysis. A temporary working directory is created using Node.js's `fs.mkdtempSync`, where all files targeted by `tsc` as well as `.vue` files are copied for processing. `.vue` files are renamed to `.vue.ts` unless a file with the same name already exists in the directory. |
 | `-h, --help`              | Display help for the command.                                                                                                                                                                                                                                                                                           |
@@ -389,6 +390,132 @@ flowchart LR
 ```
 
 It makes it easier to share problems within the team. 👍
+以下は英語版です：
+
+---
+
+## Code Metrics Measurement
+
+This is a beta feature for measuring code metrics such as the Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity. While these metrics are widely recognized, their reliability in TypeScript-specific contexts is not guaranteed. Nonetheless, they can serve as helpful indicators for evaluating code quality.
+
+For example, navigate to `typescript-graph/dummy_project_for_metrics` and execute the following command:
+
+```bash
+tsg --metrics
+```
+
+In addition to the usual content of `typescript-graph.md`, metrics like the following will be output:
+
+---
+
+<table>
+<thead><tr><th scope="col">file</th><th scope="col">scope</th><th scope="col">name</th><th scope="col">Maintainability Index</th><th scope="col">Cyclomatic Complexity</th><th scope="col">Cognitive Complexity</th><th scope="col">lines</th><th scope="col">semantic syntax volume</th><th scope="col">total operands</th><th scope="col">unique operands</th><th scope="col">total semantic syntax</th><th scope="col">unique semantic syntax</th></tr></thead>
+<tbody>
+<tr><th scope="row">badCode.ts</th><th scope="row">file</th><th scope="row">-</th><td>🧨 7.16</td><td> 27</td><td> 351</td><td> 111</td><td> 1807.98</td><td> 107</td><td> 55</td><td> 190</td><td> 13</td></tr>
+<tr><th scope="row">badCode.ts</th><th scope="row">function</th><th scope="row">badCode</th><td>💥 7.23</td><td> 27</td><td> 351</td><td> 110</td><td> 1814.06</td><td> 107</td><td> 55</td><td> 191</td><td> 13</td></tr>
+<tr><th scope="row">goodCode.ts</th><th scope="row">file</th><th scope="row">-</th><td> 73.43</td><td> 2</td><td> 1</td><td> 4</td><td> 77.66</td><td> 6</td><td> 4</td><td> 13</td><td> 13</td></tr>
+<tr><th scope="row">goodCode.ts</th><th scope="row">function</th><th scope="row">goodCode</th><td> 76</td><td> 2</td><td> 1</td><td> 3</td><td> 81.75</td><td> 6</td><td> 4</td><td> 14</td><td> 13</td></tr>
+</tbody></table>
+<details>
+<summary>CSV</summary>
+
+```csv
+file,scope,name,Maintainability Index,Cyclomatic Complexity,Cognitive Complexity,lines,semantic syntax volume,total operands,unique operands,total semantic syntax,unique semantic syntax
+badCode.ts,file,-,7.155438841340747,27,351,111,1807.9764638513507,107,55,190,13
+badCode.ts,function,badCode,7.2309524830767815,27,351,110,1814.063926692601,107,55,191,13
+goodCode.ts,file,-,73.4296734165724,2,1,4,77.66179398375644,6,4,13,13
+goodCode.ts,function,goodCode,75.99910291534641,2,1,3,81.74925682500678,6,4,14,13
+```
+
+</details>
+
+<details>
+<summary>TSV</summary>
+
+```tsv
+file	scope	name	Maintainability Index	Cyclomatic Complexity	Cognitive Complexity	lines	semantic syntax volume	total operands	unique operands	total semantic syntax	unique semantic syntax
+badCode.ts	file	-	7.155438841340747	27	351	111	1807.9764638513507	107	55	190	13
+badCode.ts	function	badCode	7.2309524830767815	27	351	110	1814.063926692601	107	55	191	13
+goodCode.ts	file	-	73.4296734165724	2	1	4	77.66179398375644	6	4	13	13
+goodCode.ts	function	goodCode	75.99910291534641	2	1	3	81.74925682500678	6	4	14	13
+```
+
+</details>
+
+---
+
+### Maintainability Index
+
+This metric calculates an index value ranging from 0 to 100, representing the relative ease of maintaining the code. Higher values indicate better maintainability. Two thresholds are defined, and an icon is displayed if the index falls below them.
+
+| State    | Icon |
+| -------- | ---- |
+| Critical | 💥   |
+| Alert    | 🧨   |
+
+Since this is a beta feature, the formulas and thresholds may change. Current thresholds are set per scope:
+
+| Scope | 💥 Critical | 🧨 Alert |
+| ----- | ----------- | -------- |
+| File  | 0           | 10       |
+| Class | 0           | 10       |
+| Other | 10          | 20       |
+
+The current calculation formula is the same across all scopes, which tends to produce worse metrics for broader scopes. Future updates may introduce customizations for formulas and thresholds.
+
+### Cyclomatic Complexity
+
+Cyclomatic Complexity in TypeScript Graph includes Conditional Types. For additional information, a web search will provide more precise details than this document.
+
+### Cognitive Complexity
+
+In simple terms, Cognitive Complexity is similar to Cyclomatic Complexity in that it scores based on control flow branches. However, it imposes penalties for nested control structures.
+
+This implementation is based on the whitepaper “[A new way of measuring understandability](https://www.sonarsource.com/docs/CognitiveComplexity.pdf)” by G. Ann Campbell from [SonarSource](https://www.sonarsource.com). Note that this project is not affiliated with SonarSource.
+
+Currently, the implementation does not fully account for TypeScript's type system. We acknowledge the need for improvements and may address this in future updates.
+
+#### Differences from SonarSource's Cognitive Complexity
+
+The handling of functions assigned to objects as substitutes for classes differs. SonarSource only increments nesting levels when the structure is non-declarative. In contrast, TypeScript Graph increments nesting levels without considering whether the structure is declarative.
+
+### Semantic Syntax Volume
+
+The Maintainability Index calculation typically uses the Halstead Volume metric, which is derived from the total and unique counts of operators and operands in the source code.
+
+In TypeScript Graph, the number of non-operand nodes in the AST (after excluding nodes deemed irrelevant for counting) is used as a substitute, as counting operators directly from the AST can be cumbersome.
+
+The calculation formula is as follows:
+
+```typescript
+function volume(): number {
+  const N = totalSemanticSyntax.count + totalOperands.count;
+  const n = uniqueSemanticSyntax.count + uniqueOperands.count;
+  return N * Math.log2(n);
+}
+```
+
+### Monitoring Code Metrics
+
+You can monitor file changes in real time and display metrics such as the Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity whenever changes occur using the following command:
+
+```bash
+tsg --watch-metrics
+```
+
+![tsg --watch-metrics result](docs/img/watch-metrics.png)
+
+The values in `()` represent the difference from when monitoring started. Improvements are displayed in green, while regressions are shown in red. Whether an increase or decrease is better depends on the metric. The following table outlines the preferred directions for each metric:
+
+| Metrics Name          | Better Direction |
+| --------------------- | ---------------- |
+| Maintainability Index | Higher           |
+| Cyclomatic Complexity | Lower            |
+| Cognitive Complexity  | Lower            |
+
+---
+
+Let me know if you need further refinements!
 
 ## Other Options
 
