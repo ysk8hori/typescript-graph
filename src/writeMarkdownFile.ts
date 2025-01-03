@@ -1,7 +1,12 @@
 import { createWriteStream } from 'fs';
 import mermaidify from './mermaidify';
 import { Graph, OptionValues, measureInstability } from './models';
-import { CodeMetrics } from './metrics/calculateCodeMetrics';
+import {
+  CodeMetrics,
+  flatMetrics,
+  sortMetrics,
+} from './metrics/calculateCodeMetrics';
+import { getIconByState } from './metricsModels';
 
 type Options = OptionValues & {
   rootDir: string;
@@ -54,9 +59,10 @@ export async function writeMarkdownFile(
 
     if (metrics.length !== 0) {
       sortMetrics(metrics);
-      const flatten = metrics.map(m => flatMetrics(m)).flat();
+      const flatten = flatMetrics(metrics);
       ws.write('## Code Metrics\n');
 
+      // TODO: HTML で組む必要がないので Markdown にする
       ws.write('\n');
       ws.write('<table>\n');
       ws.write(
@@ -70,7 +76,7 @@ export async function writeMarkdownFile(
               score: Math.round(value * 100) / 100,
               state,
             }))
-            .map(v => `<td${getStyleByState(v.state)}>${v.score}</td$>`)
+            .map(v => `<td>${getIconByState(v.state)} ${v.score}</td>`)
             .join('')}</tr>\n`,
         );
       });
@@ -114,47 +120,4 @@ export async function writeMarkdownFile(
 
     console.log(filename);
   });
-}
-
-function flatMetrics(
-  metrics: CodeMetrics,
-  fileName?: string,
-): ({ fileName: string } & Pick<CodeMetrics, 'scope' | 'name' | 'scores'>)[] {
-  const children =
-    metrics.children?.map(c =>
-      fileName
-        ? flatMetrics({ ...c, name: `${metrics.name}.${c.name}` }, fileName) // クラスを想定。汎用的でない処理なので注意。
-        : flatMetrics(c, metrics.name),
-    ) ?? [];
-  return [
-    {
-      fileName: fileName ?? metrics.name,
-      scope: metrics.scope,
-      name: fileName ? metrics.name : '-',
-      scores: metrics.scores,
-    },
-    ...children,
-  ].flat();
-}
-
-export function getStyleByState(
-  state: CodeMetrics['scores'][number]['state'],
-): string {
-  switch (state) {
-    case 'critical':
-      return ' style="color:white;background-color:red;"';
-    case 'alert':
-      return ' style="color:black;background-color:yellow;"';
-    default:
-      return '';
-  }
-}
-
-function sortMetrics(list: CodeMetrics[]) {
-  list.sort(
-    (a, b) =>
-      (a.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0) -
-      (b.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0),
-  );
-  list.forEach(m => m.children && sortMetrics(m.children));
 }
