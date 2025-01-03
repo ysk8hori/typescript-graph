@@ -11,6 +11,7 @@ import { SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolume';
 import { readFileSync } from 'fs';
 import { CyclomaticComplexityMetrics } from './CyclomaticComplexity';
 import { MetricsScope } from './Metrics';
+import { MetricsScoreState } from '../metricsModels';
 
 export interface Score {
   /** 計測した値の名前。 Maintainability Index など。 */
@@ -18,7 +19,7 @@ export interface Score {
   /** 計測した値 */
   value: number;
   /** 判定結果 */
-  state: 'normal' | 'alert' | 'critical';
+  state: MetricsScoreState;
   /** 値が高いほど良いか低いほど良いか */
   betterDirection: 'higher' | 'lower' | 'none';
 }
@@ -263,19 +264,19 @@ function getMarker(scope: MetricsScope) {
   }
 }
 
-function getMIState(score: number): Score['state'] {
+function getMIState(score: number): MetricsScoreState {
   if (score < 10) return 'critical';
   if (score < 20) return 'alert';
   return 'normal';
 }
 
-function getClassMIState(score: number): Score['state'] {
+function getClassMIState(score: number): MetricsScoreState {
   if (score === 0) return 'critical';
   if (score < 10) return 'alert';
   return 'normal';
 }
 
-function getFileMIState(score: number): Score['state'] {
+function getFileMIState(score: number): MetricsScoreState {
   if (score === 0) return 'critical';
   if (score < 10) return 'alert';
   return 'normal';

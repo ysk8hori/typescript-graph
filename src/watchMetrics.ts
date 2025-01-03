@@ -12,6 +12,7 @@ import { pipe, piped, tap } from 'remeda';
 import { isTsFile } from './tsc-utils';
 import { Table } from 'console-table-printer';
 import chalk from 'chalk';
+import { getIconByState } from './metricsModels';
 
 type ScoreWithDiff = Score & {
   diff?: number;
@@ -103,11 +104,12 @@ function getChalkedValue(
   score: FlattenMatericsWithDiff['scores'][number],
   displayValue?: string,
 ) {
+  const icon = getIconByState(score.state);
   switch (score.state) {
     case 'alert':
-      return `💣 ${chalk.yellow(displayValue ?? score.value)}`;
+      return `${icon} ${chalk.yellow(displayValue ?? score.value)}`;
     case 'critical':
-      return `💥 ${chalk.red(displayValue ?? score.value)}`;
+      return `${icon} ${chalk.red(displayValue ?? score.value)}`;
     default:
       return displayValue ?? score.value;
   }
