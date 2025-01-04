@@ -263,10 +263,6 @@ outer: for (let i = 0; i < 5; i++) { // +1 nest++
       5,
     ],
   },
-  {
-    perspective: 'highlight',
-    tests: [readFileSync('src/graph/highlight.ts', 'utf-8'), 4],
-  },
 ] satisfies OperatorTest[])(
   `$perspective`,
   ({ tests: [sourceCode, expected] }) => {

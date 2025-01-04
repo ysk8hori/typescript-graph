@@ -1,10 +1,10 @@
 import path from 'path';
 import { pipe } from 'remeda';
 import { setupConfig, getConfig } from './config';
-import { abstraction } from './graph/abstraction';
-import { createGraph } from './graph/createGraph';
-import { filterGraph } from './graph/filterGraph';
-import { highlight } from './graph/highlight';
+import { abstraction } from './feature/graph/abstraction';
+import { createGraph } from './feature/graph/createGraph';
+import { filterGraph } from './feature/graph/filterGraph';
+import { highlight } from './feature/graph/highlight';
 import {
   CodeMetrics,
   calculateCodeMetrics,

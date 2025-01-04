@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import { tmpdir } from 'os';
 import * as ts from 'typescript';
-import { Graph, Meta, Node, OptionValues, Relation } from '../models';
+import { Graph, Meta, Node, OptionValues, Relation } from '../../models';
 import { pipe, piped } from 'remeda';
 import { mergeGraph } from './utils';
 

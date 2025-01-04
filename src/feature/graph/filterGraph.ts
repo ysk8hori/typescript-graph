@@ -4,7 +4,7 @@ import {
   getUniqueNodes,
   getUniqueRelations,
   isSameNode,
-} from '../models';
+} from '../../models';
 import { extractUniqueNodes } from './utils';
 
 /** word に該当するか */
