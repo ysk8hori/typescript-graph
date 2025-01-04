@@ -1,6 +1,6 @@
 import path from 'path';
-import { Graph, Node, OptionValues } from './models';
-import { getConfig } from './config';
+import { Graph, Node, OptionValues } from '../../models';
+import { getConfig } from '../../config';
 
 /** ディレクトリツリーを表現するオブジェクト */
 type DirAndNodesTree = {
