@@ -9,7 +9,7 @@ import {
   CodeMetrics,
   calculateCodeMetrics,
 } from './metrics/calculateCodeMetrics';
-import { measureInstability, OptionValues } from './models';
+import { Graph, measureInstability, OptionValues } from './models';
 import { writeMarkdownFile } from './writeMarkdownFile';
 
 export async function main(
@@ -23,31 +23,13 @@ export async function main(
   );
 
   const { graph: fullGraph, meta } = createGraph(commandOptions);
+  const graph = refineGraph(commandOptions, fullGraph);
 
-  let metrics: CodeMetrics[] = [];
-  if (commandOptions.metrics) {
-    console.time('calculateCodeMetrics');
-    metrics = calculateCodeMetrics(commandOptions);
-    console.timeEnd('calculateCodeMetrics');
-  }
+  const metrics: CodeMetrics[] = getCodeMetrics(commandOptions);
 
-  let couplingData: ReturnType<typeof measureInstability> = [];
-  if (commandOptions.measureInstability) {
-    console.time('coupling');
-    couplingData = measureInstability(fullGraph);
-    console.timeEnd('coupling');
-  }
-
-  const graph = pipe(
+  const couplingData: ReturnType<typeof measureInstability> = getCouplingData(
+    commandOptions,
     fullGraph,
-    graph =>
-      filterGraph(
-        commandOptions.include,
-        [...(getConfig().exclude ?? []), ...(commandOptions.exclude ?? [])],
-        graph,
-      ),
-    graph => abstraction(commandOptions.abstraction, graph),
-    graph => highlight(commandOptions.highlight, graph),
   );
 
   await writeMarkdownFile(
@@ -61,4 +43,37 @@ export async function main(
     couplingData,
     metrics,
   );
+}
+
+const refineGraph = (commandOptions: OptionValues, fullGraph: Graph) =>
+  pipe(
+    fullGraph,
+    graph =>
+      filterGraph(
+        commandOptions.include,
+        [...(getConfig().exclude ?? []), ...(commandOptions.exclude ?? [])],
+        graph,
+      ),
+    graph => abstraction(commandOptions.abstraction, graph),
+    graph => highlight(commandOptions.highlight, graph),
+  );
+
+function getCouplingData(commandOptions: OptionValues, fullGraph: Graph) {
+  let couplingData: ReturnType<typeof measureInstability> = [];
+  if (commandOptions.measureInstability) {
+    console.time('coupling');
+    couplingData = measureInstability(fullGraph);
+    console.timeEnd('coupling');
+  }
+  return couplingData;
+}
+
+function getCodeMetrics(commandOptions: OptionValues) {
+  let metrics: CodeMetrics[] = [];
+  if (commandOptions.metrics) {
+    console.time('calculateCodeMetrics');
+    metrics = calculateCodeMetrics(commandOptions);
+    console.timeEnd('calculateCodeMetrics');
+  }
+  return metrics;
 }
