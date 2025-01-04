@@ -204,7 +204,7 @@ export function convertRowToCodeMetrics({
         betterDirection: 'lower',
       },
     ] as const,
-    children: hoge(
+    children: zipHierarchicalMetris(
       semanticSyntaxVolume.children,
       cyclomaticComplexity.children,
       cognitiveComplexity.children,
@@ -212,7 +212,7 @@ export function convertRowToCodeMetrics({
   };
 }
 
-function hoge(
+function zipHierarchicalMetris(
   semanticSyntaxVolumeChildren?: SemanticSyntaxVolumeMetrics[],
   cyclomaticComplexityChildren?: CyclomaticComplexityMetrics[],
   cognitiveComplexityChildren?: CognitiveComplexityMetrics[],
