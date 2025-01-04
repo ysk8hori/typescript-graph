@@ -6,7 +6,7 @@ import {
   flatMetrics,
   sortMetrics,
 } from '../metric/calculateCodeMetrics';
-import { getIconByState } from '../../metricsModels';
+import { getIconByState } from '../metric/metricsModels';
 
 type Options = OptionValues & {
   rootDir: string;

@@ -11,7 +11,7 @@ import { pipe, piped, tap } from 'remeda';
 import { isTsFile } from '../tsc-utils';
 import { Table } from 'console-table-printer';
 import chalk from 'chalk';
-import { getIconByState } from '../metricsModels';
+import { getIconByState } from '../feature/metric/metricsModels';
 
 type ScoreWithDiff = Score & {
   diff?: number;

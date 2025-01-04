@@ -11,7 +11,7 @@ import { SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolume';
 import { readFileSync } from 'fs';
 import { CyclomaticComplexityMetrics } from './CyclomaticComplexity';
 import { MetricsScope } from './Metrics';
-import { MetricsScoreState } from '../../metricsModels';
+import { MetricsScoreState } from './metricsModels';
 
 export interface Score {
   /** 計測した値の名前。 Maintainability Index など。 */
