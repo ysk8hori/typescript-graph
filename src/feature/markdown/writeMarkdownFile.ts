@@ -1,12 +1,12 @@
 import { createWriteStream } from 'fs';
-import mermaidify from './feature/mermaid/mermaidify';
-import { Graph, OptionValues, measureInstability } from './models';
+import mermaidify from '../mermaid/mermaidify';
+import { Graph, OptionValues, measureInstability } from '../../models';
 import {
   CodeMetrics,
   flatMetrics,
   sortMetrics,
-} from './feature/metric/calculateCodeMetrics';
-import { getIconByState } from './metricsModels';
+} from '../metric/calculateCodeMetrics';
+import { getIconByState } from '../../metricsModels';
 
 type Options = OptionValues & {
   rootDir: string;
