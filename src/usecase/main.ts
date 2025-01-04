@@ -1,16 +1,16 @@
 import path from 'path';
 import { pipe } from 'remeda';
-import { setupConfig, getConfig } from './config';
-import { abstraction } from './feature/graph/abstraction';
-import { createGraph } from './feature/graph/createGraph';
-import { filterGraph } from './feature/graph/filterGraph';
-import { highlight } from './feature/graph/highlight';
+import { setupConfig, getConfig } from '../config';
+import { abstraction } from '../feature/graph/abstraction';
+import { createGraph } from '../feature/graph/createGraph';
+import { filterGraph } from '../feature/graph/filterGraph';
+import { highlight } from '../feature/graph/highlight';
 import {
   CodeMetrics,
   calculateCodeMetrics,
-} from './feature/metric/calculateCodeMetrics';
-import { Graph, measureInstability, OptionValues } from './models';
-import { writeMarkdownFile } from './feature/markdown/writeMarkdownFile';
+} from '../feature/metric/calculateCodeMetrics';
+import { Graph, measureInstability, OptionValues } from '../models';
+import { writeMarkdownFile } from '../feature/markdown/writeMarkdownFile';
 
 export async function main(
   commandOptions: OptionValues & { executedScript: string },

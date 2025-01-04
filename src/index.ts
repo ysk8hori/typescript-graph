@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import packagejson from '../package.json';
 import { OptionValues } from './models';
-import { main } from './main';
+import { main } from './usecase/main';
 import { watchMetrics } from './watchMetrics';
 
 const program = new Command();
