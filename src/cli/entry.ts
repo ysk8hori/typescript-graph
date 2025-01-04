@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import packagejson from '../package.json';
-import { OptionValues } from './cli/model';
-import { main } from './usecase/main';
-import { watchMetrics } from './usecase/watchMetrics';
+import packagejson from '../../package.json';
+import { OptionValues } from './model';
+import { main } from '../usecase/main';
+import { watchMetrics } from '../usecase/watchMetrics';
 
 const program = new Command();
 program
