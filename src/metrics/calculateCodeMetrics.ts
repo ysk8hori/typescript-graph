@@ -77,7 +77,7 @@ export function calculateCodeMetrics(
       ),
     )
     .map(_source => {
-      const name = pipe(_source, getFilePath(options), removeSlash);
+      const name = getFilePath(options)(_source);
       return getMetricsRowData(name);
     })
     .map(convertRowToCodeMetrics);
