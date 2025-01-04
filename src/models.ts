@@ -1,21 +1,3 @@
-export type OptionValues = {
-  md?: string;
-  mermaidLink?: boolean;
-  dir?: string;
-  tsconfig?: string;
-  include?: string[];
-  exclude?: string[];
-  abstraction?: string[];
-  highlight?: string[];
-  LR?: boolean;
-  TB?: boolean;
-  configFile?: string;
-  measureInstability?: boolean;
-  vue?: boolean;
-  metrics?: boolean;
-  watchMetrics: boolean | string[];
-};
-
 type FileName = string;
 type DirName = string;
 type FilePath = string;

@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import packagejson from '../package.json';
-import { OptionValues } from './models';
+import { OptionValues } from './cli/model';
 import { main } from './usecase/main';
 import { watchMetrics } from './usecase/watchMetrics';
 

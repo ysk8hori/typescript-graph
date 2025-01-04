@@ -9,8 +9,9 @@ import {
   CodeMetrics,
   calculateCodeMetrics,
 } from '../feature/metric/calculateCodeMetrics';
-import { Graph, measureInstability, OptionValues } from '../models';
+import { Graph, measureInstability } from '../models';
 import { writeMarkdownFile } from '../feature/markdown/writeMarkdownFile';
+import { OptionValues } from '../cli/model';
 
 export async function main(
   commandOptions: OptionValues & { executedScript: string },

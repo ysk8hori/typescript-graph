@@ -1,4 +1,4 @@
-import { OptionValues } from '../models';
+import { OptionValues } from '../cli/model';
 import chokidar from 'chokidar';
 import {
   convertRowToCodeMetrics,
