@@ -1,6 +1,6 @@
 import { createWriteStream } from 'fs';
 import mermaidify from '../mermaid/mermaidify';
-import { Graph, measureInstability } from '../../models';
+import { Graph, measureInstability } from '../graph/models';
 import {
   CodeMetrics,
   flatMetrics,

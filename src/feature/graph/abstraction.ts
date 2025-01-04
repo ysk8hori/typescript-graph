@@ -1,4 +1,4 @@
-import { Graph, getUniqueRelations, isSameNode, Node } from '../../models';
+import { Graph, getUniqueRelations, isSameNode, Node } from './models';
 import { extractUniqueNodes } from './utils';
 
 /**

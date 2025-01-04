@@ -1,5 +1,5 @@
 import path from 'path';
-import { Graph, Node } from '../../models';
+import { Graph, Node } from '../graph/models';
 import { getConfig } from '../../config';
 import { OptionValues } from '../../cli/model';
 

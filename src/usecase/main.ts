@@ -9,7 +9,7 @@ import {
   CodeMetrics,
   calculateCodeMetrics,
 } from '../feature/metric/calculateCodeMetrics';
-import { Graph, measureInstability } from '../models';
+import { Graph, measureInstability } from '../feature/graph/models';
 import { writeMarkdownFile } from '../feature/markdown/writeMarkdownFile';
 import { OptionValues } from '../cli/model';
 
