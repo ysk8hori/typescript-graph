@@ -1,4 +1,4 @@
-import { OptionValues } from './models';
+import { OptionValues } from '../models';
 import chokidar from 'chokidar';
 import {
   convertRowToCodeMetrics,
@@ -6,12 +6,12 @@ import {
   FlattenMaterics,
   getMetricsRowData,
   Score,
-} from './feature/metric/calculateCodeMetrics';
+} from '../feature/metric/calculateCodeMetrics';
 import { pipe, piped, tap } from 'remeda';
-import { isTsFile } from './tsc-utils';
+import { isTsFile } from '../tsc-utils';
 import { Table } from 'console-table-printer';
 import chalk from 'chalk';
-import { getIconByState } from './metricsModels';
+import { getIconByState } from '../metricsModels';
 
 type ScoreWithDiff = Score & {
   diff?: number;
