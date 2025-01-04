@@ -8,7 +8,7 @@ import { highlight } from './feature/graph/highlight';
 import {
   CodeMetrics,
   calculateCodeMetrics,
-} from './metrics/calculateCodeMetrics';
+} from './feature/metric/calculateCodeMetrics';
 import { Graph, measureInstability, OptionValues } from './models';
 import { writeMarkdownFile } from './writeMarkdownFile';
 

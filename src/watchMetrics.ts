@@ -1,4 +1,3 @@
-import path from 'path';
 import { OptionValues } from './models';
 import chokidar from 'chokidar';
 import {
@@ -7,7 +6,7 @@ import {
   FlattenMaterics,
   getMetricsRowData,
   Score,
-} from './metrics/calculateCodeMetrics';
+} from './feature/metric/calculateCodeMetrics';
 import { pipe, piped, tap } from 'remeda';
 import { isTsFile } from './tsc-utils';
 import { Table } from 'console-table-printer';

@@ -18,14 +18,17 @@ test.each([
       {
         name: 'sample.tsx',
         score: 4,
+        scope: 'file',
         children: [
           {
             name: 'x',
             score: 2,
+            scope: 'function',
           },
           {
             name: 'y',
             score: 3,
+            scope: 'function',
           },
         ],
       },
@@ -38,14 +41,17 @@ test.each([
       {
         name: 'sample.tsx',
         score: 4,
+        scope: 'file',
         children: [
           {
             name: 'x',
             score: 2,
+            scope: 'function',
           },
           {
             name: 'y',
             score: 3,
+            scope: 'function',
           },
         ],
       },
@@ -58,14 +64,17 @@ test.each([
       {
         name: 'sample.tsx',
         score: 4,
+        scope: 'file',
         children: [
           {
             name: 'anonymous function',
             score: 2,
+            scope: 'function',
           },
           {
             name: 'y',
             score: 3,
+            scope: 'function',
           },
         ],
       },
@@ -119,44 +128,54 @@ const y = () => {
       {
         name: 'sample.tsx',
         score: 11,
+        scope: 'file',
         children: [
           {
             name: 'X',
             score: 9,
+            scope: 'class',
             children: [
               {
                 name: 'constructor',
                 score: 2,
+                scope: 'method',
               },
               {
                 name: 'method',
                 score: 2,
+                scope: 'method',
               },
               {
                 name: '#a',
                 score: 2,
+                scope: 'method',
               },
               {
                 name: 'privateMethod',
                 score: 2,
+                scope: 'method',
               },
               {
                 name: 'publicMethod',
                 score: 2,
+                scope: 'method',
               },
               {
                 name: 'get b',
                 score: 3,
+                scope: 'method',
               },
               {
                 name: 'set b',
                 score: 2,
+                scope: 'method',
               },
             ],
           },
           {
             name: 'y',
             score: 3,
+            scope: 'function',
           },
         ],
       },
@@ -169,14 +188,17 @@ const y = () => {
       {
         name: 'sample.tsx',
         score: 4,
+        scope: 'file',
         children: [
           {
             name: 'x',
             score: 2,
+            scope: 'function',
           },
           {
             name: 'y',
             score: 3,
+            scope: 'object',
           },
         ],
       },
@@ -203,6 +225,6 @@ const y = () => {
     ]);
     astTraverser.traverse();
     console.log(astLogger.log);
-    expect(cyclomaticComplexity.metrics).toMatchObject(expected);
+    expect(cyclomaticComplexity.metrics).toEqual(expected);
   },
 );

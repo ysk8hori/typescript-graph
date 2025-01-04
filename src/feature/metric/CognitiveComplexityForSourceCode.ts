@@ -2,7 +2,6 @@ import CognitiveComplexity from './CognitiveComplexity';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import CognitiveComplexityForClass from './CognitiveComplexityForClass';
 import { TopLevelVisitorFactory, VisitorFactory } from './VisitorFactory';
-import { MetricsScope } from './Metrics';
 
 export default class CognitiveComplexityForSourceCode extends CognitiveComplexity {
   constructor(

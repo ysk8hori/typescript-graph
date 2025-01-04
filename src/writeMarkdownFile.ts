@@ -5,7 +5,7 @@ import {
   CodeMetrics,
   flatMetrics,
   sortMetrics,
-} from './metrics/calculateCodeMetrics';
+} from './feature/metric/calculateCodeMetrics';
 import { getIconByState } from './metricsModels';
 
 type Options = OptionValues & {
