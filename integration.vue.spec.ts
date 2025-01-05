@@ -118,6 +118,7 @@ test('run:sample', async () => {
         src/main.ts-->src/includeFiles/D.vue
         src/main.ts-->src/utils.ts
     \`\`\`
+
     "
   `);
 });
@@ -212,6 +213,7 @@ test('run:sample:argument-include', async () => {
         src/main.ts-->src/otherFiles/e.ts
         src/main.ts-->src/utils.ts
     \`\`\`
+
     "
   `);
 });
@@ -306,6 +308,7 @@ test('run:sample:include', async () => {
         src/main.ts-->src/otherFiles/e.ts
         src/main.ts-->src/utils.ts
     \`\`\`
+
     "
   `);
 });
@@ -372,6 +375,7 @@ test('run:sample:exclude', async () => {
         src/main.ts-->src/includeFiles/D.vue
         src/main.ts-->src/otherFiles/e.ts
     \`\`\`
+
     "
   `);
 });
@@ -429,6 +433,7 @@ test('run:sample:abstraction', async () => {
         src/main.ts-->src/includeFiles/D.vue
         src/main.ts-->src/otherFiles/e.ts
     \`\`\`
+
     "
   `);
 });
@@ -487,6 +492,7 @@ test('run:sample:highlight', async () => {
         src/main.ts-->src/includeFiles/D.vue
         src/main.ts-->src/otherFiles/e.ts
     \`\`\`
+
     "
   `);
 });
