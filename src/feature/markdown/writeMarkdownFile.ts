@@ -33,10 +33,10 @@ export function writeMarkdownFile(
     ws.write('# TypeScript Graph\n');
     ws.write('\n');
 
-    writeExecutedScript(ws, options.executedScript);
-    writeGraph(ws, graph, options);
-    writeCouplingData(ws, couplingData);
-    writeMetrics(ws, metrics);
+    writeExecutedScript(ws.write.bind(ws), options.executedScript);
+    writeGraph(ws.write.bind(ws), graph, options);
+    writeCouplingData(ws.write.bind(ws), couplingData);
+    writeMetrics(ws.write.bind(ws), metrics);
 
     ws.end();
 
@@ -45,74 +45,74 @@ export function writeMarkdownFile(
 }
 
 export function writeExecutedScript(
-  ws: { write: (str: string) => void },
+  write: (str: string) => void,
   executedScript: string | undefined,
 ) {
   if (executedScript) {
-    ws.write('```bash\n');
-    ws.write(`${executedScript}\n`);
-    ws.write('```\n');
+    write('```bash\n');
+    write(`${executedScript}\n`);
+    write('```\n');
   }
-  ws.write('\n');
+  write('\n');
 }
 
 export function writeGraph(
-  ws: { write: (str: string) => void },
+  write: (str: string) => void,
   graph: Graph,
   options: Options,
 ) {
-  ws.write('```mermaid\n');
-  mermaidify(str => ws.write(str), graph, options);
-  ws.write('```\n');
-  ws.write('\n');
+  write('```mermaid\n');
+  mermaidify(str => write(str), graph, options);
+  write('```\n');
+  write('\n');
 }
 
 export function writeCouplingData(
-  ws: { write: (str: string) => void },
+  write: (str: string) => void,
   couplingData: ReturnType<typeof measureInstability>,
 ) {
   if (couplingData.length === 0) return;
-  ws.write('## Instability\n');
-  ws.write('\n');
-  ws.write(
+  write('## Instability\n');
+  write('\n');
+  write(
     'module name | Afferent<br>coupling | Efferent<br>coupling | Instability\n',
   );
-  ws.write('--|--|--|--\n');
+  write('--|--|--|--\n');
 
   couplingData.forEach(node => {
-    ws.write(
+    write(
       `${node.path} | ${node.afferentCoupling} | ${node.efferentCoupling} | ${node.instability.toFixed(2)}\n`,
     );
   });
-  ws.write('\n');
+  write('\n');
 }
 
 export function writeMetrics(
-  ws: { write: (str: string) => void },
+  write: (str: string) => void,
   metrics: CodeMetrics[],
 ) {
   if (metrics.length === 0) return;
   sortMetrics(metrics);
   const flatten = flatMetrics(metrics);
-  ws.write('## Code Metrics\n');
-  ws.write('\n');
+  write('## Code Metrics\n');
+  write('\n');
 
-  writeMetricsTable(ws, flatten);
-  writeMetricsCsv(ws, flatten);
-  writeMetricsTsv(ws, flatten);
+  writeMetricsTable(write, flatten);
+  writeMetricsCsv(write, flatten);
+  writeMetricsTsv(write, flatten);
 }
 
 function writeMetricsTable(
-  ws: { write: (str: string) => void },
+  write: (str: string) => void,
   flatten: FlattenMaterics[],
 ) {
-  ws.write('<table>\n');
-  ws.write(
+  write('<table>\n');
+  write(
     `<thead><tr><th scope="col">file</th><th scope="col">scope</th><th scope="col">name</th>${flatten[0].scores.map(({ name }) => `<th scope="col">${name}</th>`).join('')}</tr></thead>\n`,
   );
-  ws.write(`<tbody>\n`);
+  write(`<tbody>\n`);
   flatten.forEach(m => {
-    ws.write(
+    write(
       `<tr><th scope="row">${m.fileName}</th><th scope="row">${m.scope}</th><th scope="row">${m.name}</th>${m.scores
         .map(({ value, state }) => ({
           score: Math.round(value * 100) / 100,
@@ -122,50 +122,50 @@ function writeMetricsTable(
         .join('')}</tr>\n`,
     );
   });
-  ws.write('</tbody></table>');
-  ws.write('\n');
+  write('</tbody></table>');
+  write('\n');
 }
 
 function writeMetricsCsv(
-  ws: { write: (str: string) => void },
+  write: (str: string) => void,
   flatten: FlattenMaterics[],
 ) {
-  ws.write('<details>\n');
-  ws.write('<summary>CSV</summary>\n');
-  ws.write('\n');
-  ws.write('```csv\n');
-  ws.write(
+  write('<details>\n');
+  write('<summary>CSV</summary>\n');
+  write('\n');
+  write('```csv\n');
+  write(
     `file,scope,name,${flatten[0].scores.map(({ name }) => name).join(',')}\n`,
   );
   flatten.forEach(m => {
-    ws.write(
+    write(
       `${m.fileName},${m.scope},${m.name},${m.scores.map(({ value }) => value).join(',')}\n`,
     );
   });
-  ws.write('```\n');
-  ws.write('\n');
-  ws.write('</details>\n');
-  ws.write('\n');
+  write('```\n');
+  write('\n');
+  write('</details>\n');
+  write('\n');
 }
 
 function writeMetricsTsv(
-  ws: { write: (str: string) => void },
+  write: (str: string) => void,
   flatten: FlattenMaterics[],
 ) {
-  ws.write('<details>\n');
-  ws.write('<summary>TSV</summary>\n');
-  ws.write('\n');
-  ws.write('```tsv\n');
-  ws.write(
+  write('<details>\n');
+  write('<summary>TSV</summary>\n');
+  write('\n');
+  write('```tsv\n');
+  write(
     `file\tscope\tname\t${flatten[0].scores.map(({ name }) => name).join('\t')}\n`,
   );
   flatten.forEach(m => {
-    ws.write(
+    write(
       `${m.fileName}\t${m.scope}\t${m.name}\t${m.scores.map(({ value }) => value).join('\t')}\n`,
     );
   });
-  ws.write('```\n');
-  ws.write('\n');
-  ws.write('</details>\n');
-  ws.write('\n');
+  write('```\n');
+  write('\n');
+  write('</details>\n');
+  write('\n');
 }
