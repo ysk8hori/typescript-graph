@@ -20,6 +20,17 @@ const CLASSNAME_CREATED = 'created';
 const CLASSNAME_MODIFIED = 'modified';
 const CLASSNAME_DELETED = 'deleted';
 
+export function writeGraph(
+  write: (str: string) => void,
+  graph: Graph,
+  options: Options,
+) {
+  write('```mermaid\n');
+  mermaidify(str => write(str), graph, options);
+  write('```\n');
+  write('\n');
+}
+
 export async function mermaidify(
   write: (arg: string) => void,
   graph: Graph,

@@ -1,91 +1,10 @@
-import { createWriteStream } from 'fs';
-import { mermaidify } from '../mermaid/mermaidify';
-import { Graph, measureInstability } from '../graph/models';
 import {
   CodeMetrics,
   flatMetrics,
   FlattenMaterics,
   sortMetrics,
-} from '../metric/calculateCodeMetrics';
-import { getIconByState } from '../metric/metricsModels';
-import { OptionValues } from '../../setting/model';
-
-type Options = OptionValues & {
-  rootDir: string;
-  executedScript?: string;
-};
-
-export function writeMarkdownFile(
-  markdownTitle: string,
-  graph: Graph,
-  options: Options,
-  couplingData: ReturnType<typeof measureInstability>,
-  metrics: CodeMetrics[],
-) {
-  return new Promise((resolve, reject) => {
-    const filename = markdownTitle.endsWith('.md')
-      ? markdownTitle
-      : `./${markdownTitle}.md`;
-    const ws = createWriteStream(filename);
-    ws.on('finish', resolve);
-    ws.on('error', reject);
-
-    ws.write('# TypeScript Graph\n');
-    ws.write('\n');
-
-    writeExecutedScript(ws.write.bind(ws), options.executedScript);
-    writeGraph(ws.write.bind(ws), graph, options);
-    writeCouplingData(ws.write.bind(ws), couplingData);
-    writeMetrics(ws.write.bind(ws), metrics);
-
-    ws.end();
-
-    console.log(filename);
-  });
-}
-
-export function writeExecutedScript(
-  write: (str: string) => void,
-  executedScript: string | undefined,
-) {
-  if (executedScript) {
-    write('```bash\n');
-    write(`${executedScript}\n`);
-    write('```\n');
-  }
-  write('\n');
-}
-
-export function writeGraph(
-  write: (str: string) => void,
-  graph: Graph,
-  options: Options,
-) {
-  write('```mermaid\n');
-  mermaidify(str => write(str), graph, options);
-  write('```\n');
-  write('\n');
-}
-
-export function writeCouplingData(
-  write: (str: string) => void,
-  couplingData: ReturnType<typeof measureInstability>,
-) {
-  if (couplingData.length === 0) return;
-  write('## Instability\n');
-  write('\n');
-  write(
-    'module name | Afferent<br>coupling | Efferent<br>coupling | Instability\n',
-  );
-  write('--|--|--|--\n');
-
-  couplingData.forEach(node => {
-    write(
-      `${node.path} | ${node.afferentCoupling} | ${node.efferentCoupling} | ${node.instability.toFixed(2)}\n`,
-    );
-  });
-  write('\n');
-}
+} from './calculateCodeMetrics';
+import { getIconByState } from './metricsModels';
 
 export function writeMetrics(
   write: (str: string) => void,
