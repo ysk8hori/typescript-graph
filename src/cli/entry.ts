@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import packagejson from '../../package.json';
 import { OptionValues } from '../setting/model';
-import { main } from '../usecase/main';
+import { generateTsg } from '../usecase/generateTsg';
 import { watchMetrics } from '../usecase/watchMetrics';
 
 const program = new Command();
@@ -73,5 +73,5 @@ if (opt.watchMetrics) {
   watchMetrics(opt);
 } else {
   const executedScript = `tsg ${process.argv.slice(2).join(' ')}`;
-  main({ ...opt, executedScript });
+  generateTsg({ ...opt, executedScript });
 }

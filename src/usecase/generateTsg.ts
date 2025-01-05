@@ -13,7 +13,7 @@ import { Graph, measureInstability } from '../feature/graph/models';
 import { writeMarkdownFile } from '../feature/markdown/writeMarkdownFile';
 import { OptionValues } from '../setting/model';
 
-export async function main(
+export async function generateTsg(
   commandOptions: OptionValues & { executedScript: string },
 ) {
   setupConfig(
@@ -25,9 +25,7 @@ export async function main(
 
   const { graph: fullGraph, meta } = createGraph(commandOptions);
   const graph = refineGraph(commandOptions, fullGraph);
-
   const metrics: CodeMetrics[] = getCodeMetrics(commandOptions);
-
   const couplingData: ReturnType<typeof measureInstability> = getCouplingData(
     commandOptions,
     fullGraph,
