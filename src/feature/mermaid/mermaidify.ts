@@ -1,7 +1,7 @@
 import path from 'path';
 import { Graph, Node } from '../graph/models';
 import { getConfig } from '../../config';
-import { OptionValues } from '../../cli/model';
+import { OptionValues } from '../../setting/model';
 
 /** ディレクトリツリーを表現するオブジェクト */
 type DirAndNodesTree = {

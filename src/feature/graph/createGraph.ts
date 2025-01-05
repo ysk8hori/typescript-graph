@@ -5,7 +5,7 @@ import * as ts from 'typescript';
 import { Graph, Meta, Node, Relation } from './models';
 import { pipe, piped } from 'remeda';
 import { mergeGraph } from './utils';
-import { OptionValues } from '../../cli/model';
+import { OptionValues } from '../../setting/model';
 
 export function createGraph(
   /**

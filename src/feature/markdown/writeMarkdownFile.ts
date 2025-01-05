@@ -7,7 +7,7 @@ import {
   sortMetrics,
 } from '../metric/calculateCodeMetrics';
 import { getIconByState } from '../metric/metricsModels';
-import { OptionValues } from '../../cli/model';
+import { OptionValues } from '../../setting/model';
 
 type Options = OptionValues & {
   rootDir: string;
