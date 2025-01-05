@@ -1,5 +1,5 @@
 import { createWriteStream } from 'fs';
-import mermaidify from '../mermaid/mermaidify';
+import { mermaidify } from '../mermaid/mermaidify';
 import { Graph, measureInstability } from '../graph/models';
 import {
   CodeMetrics,

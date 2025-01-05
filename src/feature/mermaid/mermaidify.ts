@@ -20,7 +20,7 @@ const CLASSNAME_CREATED = 'created';
 const CLASSNAME_MODIFIED = 'modified';
 const CLASSNAME_DELETED = 'deleted';
 
-export default async function mermaidify(
+export async function mermaidify(
   write: (arg: string) => void,
   graph: Graph,
   options: Options,
