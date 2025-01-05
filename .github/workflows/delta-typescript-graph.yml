@@ -12,3 +12,5 @@ jobs:
       - name: Checkout
         uses: actions/checkout@cbb722410c2e876e24abbe8de2cc27693e501dcb # specify latest version
       - uses: ysk8hori/delta-typescript-graph-action@v1.1.0 # specify latest version
+        with:
+          max-size: 100

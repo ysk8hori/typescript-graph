@@ -9,7 +9,7 @@
   },
   "version": "0.0.0-development",
   "description": "A CLI to visualize the dependencies between files in the TypeScript codebase.",
-  "main": "index.js",
+  "main": "entry.js",
   "homepage": "https://github.com/ysk8hori/typescript-graph",
   "bin": {
     "tsg": "./bin/tsg.js"

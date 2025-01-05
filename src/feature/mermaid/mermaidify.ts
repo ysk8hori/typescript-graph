@@ -1,6 +1,7 @@
 import path from 'path';
-import { Graph, Node, OptionValues } from './models';
-import { getConfig } from './config';
+import { Graph, Node } from '../graph/models';
+import { getConfig } from '../../setting/config';
+import { OptionValues } from '../../setting/model';
 
 /** ディレクトリツリーを表現するオブジェクト */
 type DirAndNodesTree = {
@@ -19,7 +20,18 @@ const CLASSNAME_CREATED = 'created';
 const CLASSNAME_MODIFIED = 'modified';
 const CLASSNAME_DELETED = 'deleted';
 
-export default async function mermaidify(
+export function writeGraph(
+  write: (str: string) => void,
+  graph: Graph,
+  options: Options,
+) {
+  write('```mermaid\n');
+  mermaidify(str => write(str), graph, options);
+  write('```\n');
+  write('\n');
+}
+
+export async function mermaidify(
   write: (arg: string) => void,
   graph: Graph,
   options: Options,

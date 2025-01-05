@@ -1,5 +1,4 @@
 import path from 'path';
-import { OptionValues } from '../models';
 import ts from 'typescript';
 import { allPass, pipe, piped, zipWith } from 'remeda';
 import AstTraverser from './AstTraverser';
@@ -11,7 +10,8 @@ import { SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolume';
 import { readFileSync } from 'fs';
 import { CyclomaticComplexityMetrics } from './CyclomaticComplexity';
 import { MetricsScope } from './Metrics';
-import { MetricsScoreState } from '../metricsModels';
+import { MetricsScoreState } from './metricsModels';
+import { OptionValues } from '../../setting/model';
 
 export interface Score {
   /** 計測した値の名前。 Maintainability Index など。 */
@@ -77,7 +77,7 @@ export function calculateCodeMetrics(
       ),
     )
     .map(_source => {
-      const name = pipe(_source, getFilePath(options), removeSlash);
+      const name = getFilePath(options)(_source);
       return getMetricsRowData(name);
     })
     .map(convertRowToCodeMetrics);
@@ -204,7 +204,7 @@ export function convertRowToCodeMetrics({
         betterDirection: 'lower',
       },
     ] as const,
-    children: hoge(
+    children: zipHierarchicalMetris(
       semanticSyntaxVolume.children,
       cyclomaticComplexity.children,
       cognitiveComplexity.children,
@@ -212,7 +212,7 @@ export function convertRowToCodeMetrics({
   };
 }
 
-function hoge(
+function zipHierarchicalMetris(
   semanticSyntaxVolumeChildren?: SemanticSyntaxVolumeMetrics[],
   cyclomaticComplexityChildren?: CyclomaticComplexityMetrics[],
   cognitiveComplexityChildren?: CognitiveComplexityMetrics[],

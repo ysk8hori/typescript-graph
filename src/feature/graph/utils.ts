@@ -5,7 +5,7 @@ import {
   isSameNode,
   isSameRelation,
   Node,
-} from '../models';
+} from './models';
 
 /**
  * nodes と relations をマージしたユニークな node のリストを作り直す。

@@ -4,9 +4,8 @@ import include from './filterGraph.spec.data/include.json';
 import exclude from './filterGraph.spec.data/exclude.json';
 import nodes from './filterGraph.spec.data/nodes.json';
 import relations from './filterGraph.spec.data/relations.json';
-import { Graph } from '../models';
-import { Node, Relation } from '../models';
-import { setupConfig } from '../config';
+import { Graph, Node, Relation } from '../../feature/graph/models';
+import { setupConfig } from '../../setting/config';
 
 describe('シンプルなテスト', () => {
   const mainNode = {

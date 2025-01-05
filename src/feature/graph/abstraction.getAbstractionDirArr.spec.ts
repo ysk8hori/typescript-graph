@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { getAbstractionDirArr } from './abstraction';
-import { Node } from '../models';
+import { Node } from '../../models';
 
 test('atoms matches /src/components/atoms/Button.tsx', () => {
   const node: Node = {

@@ -2,7 +2,6 @@ import CyclomaticComplexity from './CyclomaticComplexity';
 import CyclomaticComplexityForNormalNode from './CyclomaticComplexityForNormalNode';
 import CyclomaticComplexityForClass from './CyclomaticComplexityForClass';
 import { TopLevelVisitorFactory, VisitorFactory } from './VisitorFactory';
-import { MetricsScope } from './Metrics';
 
 export default class CyclomaticComplexityForSourceCode extends CyclomaticComplexity {
   constructor(

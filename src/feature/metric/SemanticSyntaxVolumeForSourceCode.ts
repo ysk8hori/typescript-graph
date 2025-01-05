@@ -1,4 +1,3 @@
-import { MetricsScope } from './Metrics';
 import SemanticSyntaxVolume from './SemanticSyntaxVolume';
 import SemanticSyntaxVolumeForClass from './SemanticSyntaxVolumeForClass';
 import SemanticSyntaxVolumeForNormalNode from './SemanticSyntaxVolumeForNormalNode';

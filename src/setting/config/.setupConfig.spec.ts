@@ -2,7 +2,7 @@ import { test, expect } from 'vitest';
 import { setupConfig, getConfig } from '.';
 
 test('appConfigとrcConfigをマージする', () => {
-  setupConfig('src/config/rcSamples/valid.tsgrc.json');
+  setupConfig('src/setting/config/rcSamples/valid.tsgrc.json');
   expect(getConfig()).toEqual({
     reservedMermaidKeywords: [
       ['/graph/', '/_graph_/'],
@@ -16,7 +16,7 @@ test('appConfigとrcConfigをマージする', () => {
   });
 });
 test('rcFilePathのファイルが不正な場合は appConfig のみ返る', () => {
-  setupConfig('src/config/rcSamples/invalid.tsgrc.json');
+  setupConfig('src/setting/config/rcSamples/invalid.tsgrc.json');
   expect(getConfig()).toEqual({
     reservedMermaidKeywords: [
       ['/graph/', '/_graph_/'],
