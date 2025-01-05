@@ -1,6 +1,6 @@
 import path from 'path';
 import { pipe } from 'remeda';
-import { setupConfig, getConfig } from '../config';
+import { setupConfig, getConfig } from '../setting/config';
 import { abstraction } from '../feature/graph/abstraction';
 import { createGraph } from '../feature/graph/createGraph';
 import { filterGraph } from '../feature/graph/filterGraph';

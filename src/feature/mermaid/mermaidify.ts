@@ -1,6 +1,6 @@
 import path from 'path';
 import { Graph, Node } from '../graph/models';
-import { getConfig } from '../../config';
+import { getConfig } from '../../setting/config';
 import { OptionValues } from '../../setting/model';
 
 /** ディレクトリツリーを表現するオブジェクト */
