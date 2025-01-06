@@ -1,9 +1,9 @@
 import {
-  CodeMetrics,
   flatMetrics,
   FlattenMaterics,
   sortMetrics,
 } from './calculateCodeMetrics';
+import { CodeMetrics } from './convertRawToCodeMetrics';
 import { getIconByState } from './metricsModels';
 
 export function writeMetrics(

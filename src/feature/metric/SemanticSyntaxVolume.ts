@@ -4,7 +4,7 @@ import HierarchicalMetricsAnalyzer, {
   HierarchicalMetris,
 } from './HierarchicalMetricsAnalyzer';
 
-export interface Score {
+export interface SemanticSyntaxVolumeScores {
   /** 構文のボリューム */
   volume: number;
   /** 演算子の総数 */
@@ -19,7 +19,8 @@ export interface Score {
   lines: number;
 }
 
-export type SemanticSyntaxVolumeMetrics = HierarchicalMetris<Score>;
+export type SemanticSyntaxVolumeMetrics =
+  HierarchicalMetris<SemanticSyntaxVolumeScores>;
 
 /** `a++` や `a--` を見分けるための型 */
 type PostOperator = `Post${ts.SyntaxKind}`;
@@ -71,7 +72,7 @@ function isIgnoredSyntaxKind(kind: ts.SyntaxKind): boolean {
   return ignoredSyntaxKinds.includes(kind);
 }
 
-export default abstract class SemanticSyntaxVolume extends HierarchicalMetricsAnalyzer<Score> {
+export default abstract class SemanticSyntaxVolume extends HierarchicalMetricsAnalyzer<SemanticSyntaxVolumeScores> {
   protected analyze({ node, sourceFile }: AnalyzeProps) {
     this.#setLineCountFromNode(node);
     if (isIgnoredSyntaxKind(node.kind)) return;
@@ -160,7 +161,7 @@ export default abstract class SemanticSyntaxVolume extends HierarchicalMetricsAn
     }
   }
 
-  protected get score(): Score {
+  protected get score(): SemanticSyntaxVolumeScores {
     return {
       volume: this.volume,
       semanticSyntaxTotal: this.#totalSemanticSyntax,

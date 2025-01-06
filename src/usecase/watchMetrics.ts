@@ -1,17 +1,20 @@
 import { OptionValues } from '../setting/model';
 import chokidar from 'chokidar';
 import {
-  convertRowToCodeMetrics,
   flatMetrics as flatCodeMetrics,
   FlattenMaterics,
-  getMetricsRowData,
-  Score,
 } from '../feature/metric/calculateCodeMetrics';
 import { pipe, piped, tap } from 'remeda';
 import { isTsFile } from '../tsc-utils';
 import { Table } from 'console-table-printer';
 import chalk from 'chalk';
 import { getIconByState } from '../feature/metric/metricsModels';
+import { MetricsScope } from '../feature/metric/Metrics';
+import { getMetricsRawData } from '../feature/metric/getMetricsRawData';
+import {
+  convertRawToCodeMetrics,
+  Score,
+} from '../feature/metric/convertRawToCodeMetrics';
 
 type ScoreWithDiff = Score & {
   diff?: number;
@@ -63,10 +66,16 @@ const COLUMNS = [
 
 function consoleMetrics(path: string) {
   try {
-    const metrics = pipe(
+    const metrics: {
+      name: string;
+      scope: MetricsScope;
+      Maintainability: string;
+      Cyclomatic: string;
+      Cognitive: string;
+    }[] = pipe(
       path,
-      getMetricsRowData,
-      convertRowToCodeMetrics,
+      getMetricsRawData,
+      convertRawToCodeMetrics,
       flatCodeMetrics,
       injectScoreDiffToOneFileData,
       convertToWatchData,
@@ -136,8 +145,8 @@ const initialMetricsMap: Map<string, FlattenMaterics[]> = new Map();
 function saveInitialMetrics(path: string) {
   const metrics = pipe(
     path,
-    getMetricsRowData,
-    convertRowToCodeMetrics,
+    getMetricsRawData,
+    convertRawToCodeMetrics,
     flatCodeMetrics,
   );
   initialMetricsMap.set(path, metrics);
