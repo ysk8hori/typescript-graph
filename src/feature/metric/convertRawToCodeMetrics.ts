@@ -8,26 +8,8 @@ import {
   calculateMaintainabilityIndex,
   RawMetricsWithMaintainabilityIndex,
 } from './calculateMaintainabilityIndex';
-
-export interface Score {
-  /** 計測した値の名前。 Maintainability Index など。 */
-  name: string;
-  /** 計測した値 */
-  value: number;
-  /** 判定結果 */
-  state: MetricsScoreState;
-  /** 値が高いほど良いか低いほど良いか */
-  betterDirection: 'higher' | 'lower' | 'none';
-}
-
-export interface CodeMetrics {
-  filePath: string;
-  /** クラス名や関数名など */
-  name: string;
-  scope: MetricsScope;
-  scores: Score[];
-  children?: CodeMetrics[];
-}
+import { CodeMetrics } from './converter/CodeMetrics';
+import { Tree } from '../../utils/Tree';
 
 interface RawMetrics {
   semanticSyntaxVolume: SemanticSyntaxVolumeMetrics;
@@ -38,12 +20,10 @@ interface RawMetrics {
 interface ZippedRawMetrics extends RawMetrics {
   name: string;
   scope: MetricsScope;
-  children: ZippedRawMetrics[] | undefined;
 }
 
 interface ZippedRawMetricsWithFilePath extends ZippedRawMetrics {
   filePath: string;
-  children: ZippedRawMetricsWithFilePath[] | undefined;
 }
 
 export function convertRawToCodeMetrics({
@@ -65,9 +45,9 @@ export function convertRawToCodeMetrics({
 }
 
 function addFilePath(
-  zippedRawMetrics: ZippedRawMetrics,
+  zippedRawMetrics: Tree<ZippedRawMetrics>,
   filePath?: string,
-): ZippedRawMetricsWithFilePath {
+): Tree<ZippedRawMetricsWithFilePath> {
   return {
     ...zippedRawMetrics,
     filePath: filePath ?? zippedRawMetrics.name,
@@ -86,7 +66,7 @@ function convertCalculatedToCodeMetrics({
   cyclomaticComplexity,
   maintainabilityIndex,
   children,
-}: RawMetricsWithMaintainabilityIndex): CodeMetrics {
+}: Tree<RawMetricsWithMaintainabilityIndex>): Tree<CodeMetrics> {
   return {
     filePath,
     name,
@@ -155,7 +135,7 @@ function zipChildren({
   semanticSyntaxVolume,
   cognitiveComplexity,
   cyclomaticComplexity,
-}: RawMetrics): ZippedRawMetrics {
+}: RawMetrics): Tree<ZippedRawMetrics> {
   return {
     name: cognitiveComplexity.name, // cognitiveComplexity じゃなくてもいい
     scope: cognitiveComplexity.scope, // cognitiveComplexity じゃなくてもいい

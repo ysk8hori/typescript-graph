@@ -5,7 +5,10 @@ import { abstraction } from '../feature/graph/abstraction';
 import { createGraph } from '../feature/graph/createGraph';
 import { filterGraph } from '../feature/graph/filterGraph';
 import { highlight } from '../feature/graph/highlight';
-import { calculateCodeMetrics } from '../feature/metric/calculateCodeMetrics';
+import {
+  calculateCodeMetrics,
+  type CodeMetrics,
+} from '../feature/metric/calculateCodeMetrics';
 import { Graph } from '../feature/graph/models';
 import { writeMetrics } from '../feature/metric/writeMetricsTable';
 import { OptionValues } from '../setting/model';
@@ -15,7 +18,6 @@ import {
   measureInstability,
   writeCouplingData,
 } from '../feature/graph/instability';
-import { CodeMetrics } from '../feature/metric/convertRawToCodeMetrics';
 
 export async function generateTsg(
   commandOptions: OptionValues & { executedScript: string },

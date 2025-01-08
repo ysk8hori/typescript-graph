@@ -1,8 +1,8 @@
 import { OptionValues } from '../setting/model';
 import chokidar from 'chokidar';
 import {
-  flatMetrics as flatCodeMetrics,
-  FlattenMaterics,
+  CodeMetrics,
+  updateMetricsName,
 } from '../feature/metric/calculateCodeMetrics';
 import { pipe, piped, tap } from 'remeda';
 import { isTsFile } from '../tsc-utils';
@@ -11,15 +11,14 @@ import chalk from 'chalk';
 import { getIconByState } from '../feature/metric/metricsModels';
 import { MetricsScope } from '../feature/metric/Metrics';
 import { getMetricsRawData } from '../feature/metric/getMetricsRawData';
-import {
-  convertRawToCodeMetrics,
-  Score,
-} from '../feature/metric/convertRawToCodeMetrics';
+import { convertRawToCodeMetrics } from '../feature/metric/convertRawToCodeMetrics';
+import { Score } from '../feature/metric/converter/Score';
+import { unTree } from '../utils/Tree';
 
 type ScoreWithDiff = Score & {
   diff?: number;
 };
-type FlattenMatericsWithDiff = FlattenMaterics & {
+type FlattenMatericsWithDiff = CodeMetrics & {
   scores: ScoreWithDiff[];
   status?: 'added' | 'deleted';
 };
@@ -76,7 +75,8 @@ function consoleMetrics(path: string) {
       path,
       getMetricsRawData,
       convertRawToCodeMetrics,
-      flatCodeMetrics,
+      updateMetricsName,
+      unTree,
       injectScoreDiffToOneFileData,
       convertToWatchData,
     );
@@ -141,20 +141,20 @@ function getChalkedDiff(
   return '0';
 }
 
-const initialMetricsMap: Map<string, FlattenMaterics[]> = new Map();
+const initialMetricsMap: Map<string, CodeMetrics[]> = new Map();
 function saveInitialMetrics(path: string) {
   const metrics = pipe(
     path,
     getMetricsRawData,
     convertRawToCodeMetrics,
-    flatCodeMetrics,
+    unTree,
   );
   initialMetricsMap.set(path, metrics);
 }
 
 /** 引数は1ファイル分を想定している */
 function injectScoreDiffToOneFileData(
-  oneFileData: FlattenMaterics[],
+  oneFileData: CodeMetrics[],
 ): FlattenMatericsWithDiff[] {
   const initialMetrics = initialMetricsMap.get(oneFileData[0].filePath);
   if (!initialMetrics) return oneFileData;

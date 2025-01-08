@@ -1,3 +1,4 @@
+import { Tree } from '../../utils/Tree';
 import { CognitiveComplexityMetrics } from './CognitiveComplexity';
 import { CyclomaticComplexityMetrics } from './CyclomaticComplexity';
 import { MetricsScope } from './Metrics';
@@ -7,7 +8,6 @@ interface RawMetrics {
   semanticSyntaxVolume: SemanticSyntaxVolumeMetrics;
   cyclomaticComplexity: CyclomaticComplexityMetrics;
   cognitiveComplexity: CognitiveComplexityMetrics;
-  children: RawMetrics[] | undefined;
   scope: MetricsScope;
   name: string;
   filePath: string;
@@ -15,7 +15,6 @@ interface RawMetrics {
 
 export interface RawMetricsWithMaintainabilityIndex extends RawMetrics {
   maintainabilityIndex: number;
-  children: RawMetricsWithMaintainabilityIndex[] | undefined;
 }
 
 export function calculateMaintainabilityIndex({
@@ -26,7 +25,7 @@ export function calculateMaintainabilityIndex({
   cognitiveComplexity,
   cyclomaticComplexity,
   children,
-}: RawMetrics): RawMetricsWithMaintainabilityIndex {
+}: Tree<RawMetrics>): Tree<RawMetricsWithMaintainabilityIndex> {
   const calculatedChildren = children?.map(c =>
     calculateMaintainabilityIndex(c),
   );

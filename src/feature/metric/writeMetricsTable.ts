@@ -1,9 +1,9 @@
+import { unTree } from '../../utils/Tree';
 import {
-  flatMetrics,
-  FlattenMaterics,
+  type CodeMetrics,
   sortMetrics,
+  updateMetricsName,
 } from './calculateCodeMetrics';
-import { CodeMetrics } from './convertRawToCodeMetrics';
 import { getIconByState } from './metricsModels';
 
 export function writeMetrics(
@@ -12,7 +12,10 @@ export function writeMetrics(
 ) {
   if (metrics.length === 0) return;
   sortMetrics(metrics);
-  const flatten = flatMetrics(metrics);
+  const flatten = metrics
+    .map(m => updateMetricsName(m))
+    .map(unTree)
+    .flat();
   write('## Code Metrics\n');
   write('\n');
 
@@ -23,7 +26,7 @@ export function writeMetrics(
 
 function writeMetricsTable(
   write: (str: string) => void,
-  flatten: FlattenMaterics[],
+  flatten: CodeMetrics[],
 ) {
   write('<table>\n');
   write(
@@ -45,10 +48,7 @@ function writeMetricsTable(
   write('\n');
 }
 
-function writeMetricsCsv(
-  write: (str: string) => void,
-  flatten: FlattenMaterics[],
-) {
+function writeMetricsCsv(write: (str: string) => void, flatten: CodeMetrics[]) {
   write('<details>\n');
   write('<summary>CSV</summary>\n');
   write('\n');
@@ -67,10 +67,7 @@ function writeMetricsCsv(
   write('\n');
 }
 
-function writeMetricsTsv(
-  write: (str: string) => void,
-  flatten: FlattenMaterics[],
-) {
+function writeMetricsTsv(write: (str: string) => void, flatten: CodeMetrics[]) {
   write('<details>\n');
   write('<summary>TSV</summary>\n');
   write('\n');

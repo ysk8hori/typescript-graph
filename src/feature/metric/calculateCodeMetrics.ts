@@ -3,10 +3,11 @@ import ts from 'typescript';
 import { allPass, piped } from 'remeda';
 import { OptionValues } from '../../setting/model';
 import { getMetricsRawData } from './getMetricsRawData';
-import {
-  CodeMetrics,
-  convertRawToCodeMetrics,
-} from './convertRawToCodeMetrics';
+import { convertRawToCodeMetrics } from './convertRawToCodeMetrics';
+import { CodeMetrics } from './converter/CodeMetrics';
+import { MetricsScope } from './Metrics';
+import { Tree } from '../../utils/Tree';
+export { CodeMetrics } from './converter/CodeMetrics';
 
 export function calculateCodeMetrics(
   opt: Pick<OptionValues, 'exclude' | 'dir' | 'tsconfig' | 'include'>,
@@ -71,7 +72,7 @@ function removeSlash(pathName: string): string {
   return pathName.startsWith('/') ? pathName.replace('/', '') : pathName;
 }
 
-export function sortMetrics(list: CodeMetrics[]) {
+export function sortMetrics(list: Tree<Pick<CodeMetrics, 'scores'>>[]) {
   list.sort(
     (a, b) =>
       (a.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0) -
@@ -80,30 +81,32 @@ export function sortMetrics(list: CodeMetrics[]) {
   list.forEach(m => m.children && sortMetrics(m.children));
 }
 
-export type FlattenMaterics = Pick<
-  CodeMetrics,
-  'scope' | 'name' | 'scores' | 'filePath'
->;
-export function flatMetrics<T extends CodeMetrics | CodeMetrics[]>(
-  metrics: T,
-  /** クラス名.メソッド名 を作る際に必要 */
-  classname?: string,
-): FlattenMaterics[] {
-  if (Array.isArray(metrics)) {
-    return metrics.map(m => flatMetrics(m)).flat();
-  }
-  return [
-    {
-      // CodeMetrics を拡張した CodeMetricsWithDiff にも対応するためスプレッド構文でもマージすること
-      ...(metrics as CodeMetrics), // CodeMetrics[] の可能性は排除しているが as を使わないと型エラーとなる
-      name: classname
-        ? `${classname}.${metrics.name}`
-        : metrics.scope === 'file'
-          ? '-'
-          : metrics.name,
-    },
-    ...(metrics.children?.map(c =>
-      flatMetrics(c, metrics.scope === 'class' ? metrics.name : undefined),
-    ) ?? []),
-  ].flat();
+/**
+ * 各ノードの名前を更新する。
+ *
+ * - ノードのスコープがファイルの場合は `-` に変更
+ * - クラスの子ノードの場合は `クラス名.メソッド名` に変更
+ * - それ以外はそのまま
+ */
+export function updateMetricsName<
+  T extends Tree<{
+    name: string;
+    scope: MetricsScope;
+  }>,
+>(metrics: T, classname?: string): T {
+  return {
+    // T を拡張した型にも対応するためスプレッド構文でもマージすること
+    ...metrics,
+    name: classname
+      ? `${classname}.${metrics.name}`
+      : metrics.scope === 'file'
+        ? '-'
+        : metrics.name,
+    children: metrics.children?.map(c =>
+      updateMetricsName(
+        c,
+        metrics.scope === 'class' ? metrics.name : undefined,
+      ),
+    ),
+  };
 }
