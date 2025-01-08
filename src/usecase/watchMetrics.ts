@@ -156,7 +156,7 @@ function saveInitialMetrics(path: string) {
 function injectScoreDiffToOneFileData(
   oneFileData: FlattenMaterics[],
 ): FlattenMatericsWithDiff[] {
-  const initialMetrics = initialMetricsMap.get(oneFileData[0].fileName);
+  const initialMetrics = initialMetricsMap.get(oneFileData[0].filePath);
   if (!initialMetrics) return oneFileData;
   const dataNames = new Set(
     oneFileData.map(m => m.name).concat(initialMetrics.map(m => m.name)),

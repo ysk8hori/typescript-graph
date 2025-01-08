@@ -80,30 +80,30 @@ export function sortMetrics(list: CodeMetrics[]) {
   list.forEach(m => m.children && sortMetrics(m.children));
 }
 
-export type FlattenMaterics = { fileName: string } & Pick<
+export type FlattenMaterics = Pick<
   CodeMetrics,
-  'scope' | 'name' | 'scores'
+  'scope' | 'name' | 'scores' | 'filePath'
 >;
 export function flatMetrics<T extends CodeMetrics | CodeMetrics[]>(
   metrics: T,
-  fileName?: string,
+  /** クラス名.メソッド名 を作る際に必要 */
+  classname?: string,
 ): FlattenMaterics[] {
   if (Array.isArray(metrics)) {
     return metrics.map(m => flatMetrics(m)).flat();
   }
-  const children =
-    metrics.children?.map(c =>
-      fileName
-        ? flatMetrics({ ...c, name: `${metrics.name}.${c.name}` }, fileName) // クラスを想定。汎用的でない処理なので注意。
-        : flatMetrics(c, metrics.name),
-    ) ?? [];
   return [
     {
       // CodeMetrics を拡張した CodeMetricsWithDiff にも対応するためスプレッド構文でもマージすること
       ...(metrics as CodeMetrics), // CodeMetrics[] の可能性は排除しているが as を使わないと型エラーとなる
-      fileName: fileName ?? metrics.name,
-      name: fileName ? metrics.name : '-',
+      name: classname
+        ? `${classname}.${metrics.name}`
+        : metrics.scope === 'file'
+          ? '-'
+          : metrics.name,
     },
-    ...children,
+    ...(metrics.children?.map(c =>
+      flatMetrics(c, metrics.scope === 'class' ? metrics.name : undefined),
+    ) ?? []),
   ].flat();
 }

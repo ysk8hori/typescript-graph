@@ -1,10 +1,13 @@
-import { zipWith } from 'remeda';
+import { pipe, zipWith } from 'remeda';
 import { CognitiveComplexityMetrics } from './CognitiveComplexity';
 import { CyclomaticComplexityMetrics } from './CyclomaticComplexity';
 import { MetricsScope } from './Metrics';
 import { MetricsScoreState } from './metricsModels';
 import { SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolume';
-import { calculateMaintainabilityIndex } from './calculateMaintainabilityIndex';
+import {
+  calculateMaintainabilityIndex,
+  RawMetricsWithMaintainabilityIndex,
+} from './calculateMaintainabilityIndex';
 
 export interface Score {
   /** 計測した値の名前。 Maintainability Index など。 */
@@ -18,33 +21,75 @@ export interface Score {
 }
 
 export interface CodeMetrics {
-  /** ファイル名や関数名など */
+  filePath: string;
+  /** クラス名や関数名など */
   name: string;
   scope: MetricsScope;
   scores: Score[];
   children?: CodeMetrics[];
 }
 
-interface RawMetics {
+interface RawMetrics {
   semanticSyntaxVolume: SemanticSyntaxVolumeMetrics;
   cyclomaticComplexity: CyclomaticComplexityMetrics;
   cognitiveComplexity: CognitiveComplexityMetrics;
+}
+
+interface ZippedRawMetrics extends RawMetrics {
+  name: string;
+  scope: MetricsScope;
+  children: ZippedRawMetrics[] | undefined;
+}
+
+interface ZippedRawMetricsWithFilePath extends ZippedRawMetrics {
+  filePath: string;
+  children: ZippedRawMetricsWithFilePath[] | undefined;
 }
 
 export function convertRawToCodeMetrics({
   semanticSyntaxVolume,
   cognitiveComplexity,
   cyclomaticComplexity,
-}: RawMetics): CodeMetrics {
-  const maintainabilityIndex = calculateMaintainabilityIndex({
-    semanticSyntaxVolume: semanticSyntaxVolume.score.volume,
-    cognitiveComplexity: cognitiveComplexity.score,
-    cyclomaticComplexity: cyclomaticComplexity.score,
-    lines: semanticSyntaxVolume.score.lines,
-  });
-  const scope = cognitiveComplexity.scope;
+}: RawMetrics): CodeMetrics {
+  return pipe(
+    {
+      semanticSyntaxVolume,
+      cognitiveComplexity,
+      cyclomaticComplexity,
+    },
+    zipChildren,
+    addFilePath,
+    calculateMaintainabilityIndex,
+    convertCalculatedToCodeMetrics,
+  );
+}
+
+function addFilePath(
+  zippedRawMetrics: ZippedRawMetrics,
+  filePath?: string,
+): ZippedRawMetricsWithFilePath {
   return {
-    name: cognitiveComplexity.name,
+    ...zippedRawMetrics,
+    filePath: filePath ?? zippedRawMetrics.name,
+    children: zippedRawMetrics.children?.map(c =>
+      addFilePath(c, filePath ?? zippedRawMetrics.name),
+    ),
+  };
+}
+
+function convertCalculatedToCodeMetrics({
+  filePath,
+  name,
+  scope,
+  semanticSyntaxVolume,
+  cognitiveComplexity,
+  cyclomaticComplexity,
+  maintainabilityIndex,
+  children,
+}: RawMetricsWithMaintainabilityIndex): CodeMetrics {
+  return {
+    filePath,
+    name,
     scope,
     scores: [
       {
@@ -102,11 +147,26 @@ export function convertRawToCodeMetrics({
         betterDirection: 'lower',
       },
     ] as const,
+    children: children?.map(convertCalculatedToCodeMetrics),
+  };
+}
+
+function zipChildren({
+  semanticSyntaxVolume,
+  cognitiveComplexity,
+  cyclomaticComplexity,
+}: RawMetrics): ZippedRawMetrics {
+  return {
+    name: cognitiveComplexity.name, // cognitiveComplexity じゃなくてもいい
+    scope: cognitiveComplexity.scope, // cognitiveComplexity じゃなくてもいい
+    cognitiveComplexity,
+    semanticSyntaxVolume,
+    cyclomaticComplexity,
     children: zipHierarchicalMetris(
       semanticSyntaxVolume.children,
       cyclomaticComplexity.children,
       cognitiveComplexity.children,
-    )?.map(convertRawToCodeMetrics),
+    )?.map(zipChildren),
   };
 }
 
@@ -114,7 +174,7 @@ function zipHierarchicalMetris(
   semanticSyntaxVolumeChildren?: SemanticSyntaxVolumeMetrics[],
   cyclomaticComplexityChildren?: CyclomaticComplexityMetrics[],
   cognitiveComplexityChildren?: CognitiveComplexityMetrics[],
-): RawMetics[] | undefined {
+): RawMetrics[] | undefined {
   return semanticSyntaxVolumeChildren &&
     cyclomaticComplexityChildren &&
     cognitiveComplexityChildren
@@ -122,14 +182,14 @@ function zipHierarchicalMetris(
         (
           cognitiveComplexity: CognitiveComplexityMetrics,
           doubleProp: Pick<
-            RawMetics,
+            RawMetrics,
             'semanticSyntaxVolume' | 'cyclomaticComplexity'
           >,
         ) => {
           return {
             cognitiveComplexity,
             ...doubleProp,
-          } satisfies RawMetics;
+          } satisfies RawMetrics;
         },
       )(
         cognitiveComplexityChildren,
@@ -142,7 +202,7 @@ function zipHierarchicalMetris(
               semanticSyntaxVolume,
               cyclomaticComplexity,
             } satisfies Pick<
-              RawMetics,
+              RawMetrics,
               'semanticSyntaxVolume' | 'cyclomaticComplexity'
             >;
           },

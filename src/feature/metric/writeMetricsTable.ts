@@ -32,7 +32,7 @@ function writeMetricsTable(
   write(`<tbody>\n`);
   flatten.forEach(m => {
     write(
-      `<tr><th scope="row">${m.fileName}</th><th scope="row">${m.scope}</th><th scope="row">${m.name}</th>${m.scores
+      `<tr><th scope="row">${m.filePath}</th><th scope="row">${m.scope}</th><th scope="row">${m.name}</th>${m.scores
         .map(({ value, state }) => ({
           score: Math.round(value * 100) / 100,
           state,
@@ -58,7 +58,7 @@ function writeMetricsCsv(
   );
   flatten.forEach(m => {
     write(
-      `${m.fileName},${m.scope},${m.name},${m.scores.map(({ value }) => value).join(',')}\n`,
+      `${m.filePath},${m.scope},${m.name},${m.scores.map(({ value }) => value).join(',')}\n`,
     );
   });
   write('```\n');
@@ -80,7 +80,7 @@ function writeMetricsTsv(
   );
   flatten.forEach(m => {
     write(
-      `${m.fileName}\t${m.scope}\t${m.name}\t${m.scores.map(({ value }) => value).join('\t')}\n`,
+      `${m.filePath}\t${m.scope}\t${m.name}\t${m.scores.map(({ value }) => value).join('\t')}\n`,
     );
   });
   write('```\n');
