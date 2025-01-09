@@ -63,7 +63,7 @@
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "0.6.1",
-    "@types/node": "22.10.3",
+    "@types/node": "22.10.5",
     "@typescript-eslint/eslint-plugin": "8.19.0",
     "@typescript-eslint/parser": "8.19.0",
     "commitizen": "4.3.1",
@@ -73,7 +73,7 @@
     "husky": "9.1.7",
     "lint-staged": "15.3.0",
     "prettier": "3.4.2",
-    "semantic-release": "24.2.0",
+    "semantic-release": "24.2.1",
     "ts-node": "10.9.2",
     "typescript": "5.7.2",
     "vitest": "2.1.8",
