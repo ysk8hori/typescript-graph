@@ -2,10 +2,9 @@ import path from 'path';
 import ts from 'typescript';
 import { allPass, piped } from 'remeda';
 import { OptionValues } from '../../setting/model';
-import { getMetricsRawData } from './getMetricsRawData';
 import { convertRawToCodeMetrics } from './convertRawToCodeMetrics';
 import { CodeMetrics } from './metricsModels';
-import { Tree } from '../../utils/Tree';
+import { getMetricsRawData } from './functions/getMetricsRawData';
 
 export function calculateCodeMetrics(
   opt: Pick<OptionValues, 'exclude' | 'dir' | 'tsconfig' | 'include'>,

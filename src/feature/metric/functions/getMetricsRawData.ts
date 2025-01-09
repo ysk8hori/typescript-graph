@@ -1,9 +1,9 @@
 import { readFileSync } from 'fs';
 import ts from 'typescript';
-import AstTraverser from './AstTraverser';
-import CognitiveComplexityForSourceCode from './CognitiveComplexityForSourceCode';
-import CyclomaticComplexityForSourceCode from './CyclomaticComplexityForSourceCode';
-import SemanticSyntaxVolumeForSourceCode from './SemanticSyntaxVolumeForSourceCode';
+import AstTraverser from '../AstTraverser';
+import CognitiveComplexityForSourceCode from '../CognitiveComplexityForSourceCode';
+import CyclomaticComplexityForSourceCode from '../CyclomaticComplexityForSourceCode';
+import SemanticSyntaxVolumeForSourceCode from '../SemanticSyntaxVolumeForSourceCode';
 
 export function getMetricsRawData(path: string) {
   const sourceCode = readFileSync(path, 'utf-8');

@@ -10,7 +10,7 @@ import {
   Score,
 } from '../feature/metric/metricsModels';
 import { MetricsScope } from '../feature/metric/metricsModels';
-import { getMetricsRawData } from '../feature/metric/getMetricsRawData';
+import { getMetricsRawData } from '../feature/metric/functions/getMetricsRawData';
 import { convertRawToCodeMetrics } from '../feature/metric/convertRawToCodeMetrics';
 import { unTree } from '../utils/Tree';
 import { updateMetricsName } from '../feature/metric/functions/updateMetricsName';
