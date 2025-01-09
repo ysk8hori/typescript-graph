@@ -1,5 +1,5 @@
 import { unTree } from '../../utils/Tree';
-import { toSortedMetrics } from './calculateCodeMetrics';
+import { toSortedMetrics } from './functions/toSortedMetrics';
 import { updateMetricsName } from './functions/updateMetricsName';
 import { CodeMetrics, getIconByState } from './metricsModels';
 
