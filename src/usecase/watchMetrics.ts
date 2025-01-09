@@ -1,6 +1,5 @@
 import { OptionValues } from '../setting/model';
 import chokidar from 'chokidar';
-import { updateMetricsName } from '../feature/metric/calculateCodeMetrics';
 import { pipe, piped, tap } from 'remeda';
 import { isTsFile } from '../tsc-utils';
 import { Table } from 'console-table-printer';
@@ -14,6 +13,7 @@ import { MetricsScope } from '../feature/metric/metricsModels';
 import { getMetricsRawData } from '../feature/metric/getMetricsRawData';
 import { convertRawToCodeMetrics } from '../feature/metric/convertRawToCodeMetrics';
 import { unTree } from '../utils/Tree';
+import { updateMetricsName } from '../feature/metric/functions/updateMetricsName';
 
 type ScoreWithDiff = Score & {
   diff?: number;
