@@ -1,5 +1,5 @@
 import { unTree } from '../../utils/Tree';
-import { sortMetrics } from './calculateCodeMetrics';
+import { toSortedMetrics } from './calculateCodeMetrics';
 import { updateMetricsName } from './functions/updateMetricsName';
 import { CodeMetrics, getIconByState } from './metricsModels';
 
@@ -8,8 +8,7 @@ export function writeMetrics(
   metrics: CodeMetrics[],
 ) {
   if (metrics.length === 0) return;
-  sortMetrics(metrics);
-  const flatten = metrics
+  const flatten = toSortedMetrics(metrics)
     .map(m => updateMetricsName(m))
     .map(unTree)
     .flat();
