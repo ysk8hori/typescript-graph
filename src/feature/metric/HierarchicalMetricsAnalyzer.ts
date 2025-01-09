@@ -1,6 +1,7 @@
 import { Tree } from '../../utils/Tree';
 import { AstVisitor, Leave, VisitProps } from './AstTraverser';
-import Metrics, { MetricsScope } from './Metrics';
+import Metrics from './Metrics';
+import { MetricsScope } from './metricsModels';
 import { VisitorFactory } from './VisitorFactory';
 
 export type HierarchicalMetris<T> = Tree<{

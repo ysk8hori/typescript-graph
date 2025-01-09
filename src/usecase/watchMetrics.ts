@@ -1,18 +1,18 @@
 import { OptionValues } from '../setting/model';
 import chokidar from 'chokidar';
-import {
-  CodeMetrics,
-  updateMetricsName,
-} from '../feature/metric/calculateCodeMetrics';
+import { updateMetricsName } from '../feature/metric/calculateCodeMetrics';
 import { pipe, piped, tap } from 'remeda';
 import { isTsFile } from '../tsc-utils';
 import { Table } from 'console-table-printer';
 import chalk from 'chalk';
-import { getIconByState } from '../feature/metric/metricsModels';
-import { MetricsScope } from '../feature/metric/Metrics';
+import {
+  CodeMetrics,
+  getIconByState,
+  Score,
+} from '../feature/metric/metricsModels';
+import { MetricsScope } from '../feature/metric/metricsModels';
 import { getMetricsRawData } from '../feature/metric/getMetricsRawData';
 import { convertRawToCodeMetrics } from '../feature/metric/convertRawToCodeMetrics';
-import { Score } from '../feature/metric/converter/Score';
 import { unTree } from '../utils/Tree';
 
 type ScoreWithDiff = Score & {
@@ -166,7 +166,6 @@ function injectScoreDiffToOneFileData(
   for (const name of dataNames) {
     const current = oneFileData.find(flatten => flatten.name === name);
     const initial = initialMetrics.find(m => m.name === name);
-
     if (current && initial) {
       scoresWithDiff.push({
         ...current,

@@ -4,10 +4,8 @@ import { allPass, piped } from 'remeda';
 import { OptionValues } from '../../setting/model';
 import { getMetricsRawData } from './getMetricsRawData';
 import { convertRawToCodeMetrics } from './convertRawToCodeMetrics';
-import { CodeMetrics } from './converter/CodeMetrics';
-import { MetricsScope } from './Metrics';
+import { CodeMetrics, MetricsScope } from './metricsModels';
 import { Tree } from '../../utils/Tree';
-export { CodeMetrics } from './converter/CodeMetrics';
 
 export function calculateCodeMetrics(
   opt: Pick<OptionValues, 'exclude' | 'dir' | 'tsconfig' | 'include'>,
@@ -79,6 +77,22 @@ export function sortMetrics(list: Tree<Pick<CodeMetrics, 'scores'>>[]) {
       (b.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0),
   );
   list.forEach(m => m.children && sortMetrics(m.children));
+}
+export function sortMetrics2(
+  list: Tree<Pick<CodeMetrics, 'scores'>>[],
+): Tree<Pick<CodeMetrics, 'scores'>>[] {
+  const newList = list.toSorted(
+    (a, b) =>
+      (a.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0) -
+      (b.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0),
+  );
+  newList.map(m => {
+    if (m.children) {
+      m.children = sortMetrics2(m.children);
+    }
+    return m;
+  });
+  return newList;
 }
 
 /**

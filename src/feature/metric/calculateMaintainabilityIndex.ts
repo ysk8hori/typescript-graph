@@ -1,7 +1,7 @@
 import { Tree } from '../../utils/Tree';
 import { CognitiveComplexityMetrics } from './CognitiveComplexity';
 import { CyclomaticComplexityMetrics } from './CyclomaticComplexity';
-import { MetricsScope } from './Metrics';
+import { MetricsScope } from './metricsModels';
 import { SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolume';
 
 interface RawMetrics {

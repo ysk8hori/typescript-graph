@@ -1,10 +1,6 @@
 import { unTree } from '../../utils/Tree';
-import {
-  type CodeMetrics,
-  sortMetrics,
-  updateMetricsName,
-} from './calculateCodeMetrics';
-import { getIconByState } from './metricsModels';
+import { sortMetrics, updateMetricsName } from './calculateCodeMetrics';
+import { CodeMetrics, getIconByState } from './metricsModels';
 
 export function writeMetrics(
   write: (str: string) => void,

@@ -1,14 +1,13 @@
 import { pipe, zipWith } from 'remeda';
 import { CognitiveComplexityMetrics } from './CognitiveComplexity';
 import { CyclomaticComplexityMetrics } from './CyclomaticComplexity';
-import { MetricsScope } from './Metrics';
+import { CodeMetrics, MetricsScope } from './metricsModels';
 import { MetricsScoreState } from './metricsModels';
 import { SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolume';
 import {
   calculateMaintainabilityIndex,
   RawMetricsWithMaintainabilityIndex,
 } from './calculateMaintainabilityIndex';
-import { CodeMetrics } from './converter/CodeMetrics';
 import { Tree } from '../../utils/Tree';
 
 interface RawMetrics {
