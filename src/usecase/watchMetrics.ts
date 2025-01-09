@@ -63,6 +63,14 @@ const COLUMNS = [
   { name: COGNITIVE_COMPLEXITY_COLUMN, alignment: 'right' },
 ] as const;
 
+/** 初回メトリクス登録時も差分取得時にも共通で使用するメトリクスの取得と整形処理 */
+const getMetrics = piped(
+  getMetricsRawData,
+  convertRawToCodeMetrics,
+  updateMetricsName,
+  unTree,
+);
+
 function consoleMetrics(path: string) {
   try {
     const metrics: {
@@ -73,10 +81,7 @@ function consoleMetrics(path: string) {
       Cognitive: string;
     }[] = pipe(
       path,
-      getMetricsRawData,
-      convertRawToCodeMetrics,
-      updateMetricsName,
-      unTree,
+      getMetrics,
       injectScoreDiffToOneFileData,
       convertToWatchData,
     );
@@ -143,12 +148,7 @@ function getChalkedDiff(
 
 const initialMetricsMap: Map<string, CodeMetrics[]> = new Map();
 function saveInitialMetrics(path: string) {
-  const metrics = pipe(
-    path,
-    getMetricsRawData,
-    convertRawToCodeMetrics,
-    unTree,
-  );
+  const metrics = pipe(path, getMetrics);
   initialMetricsMap.set(path, metrics);
 }
 
