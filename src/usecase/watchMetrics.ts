@@ -11,7 +11,7 @@ import {
 } from '../feature/metric/metricsModels';
 import { MetricsScope } from '../feature/metric/metricsModels';
 import { getMetricsRawData } from '../feature/metric/functions/getMetricsRawData';
-import { convertRawToCodeMetrics } from '../feature/metric/convertRawToCodeMetrics';
+import { convertRawToCodeMetrics } from '../feature/metric/functions/convertRawToCodeMetrics';
 import { unTree } from '../utils/Tree';
 import { updateMetricsName } from '../feature/metric/functions/updateMetricsName';
 

@@ -2,7 +2,7 @@ import path from 'path';
 import ts from 'typescript';
 import { allPass, piped } from 'remeda';
 import { OptionValues } from '../../setting/model';
-import { convertRawToCodeMetrics } from './convertRawToCodeMetrics';
+import { convertRawToCodeMetrics } from './functions/convertRawToCodeMetrics';
 import { CodeMetrics } from './metricsModels';
 import { getMetricsRawData } from './functions/getMetricsRawData';
 
