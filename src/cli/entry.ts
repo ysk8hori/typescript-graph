@@ -56,7 +56,7 @@ program
     '--metrics',
     'Enable beta feature to measures metrics such as Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity.',
   )
-  .option('--watch-metrics [char...]', 'watch metrics', '')
+  .option('-wm, --watch-metrics [char...]', 'watch metrics', '')
   .option(
     '--config-file',
     'Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.',
