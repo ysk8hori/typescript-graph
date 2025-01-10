@@ -1,10 +1,10 @@
 import { unTree } from '../../utils/Tree';
-import { toSortedMetrics } from '../../feature/metric/functions/toSortedMetrics';
 import { updateMetricsName } from '../../feature/metric/functions/updateMetricsName';
 import {
   CodeMetrics,
   getIconByState,
 } from '../../feature/metric/metricsModels';
+import { toSortedMetrics } from '../../feature/metric/functions/toSortedMetrics';
 
 export function writeMetrics(
   write: (str: string) => void,

@@ -26,26 +26,26 @@ export function calculateMaintainabilityIndex({
   cyclomaticComplexity,
   children,
 }: Tree<RawMetrics>): Tree<RawMetricsWithMaintainabilityIndex> {
-  const calculatedChildren = children?.map(c =>
-    calculateMaintainabilityIndex(c),
-  );
-  // class や file の場合は子要素の平均値を取る
-  const maintainabilityIndex =
-    // (scope === 'class' || scope === 'file') && calculatedChildren
-    //   ? calculatedChildren
-    //       .map(c => c.maintainabilityIndex)
-    //       .reduce((a, b) => a + b, 0) / calculatedChildren.length
-    //   :
+  const isClassOrFile = (scope === 'class' || scope === 'file') && children;
+  const divisor = isClassOrFile ? 2 : 1;
+  const semanticSyntaxVolumeScore = semanticSyntaxVolume.score.volume / divisor;
+  const cyclomaticComplexityScore = cyclomaticComplexity.score / divisor;
+  const cognitiveComplexityScore = cognitiveComplexity.score / divisor;
+  const linesScore = semanticSyntaxVolume.score.lines / divisor;
+  const MAGIC_NUMBER = 171;
+  const maintainabilityIndex = Math.min(
+    100,
     Math.max(
       0,
-      ((171 -
-        5.2 * Math.log(semanticSyntaxVolume.score.volume) -
-        0.115 * cyclomaticComplexity.score -
-        0.115 * cognitiveComplexity.score -
-        16.2 * Math.log(semanticSyntaxVolume.score.lines)) *
+      ((MAGIC_NUMBER -
+        5.2 * Math.log(semanticSyntaxVolumeScore) -
+        0.115 * cyclomaticComplexityScore -
+        0.115 * cognitiveComplexityScore -
+        16.2 * Math.log(linesScore)) *
         100) /
-        171,
-    );
+        MAGIC_NUMBER,
+    ),
+  );
   return {
     filePath,
     name,
@@ -54,6 +54,6 @@ export function calculateMaintainabilityIndex({
     cognitiveComplexity,
     cyclomaticComplexity,
     maintainabilityIndex,
-    children: calculatedChildren,
+    children: children?.map(calculateMaintainabilityIndex),
   };
 }

@@ -208,13 +208,13 @@ function getMIState(score: number): MetricsScoreState {
 }
 
 function getClassMIState(score: number): MetricsScoreState {
-  if (score === 0) return 'critical';
-  if (score < 10) return 'alert';
+  if (score < 10) return 'critical';
+  if (score < 20) return 'alert';
   return 'normal';
 }
 
 function getFileMIState(score: number): MetricsScoreState {
-  if (score === 0) return 'critical';
-  if (score < 10) return 'alert';
+  if (score < 10) return 'critical';
+  if (score < 20) return 'alert';
   return 'normal';
 }
