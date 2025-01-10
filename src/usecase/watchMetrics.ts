@@ -4,16 +4,13 @@ import { pipe, piped, tap } from 'remeda';
 import { isTsFile } from '../tsc-utils';
 import { Table } from 'console-table-printer';
 import chalk from 'chalk';
-import {
-  CodeMetrics,
-  getIconByState,
-  Score,
-} from '../feature/metric/metricsModels';
+import { CodeMetrics, Score } from '../feature/metric/metricsModels';
 import { MetricsScope } from '../feature/metric/metricsModels';
 import { getMetricsRawData } from '../feature/metric/functions/getMetricsRawData';
 import { convertRawToCodeMetrics } from '../feature/metric/functions/convertRawToCodeMetrics';
 import { unTree } from '../utils/Tree';
 import { updateMetricsName } from '../feature/metric/functions/updateMetricsName';
+import { getIconByState } from '../feature/metric/functions/getIconByState';
 
 type ScoreWithDiff = Score & {
   diff?: number;

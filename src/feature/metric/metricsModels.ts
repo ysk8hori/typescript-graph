@@ -22,14 +22,3 @@ export interface CodeMetrics {
   scope: MetricsScope;
   scores: Score[];
 }
-
-export function getIconByState(state: MetricsScoreState): string {
-  switch (state) {
-    case 'critical':
-      return '💥';
-    case 'alert':
-      return '🧨';
-    default:
-      return '';
-  }
-}
