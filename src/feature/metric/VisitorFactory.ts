@@ -16,7 +16,7 @@ import {
   isTopLevelIIFE,
   isTopLevelObjectLiteralExpression,
 } from './astUtils';
-import { MetricsScope } from './Metrics';
+import { MetricsScope } from './metricsModels';
 
 export interface VisitorFactory<T extends AstVisitor> {
   createAdditionalVisitor(node: ts.Node, depth: number): T | undefined;

@@ -411,9 +411,9 @@ In addition to the usual content of `typescript-graph.md`, metrics like the foll
 <table>
 <thead><tr><th scope="col">file</th><th scope="col">scope</th><th scope="col">name</th><th scope="col">Maintainability Index</th><th scope="col">Cyclomatic Complexity</th><th scope="col">Cognitive Complexity</th><th scope="col">lines</th><th scope="col">semantic syntax volume</th><th scope="col">total operands</th><th scope="col">unique operands</th><th scope="col">total semantic syntax</th><th scope="col">unique semantic syntax</th></tr></thead>
 <tbody>
-<tr><th scope="row">badCode.ts</th><th scope="row">file</th><th scope="row">-</th><td>🧨 7.16</td><td> 27</td><td> 351</td><td> 111</td><td> 1807.98</td><td> 107</td><td> 55</td><td> 190</td><td> 13</td></tr>
+<tr><th scope="row">badCode.ts</th><th scope="row">file</th><th scope="row">-</th><td> 28.54</td><td> 27</td><td> 351</td><td> 111</td><td> 1807.98</td><td> 107</td><td> 55</td><td> 190</td><td> 13</td></tr>
 <tr><th scope="row">badCode.ts</th><th scope="row">function</th><th scope="row">badCode</th><td>💥 7.23</td><td> 27</td><td> 351</td><td> 110</td><td> 1814.06</td><td> 107</td><td> 55</td><td> 191</td><td> 13</td></tr>
-<tr><th scope="row">goodCode.ts</th><th scope="row">file</th><th scope="row">-</th><td> 73.43</td><td> 2</td><td> 1</td><td> 4</td><td> 77.66</td><td> 6</td><td> 4</td><td> 13</td><td> 13</td></tr>
+<tr><th scope="row">goodCode.ts</th><th scope="row">file</th><th scope="row">-</th><td> 82.21</td><td> 2</td><td> 1</td><td> 4</td><td> 77.66</td><td> 6</td><td> 4</td><td> 13</td><td> 13</td></tr>
 <tr><th scope="row">goodCode.ts</th><th scope="row">function</th><th scope="row">goodCode</th><td> 76</td><td> 2</td><td> 1</td><td> 3</td><td> 81.75</td><td> 6</td><td> 4</td><td> 14</td><td> 13</td></tr>
 </tbody></table>
 <details>
@@ -421,9 +421,9 @@ In addition to the usual content of `typescript-graph.md`, metrics like the foll
 
 ```csv
 file,scope,name,Maintainability Index,Cyclomatic Complexity,Cognitive Complexity,lines,semantic syntax volume,total operands,unique operands,total semantic syntax,unique semantic syntax
-badCode.ts,file,-,7.155438841340747,27,351,111,1807.9764638513507,107,55,190,13
+badCode.ts,file,-,28.540438644839494,27,351,111,1807.9764638513507,107,55,190,13
 badCode.ts,function,badCode,7.2309524830767815,27,351,110,1814.063926692601,107,55,191,13
-goodCode.ts,file,-,73.4296734165724,2,1,4,77.66179398375644,6,4,13,13
+goodCode.ts,file,-,82.20502409726409,2,1,4,77.66179398375644,6,4,13,13
 goodCode.ts,function,goodCode,75.99910291534641,2,1,3,81.74925682500678,6,4,14,13
 ```
 
@@ -434,9 +434,9 @@ goodCode.ts,function,goodCode,75.99910291534641,2,1,3,81.74925682500678,6,4,14,1
 
 ```tsv
 file	scope	name	Maintainability Index	Cyclomatic Complexity	Cognitive Complexity	lines	semantic syntax volume	total operands	unique operands	total semantic syntax	unique semantic syntax
-badCode.ts	file	-	7.155438841340747	27	351	111	1807.9764638513507	107	55	190	13
+badCode.ts	file	-	28.540438644839494	27	351	111	1807.9764638513507	107	55	190	13
 badCode.ts	function	badCode	7.2309524830767815	27	351	110	1814.063926692601	107	55	191	13
-goodCode.ts	file	-	73.4296734165724	2	1	4	77.66179398375644	6	4	13	13
+goodCode.ts	file	-	82.20502409726409	2	1	4	77.66179398375644	6	4	13	13
 goodCode.ts	function	goodCode	75.99910291534641	2	1	3	81.74925682500678	6	4	14	13
 ```
 
@@ -447,21 +447,14 @@ goodCode.ts	function	goodCode	75.99910291534641	2	1	3	81.74925682500678	6	4	14	1
 ### Maintainability Index
 
 This metric calculates an index value ranging from 0 to 100, representing the relative ease of maintaining the code. Higher values indicate better maintainability. Two thresholds are defined, and an icon is displayed if the index falls below them.
+Since this is a beta feature, the formulas and thresholds may change.
 
-| State    | Icon |
-| -------- | ---- |
-| Critical | 💥   |
-| Alert    | 🧨   |
+| threshold | state    | icon |
+| --------- | -------- | ---- |
+| 20        | alert    | 🧨   |
+| 10        | critical | 💥   |
 
-Since this is a beta feature, the formulas and thresholds may change. Current thresholds are set per scope:
-
-| Scope | 💥 Critical | 🧨 Alert |
-| ----- | ----------- | -------- |
-| File  | 0           | 10       |
-| Class | 0           | 10       |
-| Other | 10          | 20       |
-
-The current calculation formula is the same across all scopes, which tends to produce worse metrics for broader scopes. Future updates may introduce customizations for formulas and thresholds.
+Future updates may introduce customizations for formulas and thresholds.
 
 ### Cyclomatic Complexity
 

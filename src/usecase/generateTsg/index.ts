@@ -1,23 +1,21 @@
 import path from 'path';
 import { pipe } from 'remeda';
-import { setupConfig, getConfig } from '../setting/config';
-import { abstraction } from '../feature/graph/abstraction';
-import { createGraph } from '../feature/graph/createGraph';
-import { filterGraph } from '../feature/graph/filterGraph';
-import { highlight } from '../feature/graph/highlight';
-import {
-  CodeMetrics,
-  calculateCodeMetrics,
-} from '../feature/metric/calculateCodeMetrics';
-import { Graph } from '../feature/graph/models';
-import { writeMetrics } from '../feature/metric/writeMetricsTable';
-import { OptionValues } from '../setting/model';
+import { setupConfig, getConfig } from '../../setting/config';
+import { abstraction } from '../../feature/graph/abstraction';
+import { createGraph } from '../../feature/graph/createGraph';
+import { filterGraph } from '../../feature/graph/filterGraph';
+import { highlight } from '../../feature/graph/highlight';
+import { calculateCodeMetrics } from '../../feature/metric/calculateCodeMetrics';
+import { Graph } from '../../feature/graph/models';
+import { writeMetrics } from './writeMetricsTable';
+import { OptionValues } from '../../setting/model';
 import { createWriteStream } from 'fs';
-import { writeGraph } from '../feature/mermaid/mermaidify';
+import { writeGraph } from '../../feature/mermaid/mermaidify';
 import {
   measureInstability,
   writeCouplingData,
-} from '../feature/graph/instability';
+} from '../../feature/graph/instability';
+import { CodeMetrics } from '../../feature/metric/metricsModels';
 
 export async function generateTsg(
   commandOptions: OptionValues & { executedScript: string },

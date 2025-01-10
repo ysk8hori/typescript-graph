@@ -1,6 +1,6 @@
 import CognitiveComplexity from './CognitiveComplexity';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
-import { MetricsScope } from './Metrics';
+import { MetricsScope } from './metricsModels';
 import { ClassVisitorFactory } from './VisitorFactory';
 
 export default class CognitiveComplexityForClass extends CognitiveComplexity {

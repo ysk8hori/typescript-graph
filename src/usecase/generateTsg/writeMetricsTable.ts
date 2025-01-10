@@ -1,18 +1,18 @@
-import {
-  CodeMetrics,
-  flatMetrics,
-  FlattenMaterics,
-  sortMetrics,
-} from './calculateCodeMetrics';
-import { getIconByState } from './metricsModels';
+import { unTree } from '../../utils/Tree';
+import { updateMetricsName } from '../../feature/metric/functions/updateMetricsName';
+import { CodeMetrics } from '../../feature/metric/metricsModels';
+import { toSortedMetrics } from '../../feature/metric/functions/toSortedMetrics';
+import { getIconByState } from '../../feature/metric/functions/getIconByState';
 
 export function writeMetrics(
   write: (str: string) => void,
   metrics: CodeMetrics[],
 ) {
   if (metrics.length === 0) return;
-  sortMetrics(metrics);
-  const flatten = flatMetrics(metrics);
+  const flatten = toSortedMetrics(metrics)
+    .map(m => updateMetricsName(m))
+    .map(unTree)
+    .flat();
   write('## Code Metrics\n');
   write('\n');
 
@@ -23,7 +23,7 @@ export function writeMetrics(
 
 function writeMetricsTable(
   write: (str: string) => void,
-  flatten: FlattenMaterics[],
+  flatten: CodeMetrics[],
 ) {
   write('<table>\n');
   write(
@@ -32,7 +32,7 @@ function writeMetricsTable(
   write(`<tbody>\n`);
   flatten.forEach(m => {
     write(
-      `<tr><th scope="row">${m.fileName}</th><th scope="row">${m.scope}</th><th scope="row">${m.name}</th>${m.scores
+      `<tr><th scope="row">${m.filePath}</th><th scope="row">${m.scope}</th><th scope="row">${m.name}</th>${m.scores
         .map(({ value, state }) => ({
           score: Math.round(value * 100) / 100,
           state,
@@ -45,10 +45,7 @@ function writeMetricsTable(
   write('\n');
 }
 
-function writeMetricsCsv(
-  write: (str: string) => void,
-  flatten: FlattenMaterics[],
-) {
+function writeMetricsCsv(write: (str: string) => void, flatten: CodeMetrics[]) {
   write('<details>\n');
   write('<summary>CSV</summary>\n');
   write('\n');
@@ -58,7 +55,7 @@ function writeMetricsCsv(
   );
   flatten.forEach(m => {
     write(
-      `${m.fileName},${m.scope},${m.name},${m.scores.map(({ value }) => value).join(',')}\n`,
+      `${m.filePath},${m.scope},${m.name},${m.scores.map(({ value }) => value).join(',')}\n`,
     );
   });
   write('```\n');
@@ -67,10 +64,7 @@ function writeMetricsCsv(
   write('\n');
 }
 
-function writeMetricsTsv(
-  write: (str: string) => void,
-  flatten: FlattenMaterics[],
-) {
+function writeMetricsTsv(write: (str: string) => void, flatten: CodeMetrics[]) {
   write('<details>\n');
   write('<summary>TSV</summary>\n');
   write('\n');
@@ -80,7 +74,7 @@ function writeMetricsTsv(
   );
   flatten.forEach(m => {
     write(
-      `${m.fileName}\t${m.scope}\t${m.name}\t${m.scores.map(({ value }) => value).join('\t')}\n`,
+      `${m.filePath}\t${m.scope}\t${m.name}\t${m.scores.map(({ value }) => value).join('\t')}\n`,
     );
   });
   write('```\n');
