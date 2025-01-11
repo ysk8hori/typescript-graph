@@ -1,5 +1,5 @@
 import { pipe, zipWith } from 'remeda';
-import { CognitiveComplexityMetrics } from '../CognitiveComplexity';
+import { CognitiveComplexityMetrics } from '../cognitiveComplexity';
 import { CyclomaticComplexityMetrics } from '../CyclomaticComplexity';
 import { CodeMetrics, MetricsScope } from '../metricsModels';
 import { MetricsScoreState } from '../metricsModels';

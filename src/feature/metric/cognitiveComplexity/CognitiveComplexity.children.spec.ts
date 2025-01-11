@@ -1,9 +1,9 @@
 import { test, expect } from 'vitest';
-import AstLogger from './AstLogger';
+import AstLogger from '../AstLogger';
 import * as ts from 'typescript';
-import AstTraverser from './AstTraverser';
-import CognitiveComplexityForSourceCode from './CognitiveComplexityForSourceCode';
-import { CognitiveComplexityMetrics } from './CognitiveComplexity';
+import AstTraverser from '../AstTraverser';
+import { CognitiveComplexityMetrics } from './CognitiveComplexityMetrics';
+import { createCognitiveComplexityAnalyzer } from '../cognitiveComplexity';
 
 type OperatorTest = {
   perspective: string;
@@ -252,9 +252,7 @@ const y = () => {
       ts.ScriptKind.TS,
     );
     const astLogger = new AstLogger();
-    const cognitiveComplexity = new CognitiveComplexityForSourceCode(
-      'sample.tsx',
-    );
+    const cognitiveComplexity = createCognitiveComplexityAnalyzer('sample.tsx');
     const astTraverser = new AstTraverser(source, [
       astLogger,
       cognitiveComplexity,

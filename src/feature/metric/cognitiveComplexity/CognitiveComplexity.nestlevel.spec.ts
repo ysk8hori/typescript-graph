@@ -1,8 +1,8 @@
 import { test, expect } from 'vitest';
-import AstLogger from './AstLogger';
+import AstLogger from '../AstLogger';
 import * as ts from 'typescript';
-import AstTraverser from './AstTraverser';
-import CognitiveComplexityForSourceCode from './CognitiveComplexityForSourceCode';
+import AstTraverser from '../AstTraverser';
+import { createCognitiveComplexityAnalyzer } from '../cognitiveComplexity';
 
 type OperatorTest = {
   perspective: string;
@@ -336,15 +336,10 @@ class A {
       ts.ScriptKind.TS,
     );
     const astLogger = new AstLogger();
-    const cognitiveComplexity = new CognitiveComplexityForSourceCode(
-      'sample.tsx',
-    );
-    const astTraverser = new AstTraverser(source, [
-      astLogger,
-      cognitiveComplexity,
-    ]);
+    const analyzer = createCognitiveComplexityAnalyzer('sample.tsx');
+    const astTraverser = new AstTraverser(source, [astLogger, analyzer]);
     astTraverser.traverse();
     console.log(astLogger.log);
-    expect(cognitiveComplexity.metrics.score).toEqual(expected);
+    expect(analyzer.metrics.score).toEqual(expected);
   },
 );

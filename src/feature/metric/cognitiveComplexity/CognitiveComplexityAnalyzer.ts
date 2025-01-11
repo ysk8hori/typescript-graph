@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { Leave } from './AstTraverser';
+import { Leave } from '../AstTraverser';
 import { allPass, anyPass } from 'remeda';
 import {
   isTopLevelArrowFunction,
@@ -8,11 +8,11 @@ import {
   isTopLevelIIFE,
   isTopLevelObjectLiteralExpression,
   TopLevelMatcher,
-} from './astUtils';
+} from '../astUtils';
 import HierarchicalMetricsAnalyzer, {
   AnalyzeProps,
-  HierarchicalMetris,
-} from './HierarchicalMetricsAnalyzer';
+} from '../HierarchicalMetricsAnalyzer';
+import { Score } from './CognitiveComplexityMetrics';
 
 type NodeMatcher = (node: ts.Node) => boolean;
 
@@ -92,10 +92,7 @@ const skipNestIncrementAtTopLevelMatchers: TopLevelMatcher[] = [
     ts.isObjectLiteralExpression(node.parent.parent),
 ];
 
-type Score = number;
-export type CognitiveComplexityMetrics = HierarchicalMetris<Score>;
-
-export default abstract class CognitiveComplexity extends HierarchicalMetricsAnalyzer<Score> {
+export default abstract class CognitiveComplexityAnalyzer extends HierarchicalMetricsAnalyzer<Score> {
   protected analyze({ node, depth }: AnalyzeProps): Leave | void {
     this.#trackLogicalToken(node);
     if (incrementScoreMachers.some(matcher => matcher(node))) {

@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
 import HierarchicalMetricsAnalyzer, {
   AnalyzeProps,
-  HierarchicalMetris,
 } from './HierarchicalMetricsAnalyzer';
+import { HierarchicalMetris } from './HierarchicalMetris';
 
 export interface SemanticSyntaxVolumeScores {
   /** 構文のボリューム */
