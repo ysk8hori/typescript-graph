@@ -1,9 +1,9 @@
-import CognitiveComplexity from './CognitiveComplexity';
+import CognitiveComplexityAnalyzer from './CognitiveComplexityAnalyzer';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
-import { MetricsScope } from './metricsModels';
-import { ClassVisitorFactory } from './VisitorFactory';
+import { MetricsScope } from '../metricsModels';
+import { ClassVisitorFactory } from '../VisitorFactory';
 
-export default class CognitiveComplexityForClass extends CognitiveComplexity {
+export default class CognitiveComplexityForClass extends CognitiveComplexityAnalyzer {
   constructor(name: string, scope: MetricsScope) {
     super(name, scope, {
       visitorFactory: new ClassVisitorFactory({

@@ -1,19 +1,13 @@
-import CyclomaticComplexity from './CyclomaticComplexity';
+import CyclomaticComplexityAnalyzer from './CyclomaticComplexityAnalyzer';
 import CyclomaticComplexityForNormalNode from './CyclomaticComplexityForNormalNode';
 import CyclomaticComplexityForClass from './CyclomaticComplexityForClass';
-import { TopLevelVisitorFactory, VisitorFactory } from './VisitorFactory';
+import { TopLevelVisitorFactory } from '../VisitorFactory';
 
-export default class CyclomaticComplexityForSourceCode extends CyclomaticComplexity {
-  constructor(
-    name: string,
-    param?: {
-      topLevelDepth?: number;
-      visitorFactory?: VisitorFactory<CyclomaticComplexity>;
-    },
-  ) {
+export default class CyclomaticComplexityForSourceCode extends CyclomaticComplexityAnalyzer {
+  constructor(name: string) {
     super(name, 'file', {
-      visitorFactory: new TopLevelVisitorFactory<CyclomaticComplexity>(
-        param?.topLevelDepth ?? 1,
+      visitorFactory: new TopLevelVisitorFactory<CyclomaticComplexityAnalyzer>(
+        1,
         {
           createFunctionVisitor: (name, scope) =>
             new CyclomaticComplexityForNormalNode(name, scope),

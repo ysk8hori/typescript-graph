@@ -1,19 +1,13 @@
-import CognitiveComplexity from './CognitiveComplexity';
+import CognitiveComplexityAnalyzer from './CognitiveComplexityAnalyzer';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import CognitiveComplexityForClass from './CognitiveComplexityForClass';
-import { TopLevelVisitorFactory, VisitorFactory } from './VisitorFactory';
+import { TopLevelVisitorFactory } from '../VisitorFactory';
 
-export default class CognitiveComplexityForSourceCode extends CognitiveComplexity {
-  constructor(
-    name: string,
-    param?: {
-      topLevelDepth?: number;
-      visitorFactory?: VisitorFactory<CognitiveComplexity>;
-    },
-  ) {
+export default class CognitiveComplexityForSourceCode extends CognitiveComplexityAnalyzer {
+  constructor(name: string) {
     super(name, 'file', {
-      visitorFactory: new TopLevelVisitorFactory<CognitiveComplexity>(
-        param?.topLevelDepth ?? 1,
+      visitorFactory: new TopLevelVisitorFactory<CognitiveComplexityAnalyzer>(
+        1,
         {
           createFunctionVisitor: (name, scope) =>
             new CognitiveComplexityForNormalNode(name, scope),

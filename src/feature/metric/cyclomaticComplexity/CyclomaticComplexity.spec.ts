@@ -1,8 +1,8 @@
-import { test, expect, describe } from 'vitest';
-import AstLogger from './AstLogger';
+import { test, expect } from 'vitest';
+import AstLogger from '../AstLogger';
 import * as ts from 'typescript';
-import AstTraverser from './AstTraverser';
-import CyclomaticComplexityForSourceCode from './CyclomaticComplexityForSourceCode';
+import AstTraverser from '../AstTraverser';
+import { createCyclomaticComplexityAnalyzer } from '.';
 
 type OperatorTest = {
   perspective: string;
@@ -92,7 +92,7 @@ test.each([
       ts.ScriptKind.TS,
     );
     const astLogger = new AstLogger();
-    const volume = new CyclomaticComplexityForSourceCode('sample.tsx');
+    const volume = createCyclomaticComplexityAnalyzer('sample.tsx');
     const astTraverser = new AstTraverser(source, [astLogger, volume]);
     astTraverser.traverse();
     console.log(astLogger.log);
