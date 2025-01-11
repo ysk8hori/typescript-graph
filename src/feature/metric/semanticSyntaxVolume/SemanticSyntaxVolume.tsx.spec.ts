@@ -1,9 +1,9 @@
 import { test, expect, describe } from 'vitest';
-import AstLogger from './AstLogger';
-import { type SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolume';
+import AstLogger from '../AstLogger';
+import { type SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolumeAnalyzer';
 import ts from 'typescript';
-import AstTraverser from './AstTraverser';
-import SemanticSyntaxVolumeForSourceCode from './SemanticSyntaxVolumeForSourceCode';
+import AstTraverser from '../AstTraverser';
+import { createSemanticSyntaxVolumeAnalyzer } from '.';
 
 const button = `\
 function Button({ flag }: { flag: boolean }) {
@@ -118,7 +118,7 @@ describe.each([ts.ScriptKind.TSX])(`%s`, scriptKind => {
           scriptKind,
         );
         const astLogger = new AstLogger();
-        const volume = new SemanticSyntaxVolumeForSourceCode('sample.tsx');
+        const volume = createSemanticSyntaxVolumeAnalyzer('sample.tsx');
         const astTraverser = new AstTraverser(source, [astLogger, volume]);
         astTraverser.traverse();
         console.log(astLogger.log);

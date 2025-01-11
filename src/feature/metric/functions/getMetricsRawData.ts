@@ -2,8 +2,8 @@ import { readFileSync } from 'fs';
 import ts from 'typescript';
 import AstTraverser from '../AstTraverser';
 import { createCyclomaticComplexityAnalyzer } from '../cyclomaticComplexity';
-import SemanticSyntaxVolumeForSourceCode from '../SemanticSyntaxVolumeForSourceCode';
 import { createCognitiveComplexityAnalyzer } from '../cognitiveComplexity';
+import { createSemanticSyntaxVolumeAnalyzer } from '../semanticSyntaxVolume';
 
 export function getMetricsRawData(path: string) {
   const sourceCode = readFileSync(path, 'utf-8');
@@ -16,7 +16,7 @@ export function getMetricsRawData(path: string) {
     ts.ScriptKind.TS,
   );
   const cyclomaticComplexity = createCyclomaticComplexityAnalyzer(path);
-  const semanticSyntaxVolume = new SemanticSyntaxVolumeForSourceCode(path);
+  const semanticSyntaxVolume = createSemanticSyntaxVolumeAnalyzer(path);
   const cognitiveComplexityAnalyzer = createCognitiveComplexityAnalyzer(path);
   const astTraverser = new AstTraverser(source, [
     semanticSyntaxVolume,

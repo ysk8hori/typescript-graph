@@ -2,7 +2,7 @@ import { Tree } from '../../../utils/Tree';
 import { CognitiveComplexityMetrics } from '../cognitiveComplexity';
 import { CyclomaticComplexityMetrics } from '../cyclomaticComplexity';
 import { MetricsScope } from '../metricsModels';
-import { SemanticSyntaxVolumeMetrics } from '../SemanticSyntaxVolume';
+import { SemanticSyntaxVolumeMetrics } from '../semanticSyntaxVolume';
 
 interface RawMetrics {
   semanticSyntaxVolume: SemanticSyntaxVolumeMetrics;
