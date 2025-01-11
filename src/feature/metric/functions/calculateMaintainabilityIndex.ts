@@ -1,6 +1,6 @@
 import { Tree } from '../../../utils/Tree';
 import { CognitiveComplexityMetrics } from '../cognitiveComplexity';
-import { CyclomaticComplexityMetrics } from '../CyclomaticComplexity';
+import { CyclomaticComplexityMetrics } from '../cyclomaticComplexity';
 import { MetricsScope } from '../metricsModels';
 import { SemanticSyntaxVolumeMetrics } from '../SemanticSyntaxVolume';
 

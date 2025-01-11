@@ -1,6 +1,6 @@
 import { pipe, zipWith } from 'remeda';
 import { CognitiveComplexityMetrics } from '../cognitiveComplexity';
-import { CyclomaticComplexityMetrics } from '../CyclomaticComplexity';
+import { CyclomaticComplexityMetrics } from '../cyclomaticComplexity';
 import { CodeMetrics, MetricsScope } from '../metricsModels';
 import { MetricsScoreState } from '../metricsModels';
 import { SemanticSyntaxVolumeMetrics } from '../SemanticSyntaxVolume';

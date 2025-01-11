@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
 import HierarchicalMetricsAnalyzer, {
   AnalyzeProps,
-} from './HierarchicalMetricsAnalyzer';
-import { HierarchicalMetris } from './HierarchicalMetris';
+} from '../HierarchicalMetricsAnalyzer';
+import { Score } from './CyclomaticComplexityMetrics';
 
 function kindMatcher(kind: ts.SyntaxKind) {
   return (node: ts.Node) => node.kind === kind;
@@ -25,10 +25,7 @@ const cyclomaticNodeMatchers: ((node: ts.Node) => boolean)[] = [
   ts.isConditionalTypeNode,
 ];
 
-type Score = number;
-export type CyclomaticComplexityMetrics = HierarchicalMetris<Score>;
-
-export default abstract class CyclomaticComplexity extends HierarchicalMetricsAnalyzer<Score> {
+export default abstract class CyclomaticComplexityAnalyzer extends HierarchicalMetricsAnalyzer<Score> {
   protected analyze({ node }: AnalyzeProps) {
     if (cyclomaticNodeMatchers.some(matcher => matcher(node))) this.#addScore();
   }
