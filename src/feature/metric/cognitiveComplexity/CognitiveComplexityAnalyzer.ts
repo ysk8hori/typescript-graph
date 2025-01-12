@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { Leave } from '../AstTraverser';
+import { Leave } from '../AstVisitor';
 import { allPass, anyPass } from 'remeda';
 import {
   isTopLevelArrowFunction,

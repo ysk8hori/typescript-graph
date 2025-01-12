@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { AstVisitor } from './AstTraverser';
+import { AstVisitor } from './AstVisitor';
 import {
   getAnonymousFunctionName,
   getArrowFunctionName,
