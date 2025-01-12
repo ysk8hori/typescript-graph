@@ -1,5 +1,4 @@
-import { Tree } from '../../utils/Tree';
-import { AstVisitor, Leave, VisitProps } from './AstVisitor';
+import { AstVisitor, Leave, VisitProps } from '../util/AstVisitor';
 import { HierarchicalMetris } from './HierarchicalMetris';
 import Metrics from './Metrics';
 import { MetricsScope } from './metricsModels';

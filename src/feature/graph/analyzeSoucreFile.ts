@@ -36,41 +36,49 @@ export function analyzeSoucreFile(
       }
       getModuleNameText(node);
 
-      importPaths.forEach(moduleNameText => {
-        if (!moduleNameText) {
-          return;
-        }
-        const moduleName = moduleNameText.slice(1, moduleNameText.length - 1); // import 文のクォート及びダブルクォートを除去
-        const moduleFileFullName =
-          ts.resolveModuleName(moduleName, sourceFile.fileName, options, ts.sys)
-            .resolvedModule?.resolvedFileName ?? '';
-        const moduleFilePath = removeSlash(
-          options.rootDir
-            ? moduleFileFullName.replace(options.rootDir, '')
-            : moduleFileFullName,
-        );
-        if (!moduleFilePath) {
-          return;
-        }
-        const toNode: Node = {
-          path: moduleFilePath,
-          name: getName(moduleFilePath),
-          changeStatus: 'not_modified',
-        };
-        if (!findNode(nodes, moduleFilePath)) {
-          nodes.push(toNode);
-        }
-        relations.push({
-          kind: 'depends_on',
-          from: fromNode,
-          to: toNode,
-          fullText: node.getChildAt(1, sourceFile)?.getText(sourceFile) ?? '',
-          changeStatus: 'not_modified',
+      importPaths
+        .map(text => getModuleFilePath(text, sourceFile, options))
+        .filter(Boolean)
+        .forEach(moduleFilePath => {
+          const toNode: Node = {
+            path: moduleFilePath,
+            name: getName(moduleFilePath),
+            changeStatus: 'not_modified',
+          };
+          if (!findNode(nodes, moduleFilePath)) {
+            nodes.push(toNode);
+          }
+          relations.push({
+            kind: 'depends_on',
+            from: fromNode,
+            to: toNode,
+            fullText: node.getChildAt(1, sourceFile)?.getText(sourceFile) ?? '',
+            changeStatus: 'not_modified',
+          });
         });
-      });
     });
     return { nodes, relations };
   };
+}
+
+function getModuleFilePath(
+  moduleNameText: string | undefined,
+  sourceFile: ts.SourceFile,
+  options: ts.CompilerOptions,
+) {
+  if (!moduleNameText) {
+    return undefined;
+  }
+  const moduleName = moduleNameText.slice(1, moduleNameText.length - 1); // import 文のクォート及びダブルクォートを除去
+  const moduleFileFullName =
+    ts.resolveModuleName(moduleName, sourceFile.fileName, options, ts.sys)
+      .resolvedModule?.resolvedFileName ?? '';
+  const moduleFilePath = removeSlash(
+    options.rootDir
+      ? moduleFileFullName.replace(options.rootDir, '')
+      : moduleFileFullName,
+  );
+  return moduleFilePath;
 }
 
 function getName(filePath: string) {
