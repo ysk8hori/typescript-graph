@@ -50,7 +50,7 @@ export function createGraph(
       .getSourceFiles()
       .filter(sourceFile => !sourceFile.fileName.includes('node_modules')) // node_modules 配下のファイルは除外
       .filter(piped(getFilePath(options), removeSlash, isNotMatchSomeExclude))
-      .map(analyzeSoucreFile(options, getFilePath(options)));
+      .map(analyzeSoucreFile(options));
     return { graph: mergeGraph(...graphs), meta: { rootDir } };
   } else {
     const graph = createGraphForVue(rootDir, config, isNotMatchSomeExclude);
@@ -116,7 +116,7 @@ function createGraphForVue(
     .getSourceFiles()
     .filter(sourceFile => !sourceFile.fileName.includes('node_modules')) // node_modules 配下のファイルは除外
     .filter(piped(getFilePath(options), removeSlash, isNotMatchSomeExclude))
-    .map(analyzeSoucreFile(options, getFilePath(options)))
+    .map(analyzeSoucreFile(options))
     .map(graph => {
       // graph においては .vue.ts ファイルを .vue に戻す
       return {
