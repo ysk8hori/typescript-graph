@@ -14,7 +14,7 @@ beforeAll(() => {
 // TODO 現状、--config-file で指定するパスは -d からの相対パスだが、将来的には -d をなくしたい。その移行のため --config-file での指定は、-d を無視したカレントディレクトリからの相対パスで設定ファイルを優先し、なければ -d からの相対パスで探すようにしたい。
 
 test('run:sample', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --md ${filepath}`;
+  await $`npx tsx ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
@@ -118,7 +118,7 @@ test('run:sample', async () => {
 });
 
 test('run:sample:argument-include', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/cli/entry.ts includeFiles config --tsconfig './dummy_project/tsconfig.json' --md ${filepath}`;
+  await $`npx tsx ./src/cli/entry.ts includeFiles config --tsconfig './dummy_project/tsconfig.json' --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
@@ -207,7 +207,7 @@ test('run:sample:argument-include', async () => {
 });
 
 test('run:sample:include', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --md ${filepath}`;
+  await $`npx tsx ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
@@ -296,7 +296,7 @@ test('run:sample:include', async () => {
 });
 
 test('run:sample:exclude', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --md ${filepath}`;
+  await $`npx tsx ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
@@ -357,7 +357,7 @@ test('run:sample:exclude', async () => {
 });
 
 test('run:sample:abstraction', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --md ${filepath}`;
+  await $`npx tsx ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
@@ -409,7 +409,7 @@ test('run:sample:abstraction', async () => {
 });
 
 test('run:sample:highlight', async () => {
-  await $`ts-node -O '{\"module\": \"commonjs\"}' ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --md ${filepath}`;
+  await $`npx tsx ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --md ${filepath}`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`

@@ -15,7 +15,6 @@ export type RelationOfDependsOn = {
   kind: 'depends_on';
   from: Node;
   to: Node;
-  fullText: string;
   changeStatus: ChangeStatus;
 };
 export type RelationOfRenameTo = {

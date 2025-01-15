@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import ts from 'typescript';
-import AstTraverser from '../AstTraverser';
+import AstTraverser from '../../util/AstTraverser';
 import { createCyclomaticComplexityAnalyzer } from '../cyclomaticComplexity';
 import { createCognitiveComplexityAnalyzer } from '../cognitiveComplexity';
 import { createSemanticSyntaxVolumeAnalyzer } from '../semanticSyntaxVolume';

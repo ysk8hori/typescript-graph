@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { AstVisitor } from './AstTraverser';
+import { AstVisitor } from '../util/AstVisitor';
 import {
   getAnonymousFunctionName,
   getArrowFunctionName,
@@ -15,7 +15,7 @@ import {
   isTopLevelFunction,
   isTopLevelIIFE,
   isTopLevelObjectLiteralExpression,
-} from './astUtils';
+} from '../util/astUtils';
 import { MetricsScope } from './metricsModels';
 
 export interface VisitorFactory<T extends AstVisitor> {

@@ -1,8 +1,8 @@
 import { test, expect, describe } from 'vitest';
-import AstLogger from '../AstLogger';
+import AstLogger from '../../util/AstLogger';
 import { type SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolumeAnalyzer';
 import ts from 'typescript';
-import AstTraverser from '../AstTraverser';
+import AstTraverser from '../../util/AstTraverser';
 import { createSemanticSyntaxVolumeAnalyzer } from '.';
 
 const button = `\

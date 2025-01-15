@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { Leave } from '../AstTraverser';
+import { Leave } from '../../util/AstVisitor';
 import { allPass, anyPass } from 'remeda';
 import {
   isTopLevelArrowFunction,
@@ -8,7 +8,7 @@ import {
   isTopLevelIIFE,
   isTopLevelObjectLiteralExpression,
   TopLevelMatcher,
-} from '../astUtils';
+} from '../../util/astUtils';
 import HierarchicalMetricsAnalyzer, {
   AnalyzeProps,
 } from '../HierarchicalMetricsAnalyzer';
