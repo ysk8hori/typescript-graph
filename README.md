@@ -390,9 +390,6 @@ flowchart LR
 ```
 
 It makes it easier to share problems within the team. 👍
-以下は英語版です：
-
----
 
 ## Code Metrics Measurement
 
@@ -505,10 +502,6 @@ The values in `()` represent the difference from when monitoring started. Improv
 | Maintainability Index | Higher           |
 | Cyclomatic Complexity | Lower            |
 | Cognitive Complexity  | Lower            |
-
----
-
-Let me know if you need further refinements!
 
 ## Other Options
 
