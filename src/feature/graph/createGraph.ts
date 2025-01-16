@@ -3,10 +3,12 @@ import fs from 'fs';
 import { tmpdir } from 'os';
 import * as ts from 'typescript';
 import { Graph, Meta, Node } from './models';
-import { pipe, piped } from 'remeda';
+import { isNot, pipe } from 'remeda';
 import { mergeGraph } from './utils';
 import { OptionValues } from '../../setting/model';
-import { analyzeSoucreFile } from './analyzeSoucreFile';
+import ProjectTraverser from '../util/ProjectTraverser';
+import { GraphAnalyzer } from './GraphAnalyzer';
+import { resolveTsconfig } from '../../utils/tsc-util';
 
 export function createGraph(
   /**
@@ -17,44 +19,31 @@ export function createGraph(
    **/
   opt: Pick<OptionValues, 'exclude' | 'dir' | 'tsconfig' | 'vue'>,
 ): { graph: Graph; meta: Meta } {
-  const configPath = opt.tsconfig
-    ? path.resolve(opt.tsconfig)
-    : ts.findConfigFile(path.resolve(opt.dir ?? './'), ts.sys.fileExists);
-  if (!configPath) {
-    throw new Error('Could not find a valid "tsconfig.json".');
-  }
-  const { config } = ts.readConfigFile(configPath, ts.sys.readFile);
-  const splitedConfigPath = configPath.split('/');
-  const rootDir = splitedConfigPath
-    .slice(0, splitedConfigPath.length - 1)
-    .join('/');
-
   const bindWords_isFileNameMatchSomeWords =
     (array: string[]) => (filename: string) =>
       array.some(word => filename.includes(word));
   const isMatchSomeExclude = opt.exclude
     ? bindWords_isFileNameMatchSomeWords(opt.exclude)
     : () => false;
-  const isNotMatchSomeExclude = (filename: string) =>
-    !isMatchSomeExclude(filename);
+  const isNotMatchSomeExclude = isNot(isMatchSomeExclude);
 
+  const tsconfig = resolveTsconfig(opt);
   if (!opt.vue) {
-    const { options, fileNames: fullFilePaths } = ts.parseJsonConfigFileContent(
-      config,
-      ts.sys,
-      rootDir,
-    );
-    options.rootDir = rootDir;
-    const program = ts.createProgram(fullFilePaths, options);
-    const graphs = program
-      .getSourceFiles()
-      .filter(sourceFile => !sourceFile.fileName.includes('node_modules')) // node_modules 配下のファイルは除外
-      .filter(piped(getFilePath(options), removeSlash, isNotMatchSomeExclude))
-      .map(analyzeSoucreFile(options));
-    return { graph: mergeGraph(...graphs), meta: { rootDir } };
+    const traverser = new ProjectTraverser(tsconfig, ts.sys);
+    const reuslt = traverser.traverse((...args) => new GraphAnalyzer(...args));
+    const graphs = reuslt.map(([analyzer]) => analyzer.generateGraph());
+
+    return {
+      graph: mergeGraph(...graphs),
+      meta: { rootDir: tsconfig.options.rootDir },
+    };
   } else {
-    const graph = createGraphForVue(rootDir, config, isNotMatchSomeExclude);
-    return { graph, meta: { rootDir } };
+    const graph = createGraphForVue(
+      tsconfig.options.rootDir!,
+      tsconfig.raw,
+      isNotMatchSomeExclude,
+    );
+    return { graph, meta: { rootDir: tsconfig.options.rootDir } };
   }
 }
 
@@ -92,15 +81,18 @@ function createGraphForVue(
       fs.copyFileSync(relativeFilePath, tmpFilePath);
     });
 
-  const { options, fileNames: fullFilePaths } = ts.parseJsonConfigFileContent(
+  const tsconfig = ts.parseJsonConfigFileContent(
     config,
     ts.sys,
     path.join(tmpDir, relativeRootDir),
   );
   // rootDir を設定しない場合、 tmpDir/rootDir である場合に `rootDir/` が node についてしまう
-  options.rootDir = path.join(tmpDir, relativeRootDir);
+  tsconfig.options.rootDir = path.join(tmpDir, relativeRootDir);
   // ↑ここまでで、ファイルを tmp にコピーし、新たな fileNames と options を生成する
-  const program = ts.createProgram(fullFilePaths, options);
+
+  const traverser = new ProjectTraverser(tsconfig, ts.sys);
+  const reuslt = traverser.traverse((...args) => new GraphAnalyzer(...args));
+
   function renameNode(node: Node) {
     return {
       ...node,
@@ -112,11 +104,9 @@ function createGraphForVue(
         .replace(`${tmpDir.slice(1)}/`, ''),
     };
   }
-  const graphs = program
-    .getSourceFiles()
-    .filter(sourceFile => !sourceFile.fileName.includes('node_modules')) // node_modules 配下のファイルは除外
-    .filter(piped(getFilePath(options), removeSlash, isNotMatchSomeExclude))
-    .map(analyzeSoucreFile(options))
+
+  const graphs = reuslt
+    .map(([analyzer]) => analyzer.generateGraph())
     .map(graph => {
       // graph においては .vue.ts ファイルを .vue に戻す
       return {
@@ -131,19 +121,6 @@ function createGraphForVue(
       };
     });
   return mergeGraph(...graphs);
-}
-
-function removeSlash(pathName: string): string {
-  return pathName.startsWith('/') ? pathName.replace('/', '') : pathName;
-}
-
-function getFilePath(
-  options: ts.CompilerOptions,
-): (sourceFile: ts.SourceFile) => string {
-  return (sourceFile: ts.SourceFile) =>
-    options.rootDir
-      ? sourceFile.fileName.replace(options.rootDir + '/', '')
-      : sourceFile.fileName;
 }
 
 function getVueAndTsFilePathsRecursive(

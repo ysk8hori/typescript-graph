@@ -8,6 +8,13 @@ import path from 'path';
 test('GraphAnalyzer は Visitor として機能しソースファイルひとつ分のグラフを生成する', () => {
   const rootDir = path.resolve(__dirname, '../../../');
   console.log('rootDir', rootDir);
+  const system = {
+    ...ts.sys,
+    fileExists: () => true,
+    directoryExists: () => true,
+  } satisfies ts.System;
+  const tsconfig = ts.parseJsonConfigFileContent({}, system, rootDir);
+  tsconfig.options.rootDir = rootDir;
   const source = ts.createSourceFile(
     `${rootDir}/src/feature/graph/sample.tsx`,
     'import a from "./a"; import { b } from \'../../b\'; import type { C } from "./c";',
@@ -17,15 +24,7 @@ test('GraphAnalyzer は Visitor として機能しソースファイルひとつ
     ts.ScriptKind.TS,
   );
   const astLogger = new AstLogger();
-  const analyzer = new GraphAnalyzer(
-    source,
-    { rootDir },
-    {
-      ...ts.sys,
-      fileExists: () => true,
-      directoryExists: () => true,
-    },
-  );
+  const analyzer = new GraphAnalyzer(source, tsconfig, system);
   const astTraverser = new AstTraverser(source, [astLogger, analyzer]);
   astTraverser.traverse();
   console.log(astLogger.log);
