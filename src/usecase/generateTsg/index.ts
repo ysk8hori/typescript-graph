@@ -1,21 +1,20 @@
 import path from 'path';
-import { pipe } from 'remeda';
-import { setupConfig, getConfig } from '../../setting/config';
-import { abstraction } from '../../feature/graph/abstraction';
+import { setupConfig } from '../../setting/config';
 import { createGraph } from '../../feature/graph/createGraph';
-import { filterGraph } from '../../feature/graph/filterGraph';
-import { highlight } from '../../feature/graph/highlight';
 import { calculateCodeMetrics } from '../../feature/metric/calculateCodeMetrics';
 import { Graph } from '../../feature/graph/models';
-import { writeMetrics } from './writeMetricsTable';
 import { OptionValues } from '../../setting/model';
-import { createWriteStream } from 'fs';
-import { writeGraph } from '../../feature/mermaid/mermaidify';
-import {
-  measureInstability,
-  writeCouplingData,
-} from '../../feature/graph/instability';
+import { measureInstability } from '../../feature/graph/instability';
 import { CodeMetrics } from '../../feature/metric/metricsModels';
+import { resolveTsconfig } from '../../utils/tsc-util';
+import ProjectTraverser from '../../feature/util/ProjectTraverser';
+import { GraphAnalyzer } from '../../feature/graph/GraphAnalyzer';
+import { mergeGraph } from '../../feature/graph/utils';
+import { createCyclomaticComplexityAnalyzer } from '../../feature/metric/cyclomaticComplexity';
+import { createSemanticSyntaxVolumeAnalyzer } from '../../feature/metric/semanticSyntaxVolume';
+import { createCognitiveComplexityAnalyzer } from '../../feature/metric/cognitiveComplexity';
+import { writeMarkdownFile } from './writeMarkdownFile';
+import { bind_refineGraph } from '../../feature/graph/refineGraph';
 
 export async function generateTsg(
   commandOptions: OptionValues & { executedScript: string },
@@ -26,9 +25,52 @@ export async function generateTsg(
       commandOptions.configFile ?? '.tsgrc.json',
     ),
   );
+  const refineGraph = bind_refineGraph(commandOptions);
+  const tsconfig = resolveTsconfig(commandOptions);
 
-  const { graph: fullGraph, meta } = createGraph(commandOptions);
-  const graph = refineGraph(commandOptions, fullGraph);
+  if (commandOptions.vue) {
+    const { graph: fullGraph } = createGraph(commandOptions);
+    const graph = refineGraph(fullGraph);
+    const couplingData: ReturnType<typeof measureInstability> = getCouplingData(
+      commandOptions,
+      fullGraph,
+    );
+    const metrics: CodeMetrics[] = getCodeMetrics(commandOptions);
+    await writeMarkdownFile(
+      commandOptions.md ?? 'typescript-graph',
+      graph,
+      {
+        ...commandOptions,
+        rootDir: tsconfig.options.rootDir,
+        executedScript: commandOptions.executedScript,
+      },
+      couplingData,
+      metrics,
+    );
+    return;
+  }
+  const traverser = new ProjectTraverser(tsconfig);
+  console.time('traverse1');
+  const reuslt = traverser.traverse(
+    (...args) => new GraphAnalyzer(...args),
+    // source => createCyclomaticComplexityAnalyzer(source.fileName),
+    // source => createSemanticSyntaxVolumeAnalyzer(source.fileName),
+    // source => createCognitiveComplexityAnalyzer(source.fileName),
+  );
+  console.timeEnd('traverse1');
+  console.time('traverse2');
+  const reuslt2 = traverser.traverse(
+    (...args) => new GraphAnalyzer(...args),
+    source => createCyclomaticComplexityAnalyzer(source.fileName),
+    source => createSemanticSyntaxVolumeAnalyzer(source.fileName),
+    source => createCognitiveComplexityAnalyzer(source.fileName),
+  );
+  console.timeEnd('traverse2');
+  const fullGraph = mergeGraph(
+    ...reuslt.map(([analyzer]) => analyzer.generateGraph()),
+  );
+
+  const graph = refineGraph(fullGraph);
   const metrics: CodeMetrics[] = getCodeMetrics(commandOptions);
   const couplingData: ReturnType<typeof measureInstability> = getCouplingData(
     commandOptions,
@@ -40,26 +82,13 @@ export async function generateTsg(
     graph,
     {
       ...commandOptions,
-      rootDir: meta.rootDir,
+      rootDir: tsconfig.options.rootDir,
       executedScript: commandOptions.executedScript,
     },
     couplingData,
     metrics,
   );
 }
-
-const refineGraph = (commandOptions: OptionValues, fullGraph: Graph) =>
-  pipe(
-    fullGraph,
-    graph =>
-      filterGraph(
-        commandOptions.include,
-        [...(getConfig().exclude ?? []), ...(commandOptions.exclude ?? [])],
-        graph,
-      ),
-    graph => abstraction(commandOptions.abstraction, graph),
-    graph => highlight(commandOptions.highlight, graph),
-  );
 
 function getCouplingData(commandOptions: OptionValues, fullGraph: Graph) {
   let couplingData: ReturnType<typeof measureInstability> = [];
@@ -79,53 +108,4 @@ function getCodeMetrics(commandOptions: OptionValues) {
     console.timeEnd('calculateCodeMetrics');
   }
   return metrics;
-}
-
-type Options = OptionValues & {
-  rootDir: string;
-  executedScript?: string;
-};
-
-export function writeMarkdownFile(
-  markdownTitle: string,
-  graph: Graph,
-  options: Options,
-  couplingData: ReturnType<typeof measureInstability>,
-  metrics: CodeMetrics[],
-) {
-  return new Promise((resolve, reject) => {
-    const filename = markdownTitle.endsWith('.md')
-      ? markdownTitle
-      : `./${markdownTitle}.md`;
-    const ws = createWriteStream(filename);
-    ws.on('finish', resolve);
-    ws.on('error', reject);
-
-    const write = (str: string) => ws.write(str);
-    writeTitle(write);
-    writeExecutedScript(write, options.executedScript);
-    writeGraph(write, graph, options);
-    writeCouplingData(write, couplingData);
-    writeMetrics(write, metrics);
-    ws.end();
-
-    console.log(filename);
-  });
-}
-
-export function writeTitle(write: (str: string) => void) {
-  write('# TypeScript Graph\n');
-  write('\n');
-}
-
-export function writeExecutedScript(
-  write: (str: string) => void,
-  executedScript: string | undefined,
-) {
-  if (executedScript) {
-    write('```bash\n');
-    write(`${executedScript}\n`);
-    write('```\n');
-  }
-  write('\n');
 }
