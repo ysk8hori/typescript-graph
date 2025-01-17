@@ -15,12 +15,12 @@ type Options = OptionValues & {
 };
 
 export function writeMarkdownFile(
-  markdownTitle: string,
   graph: Graph,
   options: Options,
   couplingData: ReturnType<typeof measureInstability>,
   metrics: CodeMetrics[],
 ) {
+  const markdownTitle = options.md ?? 'typescript-graph';
   return new Promise((resolve, reject) => {
     const filename = markdownTitle.endsWith('.md')
       ? markdownTitle

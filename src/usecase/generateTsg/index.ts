@@ -37,12 +37,10 @@ export async function generateTsg(
     );
     const metrics: CodeMetrics[] = getCodeMetrics(commandOptions);
     await writeMarkdownFile(
-      commandOptions.md ?? 'typescript-graph',
       graph,
       {
         ...commandOptions,
         rootDir: tsconfig.options.rootDir,
-        executedScript: commandOptions.executedScript,
       },
       couplingData,
       metrics,
@@ -78,12 +76,10 @@ export async function generateTsg(
   );
 
   await writeMarkdownFile(
-    commandOptions.md ?? 'typescript-graph',
     graph,
     {
       ...commandOptions,
       rootDir: tsconfig.options.rootDir,
-      executedScript: commandOptions.executedScript,
     },
     couplingData,
     metrics,
