@@ -9,16 +9,10 @@ import { resolveTsconfig } from '../../utils/tsc-util';
 import ProjectTraverser from '../../feature/util/ProjectTraverser';
 import { GraphAnalyzer } from '../../feature/graph/GraphAnalyzer';
 import { mergeGraph } from '../../feature/graph/utils';
-import { createCyclomaticComplexityAnalyzer } from '../../feature/metric/cyclomaticComplexity';
-import { createSemanticSyntaxVolumeAnalyzer } from '../../feature/metric/semanticSyntaxVolume';
-import { createCognitiveComplexityAnalyzer } from '../../feature/metric/cognitiveComplexity';
 import { writeMarkdownFile } from './writeMarkdownFile';
 import { bind_refineGraph } from '../../feature/graph/refineGraph';
-import { allPass, anyPass, isNot } from 'remeda';
-import {
-  convertRawToCodeMetrics,
-  RawMetrics,
-} from '../../feature/metric/functions/convertRawToCodeMetrics';
+import { allPass, anyPass, isNot, map, pipe } from 'remeda';
+import { calculateCodeMetrics } from '../../feature/metric/calculateCodeMetrics';
 
 /** word に該当するか */
 const bindMatchFunc = (word: string) => (filePath: string) =>
@@ -76,16 +70,17 @@ export async function generateTsg(
 
   const traverser = new ProjectTraverser(tsconfig);
 
-  const result4graph = traverser.traverse(
-    anyPass([isExactMatchSomeIncludes, isNotMatchSomeExcludes]),
-    (...args) => new GraphAnalyzer(...args),
-  );
-  const fullGraph = mergeGraph(
-    ...result4graph.map(([analyzer]) => analyzer.generateGraph()),
+  const fullGraph = pipe(
+    traverser.traverse(
+      anyPass([isExactMatchSomeIncludes, isNotMatchSomeExcludes]),
+      (...args) => new GraphAnalyzer(...args),
+    ),
+    map(([analyzer]) => analyzer.generateGraph()),
+    mergeGraph,
   );
 
   const graph = refineGraph(fullGraph);
-  const metrics: CodeMetrics[] = getCodeMetrics(
+  const metrics: CodeMetrics[] = calculateCodeMetrics(
     commandOptions,
     traverser,
     allPass([isMatchSomeIncludes, isNotMatchSomeExcludes]),
@@ -115,28 +110,4 @@ function getCouplingData(commandOptions: OptionValues, fullGraph: Graph) {
     console.timeEnd('coupling');
   }
   return couplingData;
-}
-
-function getCodeMetrics(
-  commandOptions: OptionValues,
-  traverser: ProjectTraverser,
-  filter: (source: string) => boolean,
-): CodeMetrics[] {
-  if (!commandOptions.metrics) return [];
-  return traverser
-    .traverse(
-      filter,
-      source => createCyclomaticComplexityAnalyzer(source.fileName),
-      source => createSemanticSyntaxVolumeAnalyzer(source.fileName),
-      source => createCognitiveComplexityAnalyzer(source.fileName),
-    )
-    .map(
-      ([cyca, ssva, coca]) =>
-        ({
-          cyclomaticComplexity: cyca.metrics,
-          semanticSyntaxVolume: ssva.metrics,
-          cognitiveComplexity: coca.metrics,
-        }) satisfies RawMetrics,
-    )
-    .map(convertRawToCodeMetrics);
 }

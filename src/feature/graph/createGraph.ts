@@ -37,7 +37,7 @@ export function createGraph(
     const graphs = reuslt.map(([analyzer]) => analyzer.generateGraph());
 
     return {
-      graph: mergeGraph(...graphs),
+      graph: mergeGraph(graphs),
       meta: { rootDir: tsconfig.options.rootDir },
     };
   } else {
@@ -126,7 +126,7 @@ function createGraphForVue(
         }),
       };
     });
-  return mergeGraph(...graphs);
+  return mergeGraph(graphs);
 }
 
 function getVueAndTsFilePathsRecursive(

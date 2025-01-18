@@ -19,7 +19,7 @@ export function extractUniqueNodes({ nodes, relations }: Graph): Node[] {
   return allNodes;
 }
 
-export function mergeGraph(...graphs: Graph[]): Graph {
+export function mergeGraph(graphs: Graph[]): Graph {
   const nodes = getUniqueNodes(graphs.map(graph => graph.nodes).flat());
   const relations = getUniqueRelations(
     graphs.map(graph => graph.relations).flat(),
