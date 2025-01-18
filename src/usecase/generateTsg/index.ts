@@ -1,6 +1,5 @@
 import path from 'path';
 import { setupConfig } from '../../setting/config';
-import { createGraph } from '../../feature/graph/createGraph';
 import { Graph } from '../../feature/graph/models';
 import { OptionValues } from '../../setting/model';
 import { measureInstability } from '../../feature/graph/instability';
@@ -13,6 +12,7 @@ import { writeMarkdownFile } from './writeMarkdownFile';
 import { bind_refineGraph } from '../../feature/graph/refineGraph';
 import { allPass, anyPass, isNot, map, pipe } from 'remeda';
 import { calculateCodeMetrics } from '../../feature/metric/calculateCodeMetrics';
+import { setupVueEnvironment } from '../../utils/vue-util';
 
 /** word に該当するか */
 const bindMatchFunc = (word: string) => (filePath: string) =>
@@ -39,26 +39,9 @@ export async function generateTsg(
     ),
   );
   const refineGraph = bind_refineGraph(commandOptions);
-  const tsconfig = resolveTsconfig(commandOptions);
-
-  if (commandOptions.vue) {
-    const { graph: fullGraph } = createGraph(commandOptions);
-    const graph = refineGraph(fullGraph);
-    const couplingData: ReturnType<typeof measureInstability> = getCouplingData(
-      commandOptions,
-      fullGraph,
-    );
-    await writeMarkdownFile(
-      graph,
-      {
-        ...commandOptions,
-        rootDir: tsconfig.options.rootDir,
-      },
-      couplingData,
-      [],
-    );
-    return;
-  }
+  const [tsconfig, renameGraph] = commandOptions.vue
+    ? setupVueEnvironment(commandOptions)
+    : [resolveTsconfig(commandOptions)];
 
   const isExactMatchSomeIncludes = isExactMatchSome(
     commandOptions.include ?? [],
@@ -79,7 +62,9 @@ export async function generateTsg(
     mergeGraph,
   );
 
-  const graph = refineGraph(fullGraph);
+  const graph = renameGraph
+    ? renameGraph(refineGraph(fullGraph))
+    : refineGraph(fullGraph);
   const metrics: CodeMetrics[] = calculateCodeMetrics(
     commandOptions,
     traverser,

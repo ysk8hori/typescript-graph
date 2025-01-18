@@ -20,7 +20,7 @@ export function isTsFile(path: string) {
   ].some(ext => path.endsWith(ext));
 }
 
-type Tsconfig = ts.ParsedCommandLine & {
+export type Tsconfig = ts.ParsedCommandLine & {
   options: ts.CompilerOptions & { rootDir: string };
 };
 
