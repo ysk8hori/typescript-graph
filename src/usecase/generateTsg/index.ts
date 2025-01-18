@@ -1,7 +1,6 @@
 import path from 'path';
 import { setupConfig } from '../../setting/config';
 import { createGraph } from '../../feature/graph/createGraph';
-import { calculateCodeMetrics } from '../../feature/metric/calculateCodeMetrics';
 import { Graph } from '../../feature/graph/models';
 import { OptionValues } from '../../setting/model';
 import { measureInstability } from '../../feature/graph/instability';
@@ -15,6 +14,26 @@ import { createSemanticSyntaxVolumeAnalyzer } from '../../feature/metric/semanti
 import { createCognitiveComplexityAnalyzer } from '../../feature/metric/cognitiveComplexity';
 import { writeMarkdownFile } from './writeMarkdownFile';
 import { bind_refineGraph } from '../../feature/graph/refineGraph';
+import { allPass, anyPass, isNot } from 'remeda';
+import {
+  convertRawToCodeMetrics,
+  RawMetrics,
+} from '../../feature/metric/functions/convertRawToCodeMetrics';
+
+/** word に該当するか */
+const bindMatchFunc = (word: string) => (filePath: string) =>
+  filePath.toLowerCase().includes(word.toLowerCase());
+/** word に完全一致するか */
+const bindExactMatchFunc = (word: string) => (filePath: string) =>
+  filePath === word;
+/** 抽象的な判定関数 */
+const judge = (filePath: string) => (f: (filePath: string) => boolean) =>
+  f(filePath);
+
+const isMatchSome = (words: string[]) => (filePath: string) =>
+  words.map(bindMatchFunc).some(judge(filePath));
+const isExactMatchSome = (words: string[]) => (filePath: string) =>
+  words.map(bindExactMatchFunc).some(judge(filePath));
 
 export async function generateTsg(
   commandOptions: OptionValues & { executedScript: string },
@@ -35,7 +54,6 @@ export async function generateTsg(
       commandOptions,
       fullGraph,
     );
-    const metrics: CodeMetrics[] = getCodeMetrics(commandOptions);
     await writeMarkdownFile(
       graph,
       {
@@ -43,33 +61,36 @@ export async function generateTsg(
         rootDir: tsconfig.options.rootDir,
       },
       couplingData,
-      metrics,
+      [],
     );
     return;
   }
+
+  const isExactMatchSomeIncludes = isExactMatchSome(
+    commandOptions.include ?? [],
+  );
+  const isMatchSomeIncludes = isMatchSome(commandOptions.include ?? ['']);
+  const isNotMatchSomeExcludes = isNot(
+    isMatchSome(commandOptions.exclude ?? []),
+  );
+
   const traverser = new ProjectTraverser(tsconfig);
-  console.time('traverse1');
-  const reuslt = traverser.traverse(
+
+  const result4graph = traverser.traverse(
+    anyPass([isExactMatchSomeIncludes, isNotMatchSomeExcludes]),
     (...args) => new GraphAnalyzer(...args),
-    // source => createCyclomaticComplexityAnalyzer(source.fileName),
-    // source => createSemanticSyntaxVolumeAnalyzer(source.fileName),
-    // source => createCognitiveComplexityAnalyzer(source.fileName),
   );
-  console.timeEnd('traverse1');
-  console.time('traverse2');
-  const reuslt2 = traverser.traverse(
-    (...args) => new GraphAnalyzer(...args),
-    source => createCyclomaticComplexityAnalyzer(source.fileName),
-    source => createSemanticSyntaxVolumeAnalyzer(source.fileName),
-    source => createCognitiveComplexityAnalyzer(source.fileName),
-  );
-  console.timeEnd('traverse2');
   const fullGraph = mergeGraph(
-    ...reuslt.map(([analyzer]) => analyzer.generateGraph()),
+    ...result4graph.map(([analyzer]) => analyzer.generateGraph()),
   );
 
   const graph = refineGraph(fullGraph);
-  const metrics: CodeMetrics[] = getCodeMetrics(commandOptions);
+  const metrics: CodeMetrics[] = getCodeMetrics(
+    commandOptions,
+    traverser,
+    allPass([isMatchSomeIncludes, isNotMatchSomeExcludes]),
+  );
+  // coupling を計測するには全てのノードが必要
   const couplingData: ReturnType<typeof measureInstability> = getCouplingData(
     commandOptions,
     fullGraph,
@@ -96,12 +117,26 @@ function getCouplingData(commandOptions: OptionValues, fullGraph: Graph) {
   return couplingData;
 }
 
-function getCodeMetrics(commandOptions: OptionValues) {
-  let metrics: CodeMetrics[] = [];
-  if (commandOptions.metrics) {
-    console.time('calculateCodeMetrics');
-    metrics = calculateCodeMetrics(commandOptions);
-    console.timeEnd('calculateCodeMetrics');
-  }
-  return metrics;
+function getCodeMetrics(
+  commandOptions: OptionValues,
+  traverser: ProjectTraverser,
+  filter: (source: string) => boolean,
+): CodeMetrics[] {
+  if (!commandOptions.metrics) return [];
+  return traverser
+    .traverse(
+      filter,
+      source => createCyclomaticComplexityAnalyzer(source.fileName),
+      source => createSemanticSyntaxVolumeAnalyzer(source.fileName),
+      source => createCognitiveComplexityAnalyzer(source.fileName),
+    )
+    .map(
+      ([cyca, ssva, coca]) =>
+        ({
+          cyclomaticComplexity: cyca.metrics,
+          semanticSyntaxVolume: ssva.metrics,
+          cognitiveComplexity: coca.metrics,
+        }) satisfies RawMetrics,
+    )
+    .map(convertRawToCodeMetrics);
 }

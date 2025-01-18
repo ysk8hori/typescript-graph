@@ -30,7 +30,10 @@ export function createGraph(
   const tsconfig = resolveTsconfig(opt);
   if (!opt.vue) {
     const traverser = new ProjectTraverser(tsconfig, ts.sys);
-    const reuslt = traverser.traverse((...args) => new GraphAnalyzer(...args));
+    const reuslt = traverser.traverse(
+      isNotMatchSomeExclude,
+      (...args) => new GraphAnalyzer(...args),
+    );
     const graphs = reuslt.map(([analyzer]) => analyzer.generateGraph());
 
     return {
@@ -91,7 +94,10 @@ function createGraphForVue(
   // ↑ここまでで、ファイルを tmp にコピーし、新たな fileNames と options を生成する
 
   const traverser = new ProjectTraverser(tsconfig, ts.sys);
-  const reuslt = traverser.traverse((...args) => new GraphAnalyzer(...args));
+  const reuslt = traverser.traverse(
+    isNotMatchSomeExclude,
+    (...args) => new GraphAnalyzer(...args),
+  );
 
   function renameNode(node: Node) {
     return {
