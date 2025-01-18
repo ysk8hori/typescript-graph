@@ -10,7 +10,7 @@ import { createSemanticSyntaxVolumeAnalyzer } from './semanticSyntaxVolume';
 import { createCognitiveComplexityAnalyzer } from './cognitiveComplexity';
 
 export function calculateCodeMetrics(
-  commandOptions: OptionValues,
+  commandOptions: Pick<OptionValues, 'metrics'>,
   traverser: ProjectTraverser,
   filter: (source: string) => boolean,
 ): CodeMetrics[] {
@@ -18,16 +18,30 @@ export function calculateCodeMetrics(
   return traverser
     .traverse(
       filter,
-      source => createCyclomaticComplexityAnalyzer(source.fileName),
-      source => createSemanticSyntaxVolumeAnalyzer(source.fileName),
-      source => createCognitiveComplexityAnalyzer(source.fileName),
+      source =>
+        createCyclomaticComplexityAnalyzer(
+          // TODO: getFilePath は至るところで使われるのでユーティリティ関数化するべき
+          traverser.getFilePath(source.fileName),
+        ),
+      source =>
+        createSemanticSyntaxVolumeAnalyzer(
+          traverser.getFilePath(source.fileName),
+        ),
+      source =>
+        createCognitiveComplexityAnalyzer(
+          traverser.getFilePath(source.fileName),
+        ),
     )
     .map(
-      ([cyca, ssva, coca]) =>
+      ([
+        { metrics: cyclomaticComplexity },
+        { metrics: semanticSyntaxVolume },
+        { metrics: cognitiveComplexity },
+      ]) =>
         ({
-          cyclomaticComplexity: cyca.metrics,
-          semanticSyntaxVolume: ssva.metrics,
-          cognitiveComplexity: coca.metrics,
+          cyclomaticComplexity,
+          semanticSyntaxVolume,
+          cognitiveComplexity,
         }) satisfies RawMetrics,
     )
     .map(convertRawToCodeMetrics);

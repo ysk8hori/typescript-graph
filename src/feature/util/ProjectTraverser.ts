@@ -30,8 +30,10 @@ export default class ProjectTraverser {
   /**
    * 通常 ts.SourceFile の fileName は `/usr/ysk8/dev/typescript-graph/src/foo/bar` なのでそれを `src/foo/bar` に加工して返す。
    * 前提として、options に rootDir が指定されている必要がある。
+   *
+   * TODO: getFilePath は至るところで使われるのでユーティリティ関数化するべき
    */
-  #getFilePath(fileName: string): string {
+  public getFilePath(fileName: string): string {
     return this.#tsconfig.options.rootDir
       ? fileName.replace(this.#tsconfig.options.rootDir + '/', '')
       : fileName;
@@ -52,7 +54,7 @@ export default class ProjectTraverser {
     factory5?: AstVisitorFactory<T5>,
   ): [T1, T2, T3, T4, T5][] {
     return this.#sourceFiles
-      .filter(sourceFile => filter(this.#getFilePath(sourceFile.fileName)))
+      .filter(sourceFile => filter(this.getFilePath(sourceFile.fileName)))
       .map(sourceFile => {
         const visitors = [
           factory1(sourceFile, this.#tsconfig, this.#system),
