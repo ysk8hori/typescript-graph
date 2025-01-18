@@ -30,7 +30,6 @@ describe('シンプルなテスト', () => {
     from: testNode,
     to: mainNode,
     changeStatus: 'not_modified',
-    fullText: '',
     kind: 'depends_on',
   } satisfies Relation;
 
@@ -38,7 +37,6 @@ describe('シンプルなテスト', () => {
     from: testNode,
     to: utilNode,
     changeStatus: 'not_modified',
-    fullText: '',
     kind: 'depends_on',
   } satisfies Relation;
 
@@ -46,7 +44,6 @@ describe('シンプルなテスト', () => {
     from: mainNode,
     to: utilNode,
     changeStatus: 'not_modified',
-    fullText: '',
     kind: 'depends_on',
   } satisfies Relation;
 

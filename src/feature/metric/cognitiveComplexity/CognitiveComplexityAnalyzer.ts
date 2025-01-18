@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { Leave } from '../../util/AstVisitor';
-import { allPass, anyPass } from 'remeda';
+import { allPass, anyPass, isNot } from 'remeda';
 import {
   isTopLevelArrowFunction,
   isTopLevelClass,
@@ -15,10 +15,6 @@ import HierarchicalMetricsAnalyzer, {
 import { Score } from './CognitiveComplexityMetrics';
 
 type NodeMatcher = (node: ts.Node) => boolean;
-
-function isNot<T, F extends (t: T) => boolean>(fn: F): (arg: T) => boolean {
-  return (arg: T) => !fn(arg);
-}
 
 function isElseOrElseIfStatement(node: ts.Node): boolean {
   if (

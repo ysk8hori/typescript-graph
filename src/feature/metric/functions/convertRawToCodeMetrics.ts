@@ -10,7 +10,7 @@ import {
 } from './calculateMaintainabilityIndex';
 import { Tree } from '../../../utils/Tree';
 
-interface RawMetrics {
+export interface RawMetrics {
   semanticSyntaxVolume: SemanticSyntaxVolumeMetrics;
   cyclomaticComplexity: CyclomaticComplexityMetrics;
   cognitiveComplexity: CognitiveComplexityMetrics;

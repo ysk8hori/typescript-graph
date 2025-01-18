@@ -1,70 +1,48 @@
-import path from 'path';
-import ts from 'typescript';
-import { allPass, piped } from 'remeda';
 import { OptionValues } from '../../setting/model';
-import { convertRawToCodeMetrics } from './functions/convertRawToCodeMetrics';
+import {
+  convertRawToCodeMetrics,
+  RawMetrics,
+} from './functions/convertRawToCodeMetrics';
 import { CodeMetrics } from './metricsModels';
-import { getMetricsRawData } from './functions/getMetricsRawData';
+import ProjectTraverser from '../util/ProjectTraverser';
+import { createCyclomaticComplexityAnalyzer } from './cyclomaticComplexity';
+import { createSemanticSyntaxVolumeAnalyzer } from './semanticSyntaxVolume';
+import { createCognitiveComplexityAnalyzer } from './cognitiveComplexity';
 
 export function calculateCodeMetrics(
-  opt: Pick<OptionValues, 'exclude' | 'dir' | 'tsconfig' | 'include'>,
+  commandOptions: Pick<OptionValues, 'metrics'>,
+  traverser: ProjectTraverser,
+  filter: (source: string) => boolean,
 ): CodeMetrics[] {
-  const configPath = opt.tsconfig
-    ? path.resolve(opt.tsconfig)
-    : ts.findConfigFile(path.resolve(opt.dir ?? './'), ts.sys.fileExists);
-  if (!configPath) {
-    throw new Error('Could not find a valid "tsconfig.json".');
-  }
-  const { config } = ts.readConfigFile(configPath, ts.sys.readFile);
-  const splitedConfigPath = configPath.split('/');
-  const rootDir = splitedConfigPath
-    .slice(0, splitedConfigPath.length - 1)
-    .join('/');
-
-  const bindWords_isFileNameMatchSomeWords =
-    (array: string[]) => (filename: string) =>
-      array.some(word => filename.includes(word));
-  const isMatchSomeExclude = opt.exclude
-    ? bindWords_isFileNameMatchSomeWords(opt.exclude)
-    : () => false;
-  const isNotMatchSomeExclude = (filename: string) =>
-    !isMatchSomeExclude(filename);
-  const isMatchSomeInclude = opt.include
-    ? bindWords_isFileNameMatchSomeWords(opt.include)
-    : () => true;
-
-  const { options, fileNames: fullFilePaths } = ts.parseJsonConfigFileContent(
-    config,
-    ts.sys,
-    rootDir,
-  );
-  options.rootDir = rootDir;
-  const program = ts.createProgram(fullFilePaths, options);
-  const data = program
-    .getSourceFiles()
-    .filter(sourceFile => !sourceFile.fileName.includes('node_modules')) // node_modules 配下のファイルは除外
-    .filter(
-      piped(
-        getFilePath(options),
-        removeSlash,
-        allPass([isNotMatchSomeExclude, isMatchSomeInclude]),
-      ),
+  if (!commandOptions.metrics) return [];
+  return traverser
+    .traverse(
+      filter,
+      source =>
+        createCyclomaticComplexityAnalyzer(
+          // TODO: getFilePath は至るところで使われるのでユーティリティ関数化するべき
+          traverser.getFilePath(source.fileName),
+        ),
+      source =>
+        createSemanticSyntaxVolumeAnalyzer(
+          traverser.getFilePath(source.fileName),
+        ),
+      source =>
+        createCognitiveComplexityAnalyzer(
+          traverser.getFilePath(source.fileName),
+        ),
     )
     .map(
-      piped(getFilePath(options), getMetricsRawData, convertRawToCodeMetrics),
-    );
-  return data;
-}
-
-function getFilePath(
-  options: ts.CompilerOptions,
-): (sourceFile: ts.SourceFile) => string {
-  return (sourceFile: ts.SourceFile) =>
-    options.rootDir
-      ? sourceFile.fileName.replace(options.rootDir + '/', '')
-      : sourceFile.fileName;
-}
-
-function removeSlash(pathName: string): string {
-  return pathName.startsWith('/') ? pathName.replace('/', '') : pathName;
+      ([
+        { metrics: cyclomaticComplexity },
+        { metrics: semanticSyntaxVolume },
+        { metrics: cognitiveComplexity },
+      ]) =>
+        ({
+          cyclomaticComplexity,
+          semanticSyntaxVolume,
+          cognitiveComplexity,
+        }) satisfies RawMetrics,
+    )
+    .map(convertRawToCodeMetrics);
 }

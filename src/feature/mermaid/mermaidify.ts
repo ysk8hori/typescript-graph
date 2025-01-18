@@ -31,7 +31,7 @@ export function writeGraph(
   write('\n');
 }
 
-export async function mermaidify(
+export function mermaidify(
   write: (arg: string) => void,
   graph: Graph,
   options: Options,

@@ -6,15 +6,15 @@ import path from 'path';
 export class GraphAnalyzer implements AstVisitor {
   constructor(
     sourceFile: ts.SourceFile,
-    options: ts.CompilerOptions,
+    tsconfig: ts.ParsedCommandLine,
     system: ts.System,
   ) {
     this.#sourceFile = sourceFile;
-    this.#options = options;
+    this.#tsconfig = tsconfig;
     this.#system = system;
   }
   readonly #sourceFile: ts.SourceFile;
-  readonly #options: ts.CompilerOptions;
+  readonly #tsconfig: ts.ParsedCommandLine;
   readonly #system: ts.System;
 
   visit({ node }: VisitProps): void {
@@ -44,7 +44,7 @@ export class GraphAnalyzer implements AstVisitor {
       ts.resolveModuleName(
         moduleName,
         this.#sourceFile.fileName,
-        this.#options,
+        this.#tsconfig.options,
         this.#system,
       ).resolvedModule?.resolvedFileName ?? '';
     const moduleFilePath = this.#getFilePath(moduleFileFullName);
@@ -56,8 +56,8 @@ export class GraphAnalyzer implements AstVisitor {
    * 前提として、options に rootDir が指定されている必要がある。
    */
   #getFilePath(fileName: string): string {
-    return this.#options.rootDir
-      ? fileName.replace(this.#options.rootDir + '/', '')
+    return this.#tsconfig.options.rootDir
+      ? fileName.replace(this.#tsconfig.options.rootDir + '/', '')
       : fileName;
   }
 

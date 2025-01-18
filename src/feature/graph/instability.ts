@@ -7,7 +7,6 @@ export type NodeWithInstability = Node & {
 };
 
 export function measureInstability(graph: Graph): NodeWithInstability[] {
-  console.time('coupling');
   const couplingData = graph.nodes
     .filter(node => !node.isDirectory)
     .filter(
@@ -42,7 +41,6 @@ export function measureInstability(graph: Graph): NodeWithInstability[] {
     .toSorted((a, b) => {
       return b.instability - a.instability;
     });
-  console.timeEnd('coupling');
   return couplingData;
 }
 
