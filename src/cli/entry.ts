@@ -18,7 +18,7 @@ program
     '',
   )
   .option(
-    '--md <char>',
+    '--md [char]',
     'Specify the name of the markdown file to be output. Default is typescript-graph.md.',
   )
   .option(
@@ -26,24 +26,24 @@ program
     'Generates a link on node to open that file in VSCode.',
   )
   .option(
-    '-d, --dir <char>',
+    '-d, --dir [char]',
     'Specifies the root directory of the TypeScript project to analyze. It reads and uses the tsconfig.json file found in this directory.',
   )
   .option(
-    '--tsconfig <char>',
+    '--tsconfig [char]',
     'Specifies the path to the tsconfig file to use for analysis. If this option is provided, -d, --dir will be ignored.',
   )
   .option(
-    '--include <char...>',
+    '--include [char...]',
     'Specify file paths or parts of file paths to include in the graph (relative to the tsconfig directory, without `./`).',
   )
   .option(
-    '--exclude <char...>',
+    '--exclude [char...]',
     'Specify file paths or parts of file paths to exclude from the graph (relative to the tsconfig directory, without `./`).',
   )
-  .option('--abstraction <char...>', 'Specify the path to abstract')
+  .option('--abstraction [char...]', 'Specify the path to abstract')
   .option(
-    '--highlight <char...>',
+    '--highlight [char...]',
     'Specify the path and file name to highlight',
   )
   .option('--LR', 'Specify Flowchart orientation Left-to-Right')
