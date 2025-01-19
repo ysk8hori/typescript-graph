@@ -13,7 +13,7 @@ program
   .version(packagejson.version);
 program
   .argument(
-    '[include-files]',
+    '[include-files...]',
     'Specify file paths or parts of file paths to include in the graph (relative to the tsconfig directory, without `./`).',
     '',
   )
@@ -56,7 +56,7 @@ program
     '--metrics',
     'Enable beta feature to measures metrics such as Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity.',
   )
-  .option('-wm, --watch-metrics [char...]', 'watch metrics', '')
+  .option('-w, --watch-metrics [char...]', 'watch metrics', '')
   .option(
     '--config-file',
     'Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.',
