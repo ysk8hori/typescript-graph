@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { AstVisitor, VisitResult } from './AstVisitor';
+import type { AstVisitor, VisitResult } from './AstVisitor';
 
 export default class AstTraverser {
   readonly #sourceFile: ts.SourceFile;
@@ -8,7 +8,7 @@ export default class AstTraverser {
     this.#sourceFile = sourceFile;
     visitors.forEach(this.#setVisitor.bind(this));
   }
-  readonly #visitors: Map<Symbol, AstVisitor> = new Map();
+  readonly #visitors = new Map<symbol, AstVisitor>();
   #setVisitor(visitor: AstVisitor) {
     const key = Symbol();
     this.#visitors.set(key, visitor);
@@ -17,7 +17,7 @@ export default class AstTraverser {
 
   #traverse(node: ts.Node, depth: number) {
     const visitResults: VisitResult[] = [];
-    let additionalVisitorIds: Symbol[] = [];
+    let additionalVisitorIds: symbol[] = [];
 
     for (const visitor of this.#visitors.values()) {
       const result = visitor.visit({

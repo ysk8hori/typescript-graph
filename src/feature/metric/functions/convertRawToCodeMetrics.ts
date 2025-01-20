@@ -1,14 +1,14 @@
 import { pipe, zipWith } from 'remeda';
-import { CognitiveComplexityMetrics } from '../cognitiveComplexity';
-import { CyclomaticComplexityMetrics } from '../cyclomaticComplexity';
-import { CodeMetrics, MetricsScope } from '../metricsModels';
-import { MetricsScoreState } from '../metricsModels';
-import { SemanticSyntaxVolumeMetrics } from '../semanticSyntaxVolume';
+import type { CognitiveComplexityMetrics } from '../cognitiveComplexity';
+import type { CyclomaticComplexityMetrics } from '../cyclomaticComplexity';
+import type { CodeMetrics, MetricsScope , MetricsScoreState } from '../metricsModels';
+import type { SemanticSyntaxVolumeMetrics } from '../semanticSyntaxVolume';
+import type { Tree } from '../../../utils/Tree';
+import type {
+  RawMetricsWithMaintainabilityIndex} from './calculateMaintainabilityIndex';
 import {
-  calculateMaintainabilityIndex,
-  RawMetricsWithMaintainabilityIndex,
+  calculateMaintainabilityIndex
 } from './calculateMaintainabilityIndex';
-import { Tree } from '../../../utils/Tree';
 
 export interface RawMetrics {
   semanticSyntaxVolume: SemanticSyntaxVolumeMetrics;

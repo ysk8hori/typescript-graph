@@ -2,29 +2,29 @@ type FileName = string;
 type DirName = string;
 type FilePath = string;
 export type ChangeStatus = 'not_modified' | 'created' | 'modified' | 'deleted';
-export type Node = {
+export interface Node {
   path: FilePath;
   name: FileName | DirName;
   isDirectory?: boolean;
   highlight?: boolean;
   changeStatus: ChangeStatus;
-};
+}
 
 export type RelationType = 'depends_on' | 'rename_to';
-export type RelationOfDependsOn = {
+export interface RelationOfDependsOn {
   kind: 'depends_on';
   from: Node;
   to: Node;
   changeStatus: ChangeStatus;
-};
-export type RelationOfRenameTo = {
+}
+export interface RelationOfRenameTo {
   kind: 'rename_to';
   from: Node;
   to: Node;
-};
+}
 export type Relation = RelationOfDependsOn | RelationOfRenameTo;
-export type Graph = { nodes: Node[]; relations: Relation[] };
-export type Meta = { rootDir: string };
+export interface Graph { nodes: Node[]; relations: Relation[] }
+export interface Meta { rootDir: string }
 
 export function isSameNode(a: Node, b: Node): boolean {
   return a.path === b.path;

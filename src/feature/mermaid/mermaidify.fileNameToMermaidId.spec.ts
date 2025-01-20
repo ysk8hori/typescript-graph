@@ -1,6 +1,6 @@
 import { beforeAll, expect, test } from 'vitest';
-import { fileNameToMermaidId } from './mermaidify';
 import { setupConfig } from '../../setting/config';
+import { fileNameToMermaidId } from './mermaidify';
 
 beforeAll(() => setupConfig());
 

@@ -1,10 +1,11 @@
+import type {
+  Graph,
+  Node} from './models';
 import {
   getUniqueNodes,
   getUniqueRelations,
-  Graph,
   isSameNode,
-  isSameRelation,
-  Node,
+  isSameRelation
 } from './models';
 
 /**

@@ -1,8 +1,8 @@
-import { Tree } from '../../../utils/Tree';
-import { CognitiveComplexityMetrics } from '../cognitiveComplexity';
-import { CyclomaticComplexityMetrics } from '../cyclomaticComplexity';
-import { MetricsScope } from '../metricsModels';
-import { SemanticSyntaxVolumeMetrics } from '../semanticSyntaxVolume';
+import type { Tree } from '../../../utils/Tree';
+import type { CognitiveComplexityMetrics } from '../cognitiveComplexity';
+import type { CyclomaticComplexityMetrics } from '../cyclomaticComplexity';
+import type { MetricsScope } from '../metricsModels';
+import type { SemanticSyntaxVolumeMetrics } from '../semanticSyntaxVolume';
 
 interface RawMetrics {
   semanticSyntaxVolume: SemanticSyntaxVolumeMetrics;

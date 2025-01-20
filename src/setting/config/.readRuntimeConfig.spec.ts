@@ -1,6 +1,6 @@
+import path from 'path';
 import { expect, test } from 'vitest';
 import { readRuntimeConfig } from '.';
-import path from 'path';
 
 test('ファイルが存在しない場合は{}を返す', () => {
   expect(

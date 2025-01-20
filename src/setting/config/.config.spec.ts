@@ -1,5 +1,6 @@
 import { beforeAll, expect, test } from 'vitest';
-import { getConfig, setupConfig, TsgConfigScheme } from '.';
+import type { TsgConfigScheme } from '.';
+import { getConfig, setupConfig } from '.';
 
 beforeAll(() => setupConfig('./src/setting/config/rcSamples/valid.tsgrc.json'));
 

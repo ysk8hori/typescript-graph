@@ -1,11 +1,12 @@
-import { resolveTsconfig, Tsconfig } from './tsc-util';
-import { pipe } from 'remeda';
 import path from 'path';
-import ts from 'typescript';
 import fs from 'fs';
 import { tmpdir } from 'os';
-import { Graph, Node } from '../feature/graph/models';
-import { OptionValues } from '../setting/model';
+import ts from 'typescript';
+import { pipe } from 'remeda';
+import type { Graph, Node } from '../feature/graph/models';
+import type { OptionValues } from '../setting/model';
+import { resolveTsconfig } from './tsc-util';
+import type { Tsconfig } from './tsc-util';
 
 type RenameGraph = (graph: Graph) => Graph;
 

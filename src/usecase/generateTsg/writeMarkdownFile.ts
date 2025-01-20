@@ -1,13 +1,14 @@
 import { createWriteStream } from 'fs';
+import type {
+  measureInstability} from '../../feature/graph/instability';
 import {
-  measureInstability,
   writeCouplingData,
 } from '../../feature/graph/instability';
-import { Graph } from '../../feature/graph/models';
+import type { Graph } from '../../feature/graph/models';
 import { writeGraph } from '../../feature/mermaid/mermaidify';
-import { CodeMetrics } from '../../feature/metric/metricsModels';
+import type { CodeMetrics } from '../../feature/metric/metricsModels';
+import type { OptionValues } from '../../setting/model';
 import { writeMetrics } from './writeMetricsTable';
-import { OptionValues } from '../../setting/model';
 
 type Options = OptionValues & {
   rootDir: string;

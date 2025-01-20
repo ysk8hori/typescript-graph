@@ -1,18 +1,20 @@
 import * as ts from 'typescript';
-import { Leave } from '../../util/AstVisitor';
 import { allPass, anyPass, isNot } from 'remeda';
+import type { Leave } from '../../util/AstVisitor';
+import type {
+  TopLevelMatcher} from '../../util/astUtils';
 import {
   isTopLevelArrowFunction,
   isTopLevelClass,
   isTopLevelFunction,
   isTopLevelIIFE,
-  isTopLevelObjectLiteralExpression,
-  TopLevelMatcher,
+  isTopLevelObjectLiteralExpression
 } from '../../util/astUtils';
-import HierarchicalMetricsAnalyzer, {
+import type {
   AnalyzeProps,
 } from '../HierarchicalMetricsAnalyzer';
-import { Score } from './CognitiveComplexityMetrics';
+import HierarchicalMetricsAnalyzer from '../HierarchicalMetricsAnalyzer';
+import type { Score } from './CognitiveComplexityMetrics';
 
 type NodeMatcher = (node: ts.Node) => boolean;
 
@@ -28,6 +30,7 @@ function isElseOrElseIfStatement(node: ts.Node): boolean {
 }
 
 function hasLabel(node: ts.Node): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return !!(node as any)['label'];
 }
 
@@ -122,7 +125,7 @@ export default abstract class CognitiveComplexityAnalyzer extends HierarchicalMe
     this.score++;
   }
 
-  #nestLevel: number = 1;
+  #nestLevel = 1;
   #enterNest() {
     this.#nestLevel++;
   }

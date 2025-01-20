@@ -1,7 +1,7 @@
+import { TopLevelVisitorFactory } from '../VisitorFactory';
 import CognitiveComplexityAnalyzer from './CognitiveComplexityAnalyzer';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import CognitiveComplexityForClass from './CognitiveComplexityForClass';
-import { TopLevelVisitorFactory } from '../VisitorFactory';
 
 export default class CognitiveComplexityForSourceCode extends CognitiveComplexityAnalyzer {
   constructor(name: string) {

@@ -1,17 +1,17 @@
 import { test, expect, describe } from 'vitest';
-import AstLogger from '../../util/AstLogger';
-import { type SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolumeAnalyzer';
 import ts from 'typescript';
+import AstLogger from '../../util/AstLogger';
 import AstTraverser from '../../util/AstTraverser';
+import { type SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolumeAnalyzer';
 import { createSemanticSyntaxVolumeAnalyzer } from '.';
 
-type OperatorTest = {
+interface OperatorTest {
   perspective: string;
   tests: [
     string,
     Omit<SemanticSyntaxVolumeMetrics['score'], 'volume' | 'lines'>,
   ][];
-};
+}
 describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
   describe.each([
     {

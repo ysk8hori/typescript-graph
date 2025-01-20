@@ -1,7 +1,7 @@
+import { TopLevelVisitorFactory } from '../VisitorFactory';
 import SemanticSyntaxVolume from './SemanticSyntaxVolumeAnalyzer';
 import SemanticSyntaxVolumeForClass from './SemanticSyntaxVolumeForClass';
 import SemanticSyntaxVolumeForNormalNode from './SemanticSyntaxVolumeForNormalNode';
-import { TopLevelVisitorFactory } from '../VisitorFactory';
 
 export default class SemanticSyntaxVolumeForSourceCode extends SemanticSyntaxVolume {
   constructor(name: string) {

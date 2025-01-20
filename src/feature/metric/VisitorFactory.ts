@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { AstVisitor } from '../util/AstVisitor';
+import type { AstVisitor } from '../util/AstVisitor';
 import {
   getAnonymousFunctionName,
   getArrowFunctionName,
@@ -16,7 +16,7 @@ import {
   isTopLevelIIFE,
   isTopLevelObjectLiteralExpression,
 } from '../util/astUtils';
-import { MetricsScope } from './metricsModels';
+import type { MetricsScope } from './metricsModels';
 
 export interface VisitorFactory<T extends AstVisitor> {
   createAdditionalVisitor(node: ts.Node, depth: number): T | undefined;

@@ -1,4 +1,4 @@
-import { Graph, Node } from './models';
+import type { Graph, Node } from './models';
 
 export type NodeWithInstability = Node & {
   afferentCoupling: number;

@@ -1,15 +1,13 @@
 import { test, expect } from 'vitest';
-import AstLogger from '../../util/AstLogger';
 import * as ts from 'typescript';
+import AstLogger from '../../util/AstLogger';
 import AstTraverser from '../../util/AstTraverser';
-import { readFileSync } from 'fs';
-import CognitiveComplexityForSourceCode from './CognitiveComplexityForSourceCode';
 import { createCognitiveComplexityAnalyzer } from '../cognitiveComplexity';
 
-type OperatorTest = {
+interface OperatorTest {
   perspective: string;
   tests: [string, number];
-};
+}
 
 test.each([
   {

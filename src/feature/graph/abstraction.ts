@@ -1,4 +1,5 @@
-import { Graph, getUniqueRelations, isSameNode, Node } from './models';
+import type { Graph, Node } from './models';
+import { getUniqueRelations, isSameNode } from './models';
 import { extractUniqueNodes } from './utils';
 
 /**
@@ -66,7 +67,7 @@ function abstractionNode(node: Node, absDirArrArr: string[][]): Node {
   const absDirArr = getAbstractionDirArr(absDirArrArr, node);
   if (!absDirArr || absDirArr.at(-1) === node.name) return node;
   return {
-    name: `/${absDirArr.at(-1)!}`,
+    name: `/${absDirArr.at(-1)}`,
     path: abstractionPath(node.path, absDirArr),
     isDirectory: true,
     changeStatus: 'not_modified',
@@ -88,7 +89,7 @@ export function getAbstractionDirArr(
   return absDirArrArr.find(absDirArr => {
     // このブロックは、当該ノードが指定した abs に該当する場合に true を返す。
     // abs 先頭の dir を含む index を見つける。
-    const startIndex = targetDirArr.findIndex(dir => dir === absDirArr.at(0)!);
+    const startIndex = targetDirArr.findIndex(dir => dir === absDirArr.at(0));
     if (startIndex === -1) return false;
     return absDirArr
       .slice(1)
