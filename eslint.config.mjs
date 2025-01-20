@@ -12,12 +12,12 @@ export default [
   pluginImportFlatConfigs.typescript,
   ...tseslint.configs.strict,
   ...tseslint.configs.stylistic,
-  // {
-  //   // eslint
-  //   rules: {
-  //     'import/order': ['error', { 'newlines-between': 'always' }],
-  //   },
-  // },
+  {
+    // eslint
+    rules: {
+      'import/order': 'error',
+    },
+  },
   {
     // typescript-eslint
     rules: {

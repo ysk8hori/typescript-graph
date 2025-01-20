@@ -1,9 +1,9 @@
-import type { OptionValues } from '../setting/model';
 import { watch } from 'chokidar';
 import { pipe, piped, tap } from 'remeda';
-import { isTsFile } from '../utils/tsc-util';
 import { Table } from 'console-table-printer';
 import chalk from 'chalk';
+import { isTsFile } from '../utils/tsc-util';
+import type { OptionValues } from '../setting/model';
 import type {
   CodeMetrics,
   Score,

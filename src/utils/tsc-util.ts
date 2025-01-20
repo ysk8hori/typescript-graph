@@ -1,6 +1,6 @@
 import path from 'path';
-import type { OptionValues } from '../setting/model';
 import ts from 'typescript';
+import type { OptionValues } from '../setting/model';
 
 export function isTsFile(path: string) {
   return [

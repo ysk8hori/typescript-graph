@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
-import AstLogger from '../../util/AstLogger';
 import * as ts from 'typescript';
+import AstLogger from '../../util/AstLogger';
 import AstTraverser from '../../util/AstTraverser';
 import { createCognitiveComplexityAnalyzer } from '../cognitiveComplexity';
 

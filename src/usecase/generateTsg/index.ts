@@ -1,4 +1,5 @@
 import path from 'path';
+import { allPass, anyPass, isNot, map, pipe } from 'remeda';
 import { setupConfig } from '../../setting/config';
 import type { Graph } from '../../feature/graph/models';
 import type { OptionValues } from '../../setting/model';
@@ -8,11 +9,10 @@ import { resolveTsconfig } from '../../utils/tsc-util';
 import ProjectTraverser from '../../feature/util/ProjectTraverser';
 import { GraphAnalyzer } from '../../feature/graph/GraphAnalyzer';
 import { mergeGraph } from '../../feature/graph/utils';
-import { writeMarkdownFile } from './writeMarkdownFile';
 import { bind_refineGraph } from '../../feature/graph/refineGraph';
-import { allPass, anyPass, isNot, map, pipe } from 'remeda';
 import { calculateCodeMetrics } from '../../feature/metric/calculateCodeMetrics';
 import { setupVueEnvironment } from '../../utils/vue-util';
+import { writeMarkdownFile } from './writeMarkdownFile';
 
 /** word に該当するか */
 const bindMatchFunc = (word: string) => (filePath: string) =>

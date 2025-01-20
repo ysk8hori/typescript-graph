@@ -1,7 +1,7 @@
 import type { MetricsScope } from '../metricsModels';
+import { ClassVisitorFactory } from '../VisitorFactory';
 import SemanticSyntaxVolume from './SemanticSyntaxVolumeAnalyzer';
 import SemanticSyntaxVolumeForNormalNode from './SemanticSyntaxVolumeForNormalNode';
-import { ClassVisitorFactory } from '../VisitorFactory';
 
 const create = (name: string, scope: MetricsScope) =>
   new SemanticSyntaxVolumeForNormalNode(name, scope);

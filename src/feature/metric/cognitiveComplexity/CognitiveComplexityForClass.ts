@@ -1,7 +1,7 @@
-import CognitiveComplexityAnalyzer from './CognitiveComplexityAnalyzer';
-import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import type { MetricsScope } from '../metricsModels';
 import { ClassVisitorFactory } from '../VisitorFactory';
+import CognitiveComplexityAnalyzer from './CognitiveComplexityAnalyzer';
+import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 
 export default class CognitiveComplexityForClass extends CognitiveComplexityAnalyzer {
   constructor(name: string, scope: MetricsScope) {

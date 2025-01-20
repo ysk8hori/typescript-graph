@@ -1,10 +1,10 @@
 import { piped } from 'remeda';
 import { getConfig } from '../../setting/config';
+import type { OptionValues } from '../../setting/model';
 import { abstraction } from './abstraction';
 import { filterGraph } from './filterGraph';
 import { highlight } from './highlight';
 import type { Graph } from './models';
-import type { OptionValues } from '../../setting/model';
 
 /** filter, abstraction, highlight を行う */
 export const bind_refineGraph = (

@@ -3,12 +3,12 @@ import type { CognitiveComplexityMetrics } from '../cognitiveComplexity';
 import type { CyclomaticComplexityMetrics } from '../cyclomaticComplexity';
 import type { CodeMetrics, MetricsScope , MetricsScoreState } from '../metricsModels';
 import type { SemanticSyntaxVolumeMetrics } from '../semanticSyntaxVolume';
+import type { Tree } from '../../../utils/Tree';
 import type {
   RawMetricsWithMaintainabilityIndex} from './calculateMaintainabilityIndex';
 import {
   calculateMaintainabilityIndex
 } from './calculateMaintainabilityIndex';
-import type { Tree } from '../../../utils/Tree';
 
 export interface RawMetrics {
   semanticSyntaxVolume: SemanticSyntaxVolumeMetrics;

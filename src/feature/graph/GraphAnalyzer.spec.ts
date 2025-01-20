@@ -1,9 +1,9 @@
+import path from 'path';
 import { test, expect } from 'vitest';
-import { GraphAnalyzer } from './GraphAnalyzer';
 import ts from 'typescript';
 import AstLogger from '../util/AstLogger';
 import AstTraverser from '../util/AstTraverser';
-import path from 'path';
+import { GraphAnalyzer } from './GraphAnalyzer';
 
 test('GraphAnalyzer は Visitor として機能しソースファイルひとつ分のグラフを生成する', () => {
   const rootDir = path.resolve(__dirname, '../../../');

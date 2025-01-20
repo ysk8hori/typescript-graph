@@ -1,8 +1,8 @@
 import { test, expect, describe } from 'vitest';
-import AstLogger from '../../util/AstLogger';
-import { type SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolumeAnalyzer';
 import ts from 'typescript';
+import AstLogger from '../../util/AstLogger';
 import AstTraverser from '../../util/AstTraverser';
+import type { SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolumeAnalyzer';
 import { createSemanticSyntaxVolumeAnalyzer } from '.';
 
 interface OperatorTest {

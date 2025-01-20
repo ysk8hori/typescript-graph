@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
-import type { Leave } from '../../util/AstVisitor';
 import { allPass, anyPass, isNot } from 'remeda';
+import type { Leave } from '../../util/AstVisitor';
 import type {
   TopLevelMatcher} from '../../util/astUtils';
 import {

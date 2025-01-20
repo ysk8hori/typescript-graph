@@ -7,8 +7,8 @@ import {
 import type { Graph } from '../../feature/graph/models';
 import { writeGraph } from '../../feature/mermaid/mermaidify';
 import type { CodeMetrics } from '../../feature/metric/metricsModels';
-import { writeMetrics } from './writeMetricsTable';
 import type { OptionValues } from '../../setting/model';
+import { writeMetrics } from './writeMetricsTable';
 
 type Options = OptionValues & {
   rootDir: string;

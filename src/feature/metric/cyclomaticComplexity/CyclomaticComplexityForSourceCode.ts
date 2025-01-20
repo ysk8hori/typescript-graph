@@ -1,7 +1,7 @@
+import { TopLevelVisitorFactory } from '../VisitorFactory';
 import CyclomaticComplexityAnalyzer from './CyclomaticComplexityAnalyzer';
 import CyclomaticComplexityForNormalNode from './CyclomaticComplexityForNormalNode';
 import CyclomaticComplexityForClass from './CyclomaticComplexityForClass';
-import { TopLevelVisitorFactory } from '../VisitorFactory';
 
 export default class CyclomaticComplexityForSourceCode extends CyclomaticComplexityAnalyzer {
   constructor(name: string) {
