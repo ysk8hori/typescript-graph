@@ -1,28 +1,31 @@
 {
-  "extends": ["config:recommended"],
-  "baseBranches": ["main"],
-  "timezone": "Asia/Tokyo",
-  "schedule": ["after 5pm and before 10pm on Thursday"],
-  "rangeStrategy": "pin",
-  "packageRules": [
+  extends: ['config:recommended'],
+  baseBranches: ['main'],
+  timezone: 'Asia/Tokyo',
+  schedule: ['after 5pm and before 10pm on Thursday'],
+  rangeStrategy: 'pin',
+  packageRules: [
     {
-      "matchUpdateTypes": ["major", "minor"],
-      "labels": ["TypeScript"],
-      "matchPackageNames": ["typescript"],
-      "groupName": "TypeScript"
+      matchUpdateTypes: ['major', 'minor'],
+      labels: ['TypeScript'],
+      matchPackageNames: ['typescript'],
+      groupName: 'TypeScript',
     },
     {
-      "groupName": "ESLint related packages",
-      "packageNames": ["eslint", "eslint-config-prettier"],
-      "packagePatterns": ["^@typescript-eslint/", "^eslint-plugin"]
+      groupName: 'ESLint related packages',
+      packageNames: ['eslint', 'eslint-config-prettier'],
+      packagePatterns: ['^@typescript-eslint/', '^eslint-plugin'],
     },
     {
-      "groupName": "All minor and patch dependencies",
-      "matchUpdateTypes": ["minor", "patch"],
-      "labels": ["UPDATE-MINOR&PATCH"],
-      "excludePackageNames": ["typescript", "eslint", "eslint-config-prettier"],
-      "excludePackagePatterns": ["^@typescript-eslint/", "^eslint-plugin"]
-    }
+      groupName: 'All minor and patch dependencies',
+      matchUpdateTypes: ['minor', 'patch'],
+      labels: ['UPDATE-MINOR&PATCH'],
+      excludePackageNames: ['typescript', 'eslint', 'eslint-config-prettier'],
+      excludePackagePatterns: ['^@typescript-eslint/', '^eslint-plugin'],
+    },
   ],
-  "automerge": true,
+  automerge: true,
+  ignoreDeps: [
+    'chalk', // 要 esm 対応 @see https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+  ],
 }
