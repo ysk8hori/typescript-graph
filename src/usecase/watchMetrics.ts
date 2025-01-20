@@ -143,7 +143,7 @@ function getChalkedDiff(
   return '0';
 }
 
-const initialMetricsMap: Map<string, CodeMetrics[]> = new Map();
+const initialMetricsMap = new Map<string, CodeMetrics[]>();
 function saveInitialMetrics(path: string) {
   const metrics = pipe(path, getMetrics);
   initialMetricsMap.set(path, metrics);

@@ -7,7 +7,7 @@ export default class AstLogger implements AstVisitor {
   }
 
   /** visit したノードのインデックス番号を記録するカウンター */
-  #no: number = 0;
+  #no = 0;
   /** visit したノード1つにつき1行データを登録する */
   #logList: string[] = [
     'No. | depth | code | SyntaxKind | NodeFlags',
@@ -34,6 +34,7 @@ export default class AstLogger implements AstVisitor {
   }
 
   #getSyntaxKindText(node: ts.Node) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const operator = (node as any)['operator'];
     return `${ts.SyntaxKind[node.kind]}${operator ? ` (${ts.SyntaxKind[operator]})` : ''}`;
   }

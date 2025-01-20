@@ -5,13 +5,13 @@ import ts from 'typescript';
 import AstTraverser from '../../util/AstTraverser';
 import { createSemanticSyntaxVolumeAnalyzer } from '.';
 
-type OperatorTest = {
+interface OperatorTest {
   perspective: string;
   tests: [
     string,
     Omit<SemanticSyntaxVolumeMetrics['score'], 'volume' | 'lines'>,
   ][];
-};
+}
 describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
   describe.each([
     {

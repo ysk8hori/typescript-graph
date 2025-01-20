@@ -23,13 +23,13 @@ function Button({ flag }: { flag: boolean }) {
   );
 }\
 `;
-type OperatorTest = {
+interface OperatorTest {
   perspective: string;
   tests: [
     string,
     Omit<SemanticSyntaxVolumeMetrics['score'], 'volume' | 'lines'>,
   ][];
-};
+}
 describe.each([ts.ScriptKind.TSX])(`%s`, scriptKind => {
   describe.each([
     {

@@ -5,10 +5,10 @@ import AstTraverser from '../../util/AstTraverser';
 import { CognitiveComplexityMetrics } from './CognitiveComplexityMetrics';
 import { createCognitiveComplexityAnalyzer } from '../cognitiveComplexity';
 
-type OperatorTest = {
+interface OperatorTest {
   perspective: string;
   tests: [string, CognitiveComplexityMetrics];
-};
+}
 
 test.each([
   {

@@ -7,10 +7,10 @@ import {
   createCyclomaticComplexityAnalyzer,
 } from '.';
 
-type OperatorTest = {
+interface OperatorTest {
   perspective: string;
   tests: [string, CyclomaticComplexityMetrics];
-};
+}
 
 test.each([
   {

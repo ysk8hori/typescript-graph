@@ -88,7 +88,7 @@ export default abstract class SemanticSyntaxVolume extends HierarchicalMetricsAn
    * ソースコードは、ファイル全体となる場合や1つの関数となる場合など様々なので、
    * 解析開始時点で一番最初に解析対象となったノードの行数を格納する。
    */
-  #lineCount: number = -1;
+  #lineCount = -1;
   #setLineCountFromNode(node: ts.Node) {
     if (this.#lineCount !== -1) return;
     this.#lineCount = node.getText(node.getSourceFile()).split('\n').length;
@@ -97,11 +97,11 @@ export default abstract class SemanticSyntaxVolume extends HierarchicalMetricsAn
     return this.#lineCount;
   }
 
-  readonly #uniqueSemanticSyntaxKinds: Set<SemanticSyntaxKind> = new Set();
-  #totalSemanticSyntax: number = 0;
+  readonly #uniqueSemanticSyntaxKinds = new Set<SemanticSyntaxKind>();
+  #totalSemanticSyntax = 0;
 
-  readonly #uniqueOperands: Set<string> = new Set();
-  #totalOperands: number = 0;
+  readonly #uniqueOperands = new Set<string>();
+  #totalOperands = 0;
 
   #addSemanticSyntaxKind(kind: SemanticSyntaxKind) {
     this.#uniqueSemanticSyntaxKinds.add(kind);
@@ -145,6 +145,7 @@ export default abstract class SemanticSyntaxVolume extends HierarchicalMetricsAn
       }
     } else {
       this.#addSemanticSyntaxKind(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (node as any)['operator'] ?? `${node.kind}/${node.flags}`,
       );
     }

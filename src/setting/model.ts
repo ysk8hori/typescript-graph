@@ -1,4 +1,4 @@
-export type OptionValues = {
+export interface OptionValues {
   md?: string;
   mermaidLink?: boolean;
   dir?: string;
@@ -14,4 +14,4 @@ export type OptionValues = {
   vue?: boolean;
   metrics?: boolean;
   watchMetrics: boolean | string[];
-};
+}

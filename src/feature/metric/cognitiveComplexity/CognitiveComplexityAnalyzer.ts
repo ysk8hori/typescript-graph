@@ -28,6 +28,7 @@ function isElseOrElseIfStatement(node: ts.Node): boolean {
 }
 
 function hasLabel(node: ts.Node): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return !!(node as any)['label'];
 }
 
@@ -122,7 +123,7 @@ export default abstract class CognitiveComplexityAnalyzer extends HierarchicalMe
     this.score++;
   }
 
-  #nestLevel: number = 1;
+  #nestLevel = 1;
   #enterNest() {
     this.#nestLevel++;
   }

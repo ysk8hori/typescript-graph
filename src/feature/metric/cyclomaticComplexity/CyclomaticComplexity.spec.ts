@@ -4,10 +4,10 @@ import * as ts from 'typescript';
 import AstTraverser from '../../util/AstTraverser';
 import { createCyclomaticComplexityAnalyzer } from '.';
 
-type OperatorTest = {
+interface OperatorTest {
   perspective: string;
   tests: [string, number];
-};
+}
 
 test.each([
   {

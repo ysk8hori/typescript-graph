@@ -1,10 +1,10 @@
 import ts from 'typescript';
 
-export type VisitProps = {
+export interface VisitProps {
   node: ts.Node;
   depth: number;
   sourceFile: ts.SourceFile;
-};
+}
 
 export type Leave = (props: VisitProps) => void;
 
