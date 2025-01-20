@@ -1,11 +1,14 @@
 import type { OptionValues } from '../setting/model';
-import chokidar from 'chokidar';
+import { watch } from 'chokidar';
 import { pipe, piped, tap } from 'remeda';
 import { isTsFile } from '../utils/tsc-util';
 import { Table } from 'console-table-printer';
 import chalk from 'chalk';
-import type { CodeMetrics, Score } from '../feature/metric/metricsModels';
-import type { MetricsScope } from '../feature/metric/metricsModels';
+import type {
+  CodeMetrics,
+  Score,
+  MetricsScope,
+} from '../feature/metric/metricsModels';
 import { getMetricsRawData } from '../feature/metric/functions/getMetricsRawData';
 import { convertRawToCodeMetrics } from '../feature/metric/functions/convertRawToCodeMetrics';
 import { unTree } from '../utils/Tree';
@@ -25,7 +28,7 @@ export function watchMetrics(opt: Pick<OptionValues, 'watchMetrics'>) {
     typeof opt.watchMetrics === 'boolean' ? ['./'] : opt.watchMetrics;
 
   // Initialize watcher.
-  const watcher = chokidar.watch(target, {
+  const watcher = watch(target, {
     ignored: (path, stats) =>
       (!!stats?.isFile() && !isTsFile(path)) || path.includes('node_modules'),
     persistent: true,

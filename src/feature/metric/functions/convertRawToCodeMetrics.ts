@@ -1,8 +1,7 @@
 import { pipe, zipWith } from 'remeda';
 import type { CognitiveComplexityMetrics } from '../cognitiveComplexity';
 import type { CyclomaticComplexityMetrics } from '../cyclomaticComplexity';
-import type { CodeMetrics, MetricsScope } from '../metricsModels';
-import type { MetricsScoreState } from '../metricsModels';
+import type { CodeMetrics, MetricsScope , MetricsScoreState } from '../metricsModels';
 import type { SemanticSyntaxVolumeMetrics } from '../semanticSyntaxVolume';
 import type {
   RawMetricsWithMaintainabilityIndex} from './calculateMaintainabilityIndex';
