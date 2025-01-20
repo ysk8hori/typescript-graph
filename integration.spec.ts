@@ -1,7 +1,7 @@
-import { beforeAll, expect, test } from 'vitest';
-import { $ } from 'zx';
 import fs from 'fs';
 import path from 'path';
+import { beforeAll, expect, test } from 'vitest';
+import { $ } from 'zx';
 
 const dir = '__tmp__';
 const filename = 'test.md';
