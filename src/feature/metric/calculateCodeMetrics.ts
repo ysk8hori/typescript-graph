@@ -1,10 +1,11 @@
-import { OptionValues } from '../../setting/model';
+import type { OptionValues } from '../../setting/model';
+import type {
+  RawMetrics} from './functions/convertRawToCodeMetrics';
 import {
-  convertRawToCodeMetrics,
-  RawMetrics,
+  convertRawToCodeMetrics
 } from './functions/convertRawToCodeMetrics';
-import { CodeMetrics } from './metricsModels';
-import ProjectTraverser from '../util/ProjectTraverser';
+import type { CodeMetrics } from './metricsModels';
+import type ProjectTraverser from '../util/ProjectTraverser';
 import { createCyclomaticComplexityAnalyzer } from './cyclomaticComplexity';
 import { createSemanticSyntaxVolumeAnalyzer } from './semanticSyntaxVolume';
 import { createCognitiveComplexityAnalyzer } from './cognitiveComplexity';

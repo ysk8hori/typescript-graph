@@ -1,4 +1,4 @@
-import { Graph, Node } from './models';
+import type { Graph, Node } from './models';
 
 export function highlight(
   highlightArray: string[] | undefined,

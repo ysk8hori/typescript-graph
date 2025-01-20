@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { AstVisitor } from './AstVisitor';
+import type { AstVisitor } from './AstVisitor';
 import AstTraverser from './AstTraverser';
 
 type AstVisitorFactory<T extends AstVisitor> = (

@@ -1,4 +1,4 @@
-import CognitiveComplexityAnalyzer from './CognitiveComplexityAnalyzer';
+import type CognitiveComplexityAnalyzer from './CognitiveComplexityAnalyzer';
 import CognitiveComplexityForSourceCode from './CognitiveComplexityForSourceCode';
 export { CognitiveComplexityMetrics } from './CognitiveComplexityMetrics';
 

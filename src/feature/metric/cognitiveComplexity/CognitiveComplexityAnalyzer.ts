@@ -1,18 +1,20 @@
 import * as ts from 'typescript';
-import { Leave } from '../../util/AstVisitor';
+import type { Leave } from '../../util/AstVisitor';
 import { allPass, anyPass, isNot } from 'remeda';
+import type {
+  TopLevelMatcher} from '../../util/astUtils';
 import {
   isTopLevelArrowFunction,
   isTopLevelClass,
   isTopLevelFunction,
   isTopLevelIIFE,
-  isTopLevelObjectLiteralExpression,
-  TopLevelMatcher,
+  isTopLevelObjectLiteralExpression
 } from '../../util/astUtils';
-import HierarchicalMetricsAnalyzer, {
+import type {
   AnalyzeProps,
 } from '../HierarchicalMetricsAnalyzer';
-import { Score } from './CognitiveComplexityMetrics';
+import HierarchicalMetricsAnalyzer from '../HierarchicalMetricsAnalyzer';
+import type { Score } from './CognitiveComplexityMetrics';
 
 type NodeMatcher = (node: ts.Node) => boolean;
 

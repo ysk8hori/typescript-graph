@@ -1,5 +1,5 @@
-import { Tree } from '../../../utils/Tree';
-import { MetricsScope } from '../metricsModels';
+import type { Tree } from '../../../utils/Tree';
+import type { MetricsScope } from '../metricsModels';
 
 /**
  * 各ノードの名前を更新する。

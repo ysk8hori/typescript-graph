@@ -3,8 +3,8 @@ import { getConfig } from '../../setting/config';
 import { abstraction } from './abstraction';
 import { filterGraph } from './filterGraph';
 import { highlight } from './highlight';
-import { Graph } from './models';
-import { OptionValues } from '../../setting/model';
+import type { Graph } from './models';
+import type { OptionValues } from '../../setting/model';
 
 /** filter, abstraction, highlight を行う */
 export const bind_refineGraph = (

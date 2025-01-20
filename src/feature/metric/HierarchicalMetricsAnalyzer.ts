@@ -1,8 +1,8 @@
-import { AstVisitor, Leave, VisitProps } from '../util/AstVisitor';
-import { HierarchicalMetris } from './HierarchicalMetris';
-import Metrics from './Metrics';
-import { MetricsScope } from './metricsModels';
-import { VisitorFactory } from './VisitorFactory';
+import type { AstVisitor, Leave, VisitProps } from '../util/AstVisitor';
+import type { HierarchicalMetris } from './HierarchicalMetris';
+import type Metrics from './Metrics';
+import type { MetricsScope } from './metricsModels';
+import type { VisitorFactory } from './VisitorFactory';
 
 export type AnalyzeProps = VisitProps;
 

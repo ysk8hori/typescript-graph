@@ -2,8 +2,9 @@ import { test, expect } from 'vitest';
 import AstLogger from '../../util/AstLogger';
 import * as ts from 'typescript';
 import AstTraverser from '../../util/AstTraverser';
+import type {
+  CyclomaticComplexityMetrics} from '.';
 import {
-  CyclomaticComplexityMetrics,
   createCyclomaticComplexityAnalyzer,
 } from '.';
 

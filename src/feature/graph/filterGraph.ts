@@ -1,6 +1,7 @@
-import {
+import type {
   Graph,
-  Node,
+  Node} from './models';
+import {
   getUniqueNodes,
   getUniqueRelations,
   isSameNode,

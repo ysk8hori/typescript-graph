@@ -1,4 +1,4 @@
-import { MetricsScoreState } from '../metricsModels';
+import type { MetricsScoreState } from '../metricsModels';
 
 export function getIconByState(state: MetricsScoreState): string {
   switch (state) {

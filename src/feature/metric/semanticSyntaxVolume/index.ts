@@ -1,4 +1,4 @@
-import SemanticSyntaxVolumeAnalyzer from './SemanticSyntaxVolumeAnalyzer';
+import type SemanticSyntaxVolumeAnalyzer from './SemanticSyntaxVolumeAnalyzer';
 import SemanticSyntaxVolumeForSourceCode from './SemanticSyntaxVolumeForSourceCode';
 export { SemanticSyntaxVolumeMetrics } from './SemanticSyntaxVolumeAnalyzer';
 

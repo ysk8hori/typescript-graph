@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import packagejson from '../../package.json';
-import { OptionValues } from '../setting/model';
+import type { OptionValues } from '../setting/model';
 import { generateTsg } from '../usecase/generateTsg';
 import { watchMetrics } from '../usecase/watchMetrics';
 

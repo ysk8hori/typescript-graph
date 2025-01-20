@@ -1,6 +1,6 @@
 import CyclomaticComplexityAnalyzer from './CyclomaticComplexityAnalyzer';
 import CyclomaticComplexityForNormalNode from './CyclomaticComplexityForNormalNode';
-import { MetricsScope } from '../metricsModels';
+import type { MetricsScope } from '../metricsModels';
 import { ClassVisitorFactory } from '../VisitorFactory';
 
 export default class CyclomaticComplexityForClass extends CyclomaticComplexityAnalyzer {

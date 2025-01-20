@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { AstVisitor, VisitResult } from './AstVisitor';
+import type { AstVisitor, VisitResult } from './AstVisitor';
 
 export default class AstTraverser {
   readonly #sourceFile: ts.SourceFile;

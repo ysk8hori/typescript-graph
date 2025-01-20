@@ -1,6 +1,6 @@
 import { unTree } from '../../utils/Tree';
 import { updateMetricsName } from '../../feature/metric/functions/updateMetricsName';
-import { CodeMetrics } from '../../feature/metric/metricsModels';
+import type { CodeMetrics } from '../../feature/metric/metricsModels';
 import { toSortedMetrics } from '../../feature/metric/functions/toSortedMetrics';
 import { getIconByState } from '../../feature/metric/functions/getIconByState';
 

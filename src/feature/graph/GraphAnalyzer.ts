@@ -1,6 +1,6 @@
 import ts from 'typescript';
-import { AstVisitor, VisitProps } from '../util/AstVisitor';
-import { Graph, Node, Relation } from './models';
+import type { AstVisitor, VisitProps } from '../util/AstVisitor';
+import type { Graph, Node, Relation } from './models';
 import path from 'path';
 
 export class GraphAnalyzer implements AstVisitor {

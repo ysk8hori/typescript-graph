@@ -1,9 +1,9 @@
 import path from 'path';
 import { setupConfig } from '../../setting/config';
-import { Graph } from '../../feature/graph/models';
-import { OptionValues } from '../../setting/model';
+import type { Graph } from '../../feature/graph/models';
+import type { OptionValues } from '../../setting/model';
 import { measureInstability } from '../../feature/graph/instability';
-import { CodeMetrics } from '../../feature/metric/metricsModels';
+import type { CodeMetrics } from '../../feature/metric/metricsModels';
 import { resolveTsconfig } from '../../utils/tsc-util';
 import ProjectTraverser from '../../feature/util/ProjectTraverser';
 import { GraphAnalyzer } from '../../feature/graph/GraphAnalyzer';

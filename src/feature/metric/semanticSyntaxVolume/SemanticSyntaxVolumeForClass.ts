@@ -1,4 +1,4 @@
-import { MetricsScope } from '../metricsModels';
+import type { MetricsScope } from '../metricsModels';
 import SemanticSyntaxVolume from './SemanticSyntaxVolumeAnalyzer';
 import SemanticSyntaxVolumeForNormalNode from './SemanticSyntaxVolumeForNormalNode';
 import { ClassVisitorFactory } from '../VisitorFactory';

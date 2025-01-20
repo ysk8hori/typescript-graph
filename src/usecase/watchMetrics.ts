@@ -1,11 +1,11 @@
-import { OptionValues } from '../setting/model';
+import type { OptionValues } from '../setting/model';
 import chokidar from 'chokidar';
 import { pipe, piped, tap } from 'remeda';
 import { isTsFile } from '../utils/tsc-util';
 import { Table } from 'console-table-printer';
 import chalk from 'chalk';
-import { CodeMetrics, Score } from '../feature/metric/metricsModels';
-import { MetricsScope } from '../feature/metric/metricsModels';
+import type { CodeMetrics, Score } from '../feature/metric/metricsModels';
+import type { MetricsScope } from '../feature/metric/metricsModels';
 import { getMetricsRawData } from '../feature/metric/functions/getMetricsRawData';
 import { convertRawToCodeMetrics } from '../feature/metric/functions/convertRawToCodeMetrics';
 import { unTree } from '../utils/Tree';

@@ -1,5 +1,5 @@
-import { Tree } from '../../../utils/Tree';
-import { CodeMetrics } from '../metricsModels';
+import type { Tree } from '../../../utils/Tree';
+import type { CodeMetrics } from '../metricsModels';
 
 export function toSortedMetrics<T extends Tree<Pick<CodeMetrics, 'scores'>>>(
   list: T[],

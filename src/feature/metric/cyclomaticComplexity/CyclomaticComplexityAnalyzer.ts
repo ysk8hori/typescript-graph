@@ -1,8 +1,9 @@
 import * as ts from 'typescript';
-import HierarchicalMetricsAnalyzer, {
+import type {
   AnalyzeProps,
 } from '../HierarchicalMetricsAnalyzer';
-import { Score } from './CyclomaticComplexityMetrics';
+import HierarchicalMetricsAnalyzer from '../HierarchicalMetricsAnalyzer';
+import type { Score } from './CyclomaticComplexityMetrics';
 
 function kindMatcher(kind: ts.SyntaxKind) {
   return (node: ts.Node) => node.kind === kind;

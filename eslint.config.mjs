@@ -10,8 +10,10 @@ export default [
   ...tseslint.configs.strict,
   ...tseslint.configs.stylistic,
   {
+    // typescript-eslint
     rules: {
       '@typescript-eslint/no-invalid-void-type': 'off',
+      '@typescript-eslint/consistent-type-imports': 'error',
     },
   },
 ];

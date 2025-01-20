@@ -2,7 +2,7 @@ import { test, expect } from 'vitest';
 import AstLogger from '../../util/AstLogger';
 import * as ts from 'typescript';
 import AstTraverser from '../../util/AstTraverser';
-import { CognitiveComplexityMetrics } from './CognitiveComplexityMetrics';
+import type { CognitiveComplexityMetrics } from './CognitiveComplexityMetrics';
 import { createCognitiveComplexityAnalyzer } from '../cognitiveComplexity';
 
 interface OperatorTest {
