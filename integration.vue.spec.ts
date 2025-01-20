@@ -1,20 +1,21 @@
-import { beforeAll, expect, test } from 'vitest';
-import { $ } from 'zx';
 import fs from 'fs';
 import path from 'path';
+import { beforeAll, expect, test } from 'vitest';
+import { $ } from 'zx';
 
 const dir = '__tmp__';
 const filename = 'test-vue.md';
 const filepath = path.join(dir, filename);
 
-beforeAll(() => {
+beforeAll(async () => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+  await $`npm run build`;
 });
 
 // TODO 現状、--config-file で指定するパスは -d からの相対パスだが、将来的には -d をなくしたい。その移行のため --config-file での指定は、-d を無視したカレントディレクトリからの相対パスで設定ファイルを優先し、なければ -d からの相対パスで探すようにしたい。
 
 test('run:sample', async () => {
-  await $`npx tsx ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --md ${filepath} --vue`;
+  await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --md ${filepath} --vue`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
@@ -124,7 +125,7 @@ test('run:sample', async () => {
 });
 
 test('run:sample:argument-include', async () => {
-  await $`npx tsx ./src/cli/entry.ts includeFiles config --tsconfig './dummy_project/tsconfig.json' --md ${filepath} --vue`;
+  await $`node ./bin/tsg.js includeFiles config --tsconfig './dummy_project/tsconfig.json' --md ${filepath} --vue`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
@@ -219,7 +220,7 @@ test('run:sample:argument-include', async () => {
 });
 
 test('run:sample:include', async () => {
-  await $`npx tsx ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --md ${filepath} --vue`;
+  await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --md ${filepath} --vue`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
@@ -314,7 +315,7 @@ test('run:sample:include', async () => {
 });
 
 test('run:sample:exclude', async () => {
-  await $`npx tsx ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --md ${filepath} --vue`;
+  await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --md ${filepath} --vue`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
@@ -381,7 +382,7 @@ test('run:sample:exclude', async () => {
 });
 
 test('run:sample:abstraction', async () => {
-  await $`npx tsx ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --md ${filepath} --vue`;
+  await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --md ${filepath} --vue`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
@@ -439,7 +440,7 @@ test('run:sample:abstraction', async () => {
 });
 
 test('run:sample:highlight', async () => {
-  await $`npx tsx ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --md ${filepath} --vue`;
+  await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --abstraction abstractions --highlight config.ts b.ts --md ${filepath} --vue`;
 
   const file = fs.readFileSync(filepath, { encoding: 'utf-8' });
   expect(file).toMatchInlineSnapshot(`
