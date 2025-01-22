@@ -5,6 +5,7 @@ import SemanticSyntaxVolumeForNormalNode from './SemanticSyntaxVolumeForNormalNo
 
 const create = (name: string, scope: MetricsScope) =>
   new SemanticSyntaxVolumeForNormalNode(name, scope);
+
 export default class SemanticSyntaxVolumeForClass extends SemanticSyntaxVolume {
   constructor(name: string, scope: MetricsScope) {
     super(name, scope, {

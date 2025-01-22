@@ -3,18 +3,17 @@ import { ClassVisitorFactory } from '../VisitorFactory';
 import CognitiveComplexityAnalyzer from './CognitiveComplexityAnalyzer';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 
+const create = (name: string, scope: MetricsScope) =>
+  new CognitiveComplexityForNormalNode(name, scope);
+
 export default class CognitiveComplexityForClass extends CognitiveComplexityAnalyzer {
   constructor(name: string, scope: MetricsScope) {
     super(name, scope, {
       visitorFactory: new ClassVisitorFactory({
-        createGetAccessorVisitor: (name, scope) =>
-          new CognitiveComplexityForNormalNode(name, scope),
-        createSetAccessorVisitor: (name, scope) =>
-          new CognitiveComplexityForNormalNode(name, scope),
-        createMethodVisitor: (name, scope) =>
-          new CognitiveComplexityForNormalNode(name, scope),
-        createConstructorVisitor: (name, scope) =>
-          new CognitiveComplexityForNormalNode(name, scope),
+        createGetAccessorVisitor: create,
+        createSetAccessorVisitor: create,
+        createMethodVisitor: create,
+        createConstructorVisitor: create,
       }),
     });
   }

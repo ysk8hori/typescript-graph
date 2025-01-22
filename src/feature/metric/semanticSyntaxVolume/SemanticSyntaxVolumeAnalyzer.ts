@@ -1,7 +1,5 @@
 import * as ts from 'typescript';
-import type {
-  AnalyzeProps,
-} from '../HierarchicalMetricsAnalyzer';
+import type { AnalyzeProps } from '../HierarchicalMetricsAnalyzer';
 import HierarchicalMetricsAnalyzer from '../HierarchicalMetricsAnalyzer';
 import type { HierarchicalMetris } from '../HierarchicalMetris';
 

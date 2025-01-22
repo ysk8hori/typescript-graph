@@ -1,7 +1,13 @@
 import { TopLevelVisitorFactory } from '../VisitorFactory';
+import type { MetricsScope } from '../metricsModels';
 import CognitiveComplexityAnalyzer from './CognitiveComplexityAnalyzer';
 import CognitiveComplexityForNormalNode from './CognitiveComplexityForNormalNode';
 import CognitiveComplexityForClass from './CognitiveComplexityForClass';
+
+const createNormal = (name: string, scope: MetricsScope) =>
+  new CognitiveComplexityForNormalNode(name, scope);
+const createClassVisitor = (name: string, scope: MetricsScope) =>
+  new CognitiveComplexityForClass(name, scope);
 
 export default class CognitiveComplexityForSourceCode extends CognitiveComplexityAnalyzer {
   constructor(name: string) {
@@ -9,16 +15,13 @@ export default class CognitiveComplexityForSourceCode extends CognitiveComplexit
       visitorFactory: new TopLevelVisitorFactory<CognitiveComplexityAnalyzer>(
         1,
         {
-          createFunctionVisitor: (name, scope) =>
-            new CognitiveComplexityForNormalNode(name, scope),
-          createArrowFunctionVisitor: (name, scope) =>
-            new CognitiveComplexityForNormalNode(name, scope),
-          createIIFEVisitor: (name, scope) =>
-            new CognitiveComplexityForNormalNode(name, scope),
-          createClassVisitor: (name, scope) =>
-            new CognitiveComplexityForClass(name, scope),
-          createObjectLiteralExpressionVisitor: (name, scope) =>
-            new CognitiveComplexityForNormalNode(name, scope),
+          createFunctionVisitor: createNormal,
+          createArrowFunctionVisitor: createNormal,
+          createIIFEVisitor: createNormal,
+          createObjectLiteralExpressionVisitor: createNormal,
+          createInterfaceDeclarationVisitor: createNormal,
+          createTypeAliasDeclarationVisitor: createNormal,
+          createClassVisitor,
         },
       ),
     });

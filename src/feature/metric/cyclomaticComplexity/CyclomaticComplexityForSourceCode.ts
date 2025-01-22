@@ -1,7 +1,13 @@
 import { TopLevelVisitorFactory } from '../VisitorFactory';
+import type { MetricsScope } from '../metricsModels';
 import CyclomaticComplexityAnalyzer from './CyclomaticComplexityAnalyzer';
 import CyclomaticComplexityForNormalNode from './CyclomaticComplexityForNormalNode';
 import CyclomaticComplexityForClass from './CyclomaticComplexityForClass';
+
+const createNormal = (name: string, scope: MetricsScope) =>
+  new CyclomaticComplexityForNormalNode(name, scope);
+const createClassVisitor = (name: string, scope: MetricsScope) =>
+  new CyclomaticComplexityForClass(name, scope);
 
 export default class CyclomaticComplexityForSourceCode extends CyclomaticComplexityAnalyzer {
   constructor(name: string) {
@@ -9,16 +15,13 @@ export default class CyclomaticComplexityForSourceCode extends CyclomaticComplex
       visitorFactory: new TopLevelVisitorFactory<CyclomaticComplexityAnalyzer>(
         1,
         {
-          createFunctionVisitor: (name, scope) =>
-            new CyclomaticComplexityForNormalNode(name, scope),
-          createArrowFunctionVisitor: (name, scope) =>
-            new CyclomaticComplexityForNormalNode(name, scope),
-          createIIFEVisitor: (name, scope) =>
-            new CyclomaticComplexityForNormalNode(name, scope),
-          createClassVisitor: (name, scope) =>
-            new CyclomaticComplexityForClass(name, scope),
-          createObjectLiteralExpressionVisitor: (name, scope) =>
-            new CyclomaticComplexityForNormalNode(name, scope),
+          createFunctionVisitor: createNormal,
+          createArrowFunctionVisitor: createNormal,
+          createIIFEVisitor: createNormal,
+          createObjectLiteralExpressionVisitor: createNormal,
+          createInterfaceDeclarationVisitor: createNormal,
+          createTypeAliasDeclarationVisitor: createNormal,
+          createClassVisitor,
         },
       ),
     });
