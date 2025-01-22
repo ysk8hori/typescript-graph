@@ -4,6 +4,14 @@ import type { AstVisitor, VisitProps } from '../util/AstVisitor';
 import type { Graph, Node, Relation } from './models';
 
 export class GraphAnalyzer implements AstVisitor {
+  static create(
+    sourceFile: ts.SourceFile,
+    tsconfig: ts.ParsedCommandLine,
+    system: ts.System,
+  ) {
+    return new GraphAnalyzer(sourceFile, tsconfig, system);
+  }
+
   constructor(
     sourceFile: ts.SourceFile,
     tsconfig: ts.ParsedCommandLine,
@@ -13,6 +21,7 @@ export class GraphAnalyzer implements AstVisitor {
     this.#tsconfig = tsconfig;
     this.#system = system;
   }
+
   readonly #sourceFile: ts.SourceFile;
   readonly #tsconfig: ts.ParsedCommandLine;
   readonly #system: ts.System;
