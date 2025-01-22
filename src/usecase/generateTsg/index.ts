@@ -56,7 +56,7 @@ export async function generateTsg(
   const fullGraph = pipe(
     traverser.traverse(
       anyPass([isExactMatchSomeIncludes, isNotMatchSomeExcludes]),
-      (...args) => new GraphAnalyzer(...args),
+      GraphAnalyzer.create,
     ),
     map(([analyzer]) => analyzer.generateGraph()),
     mergeGraph,
