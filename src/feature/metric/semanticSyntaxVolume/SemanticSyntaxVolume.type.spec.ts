@@ -18,6 +18,15 @@ describe.each([ts.ScriptKind.TS, ts.ScriptKind.TSX])(`%s`, scriptKind => {
       perspective: '型の定義',
       tests: [
         [
+          'interface A {a:boolean; b:number; c:string;}',
+          {
+            operandsTotal: 4,
+            operandsUnique: 4,
+            semanticSyntaxTotal: 7,
+            semanticSyntaxUnique: 5,
+          },
+        ],
+        [
           'type A = {a:boolean, b:number, c:string};',
           {
             operandsTotal: 4,

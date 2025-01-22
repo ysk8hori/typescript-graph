@@ -1,6 +1,13 @@
 // feature/metric の外からも参照される型を定義する
 
-export type MetricsScope = 'file' | 'function' | 'class' | 'method' | 'object';
+export type MetricsScope =
+  | 'file'
+  | 'function'
+  | 'class'
+  | 'method'
+  | 'object'
+  | 'type'
+  | 'interface';
 
 export type MetricsScoreState = 'critical' | 'alert' | 'normal';
 

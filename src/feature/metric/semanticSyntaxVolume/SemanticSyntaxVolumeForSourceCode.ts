@@ -17,6 +17,8 @@ export default class SemanticSyntaxVolumeForSourceCode extends SemanticSyntaxVol
         createArrowFunctionVisitor: createNormal,
         createIIFEVisitor: createNormal,
         createObjectLiteralExpressionVisitor: createNormal,
+        createInterfaceDeclarationVisitor: createNormal,
+        createTypeAliasDeclarationVisitor: createNormal,
         createClassVisitor,
       }),
     });

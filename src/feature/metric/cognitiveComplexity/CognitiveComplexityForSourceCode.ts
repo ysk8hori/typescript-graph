@@ -19,6 +19,8 @@ export default class CognitiveComplexityForSourceCode extends CognitiveComplexit
           createArrowFunctionVisitor: createNormal,
           createIIFEVisitor: createNormal,
           createObjectLiteralExpressionVisitor: createNormal,
+          createInterfaceDeclarationVisitor: createNormal,
+          createTypeAliasDeclarationVisitor: createNormal,
           createClassVisitor,
         },
       ),

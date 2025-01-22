@@ -68,6 +68,26 @@ export function isTopLevelObjectLiteralExpression(
   );
 }
 
+/** トップレベルに定義された TypeAlias かどうかを判定する */
+export function isTopLevelTypeAlias(
+  topLevelDepth: number,
+  currentDepth: number,
+  node: ts.Node,
+): node is ts.TypeAliasDeclaration {
+  // 0:SourceFile>1:TypeAliasDeclaration
+  return currentDepth === topLevelDepth && ts.isTypeAliasDeclaration(node);
+}
+
+/** トップレベルに定義された interface かどうかを判定する */
+export function isTopLevelInterface(
+  topLevelDepth: number,
+  currentDepth: number,
+  node: ts.Node,
+): node is ts.InterfaceDeclaration {
+  // 0:SourceFile>1:InterfaceDeclaration
+  return currentDepth === topLevelDepth && ts.isInterfaceDeclaration(node);
+}
+
 const ANONYMOUS_FUNCTION_NAME = 'anonymous function';
 
 export function getFunctionName(node: ts.FunctionDeclaration): string {
@@ -138,5 +158,23 @@ export function getObjectName(node: ts.ObjectLiteralExpression): string {
       .getChildren()
       .find(n => ts.isIdentifier(n))
       ?.getText(node.getSourceFile()) ?? 'anonymous object'
+  );
+}
+
+export function getTypeAliasName(node: ts.TypeAliasDeclaration): string {
+  return (
+    node
+      .getChildren()
+      .find(n => ts.isIdentifier(n))
+      ?.getText(node.getSourceFile()) ?? 'anonymous type'
+  );
+}
+
+export function getInterfaceName(node: ts.InterfaceDeclaration): string {
+  return (
+    node
+      .getChildren()
+      .find(n => ts.isIdentifier(n))
+      ?.getText(node.getSourceFile()) ?? 'anonymous interface'
   );
 }
