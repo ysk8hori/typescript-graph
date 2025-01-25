@@ -9,7 +9,7 @@ interface DirAndNodesTree {
   nodes: Node[];
   children: DirAndNodesTree[];
 }
-type Options = OptionValues & {
+type Options = Omit<OptionValues, 'watchMetrics'> & {
   rootDir: string;
 };
 
@@ -34,7 +34,7 @@ export function writeGraph(
 export function mermaidify(
   write: (arg: string) => void,
   graph: Graph,
-  options: Options,
+  options: Pick<Options, 'LR' | 'TB' | 'abstraction' | 'highlight'>,
 ) {
   // フローチャートの方向を指定
   if (options.LR) {
@@ -75,9 +75,10 @@ export function mermaidify(
   writeFileNodesWithSubgraph(write, dirAndNodesTree);
   writeRelations(write, graph);
 
-  if (options.mermaidLink) {
-    writeFileLink(write, dirAndNodesTree, options.rootDir);
-  }
+  // TODO: いつか復活させる
+  // if (options.mermaidLink) {
+  //   writeFileLink(write, dirAndNodesTree, options.rootDir);
+  // }
 }
 
 /**
@@ -274,29 +275,32 @@ function addGraph(
   write(`${_indent}end`);
   write('\n');
 }
-function writeFileLink(
-  write: (arg: string) => void,
-  trees: DirAndNodesTree[],
-  rootDir: string,
-) {
-  trees.forEach(tree => addLink(write, tree, rootDir));
-}
 
-function addLink(
-  write: (arg: string) => void,
-  tree: DirAndNodesTree,
-  rootDir: string,
-): void {
-  tree.nodes
-    .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
-    .forEach(node => {
-      write(
-        `${indent}click ${node.mermaidId} href "vscode://file/${path.join(
-          rootDir,
-          node.path,
-        )}" _blank`,
-      );
-      write('\n');
-    });
-  tree.children.forEach(child => addLink(write, child, rootDir));
-}
+// TODO: いつか復活させる
+// function writeFileLink(
+//   write: (arg: string) => void,
+//   trees: DirAndNodesTree[],
+//   rootDir: string,
+// ) {
+//   trees.forEach(tree => addLink(write, tree, rootDir));
+// }
+
+// TODO: いつか復活させる
+// function addLink(
+//   write: (arg: string) => void,
+//   tree: DirAndNodesTree,
+//   rootDir: string,
+// ): void {
+//   tree.nodes
+//     .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
+//     .forEach(node => {
+//       write(
+//         `${indent}click ${node.mermaidId} href "vscode://file/${path.join(
+//           rootDir,
+//           node.path,
+//         )}" _blank`,
+//       );
+//       write('\n');
+//     });
+//   tree.children.forEach(child => addLink(write, child, rootDir));
+// }
