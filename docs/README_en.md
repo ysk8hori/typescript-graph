@@ -74,7 +74,6 @@ npm install --global @ysk8hori/typescript-graph
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `-V, --version`           | Output the version number                                                                                                                                                                                                                                                                                               |
 | `--md <char>`             | Specify the name of the markdown file to be output. The default is typescript-graph.md.                                                                                                                                                                                                                                 |
-| `--mermaid-link`          | (experimental) Generates a link on a node to open the corresponding file in VSCode.                                                                                                                                                                                                                                     |
 | `-d, --dir <char>`        | Specifies the root directory of the TypeScript project to analyze. It reads and uses the tsconfig.json file found in this directory.                                                                                                                                                                                    |
 | `--tsconfig <char>`       | Specifies the path to the tsconfig file to use for analysis. If this option is provided, -d, --dir will be ignored.                                                                                                                                                                                                     |
 | `--include <char...>`     | Specify file paths or parts of file paths to include in the graph (relative to the tsconfig directory, without `./`).                                                                                                                                                                                                   |
@@ -502,15 +501,3 @@ The values in `()` represent the difference from when monitoring started. Improv
 | Maintainability Index | Higher           |
 | Cyclomatic Complexity | Lower            |
 | Cognitive Complexity  | Lower            |
-
-## Other Options
-
-### --mermaid-link
-
-Add a link to the Mermaid node to open it in VSCode; Mermaid will output a click event as follows
-
-```
-    click src/createGraph.ts href "vscode://file//your/path/typescript-graph/src/createGraph.ts" _blank
-```
-
-However, this does not work. The click event definition is correct, and the URL is correct, but it does not work in VSCode's Mermaid Preview. This is a feature I implemented in hopes that it will work someday🤣.
