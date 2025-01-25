@@ -74,7 +74,6 @@ npm install --global @ysk8hori/typescript-graph
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `-V, --version`           | バージョン番号を出力                                                                                                                                                                                                                                                       |
 | `--md <char>`             | 出力するMarkdownファイルの名前を指定します。デフォルトは typescript-graph.md です。                                                                                                                                                                                        |
-| `--mermaid-link`          | (experimental) ノードにリンクを生成し、そのファイルをVSCodeで開けるようにします。                                                                                                                                                                                          |
 | `-d, --dir <char>`        | 解析対象のTypeScriptプロジェクトのルートディレクトリを指定します。そこにある tsconfig.json を読み取り、解析します。                                                                                                                                                        |
 | `--tsconfig <char>`       | 解析に使用する tsconfig ファイルのパスを指定します。これが指定された場合、`-d, --dir` を無視します。                                                                                                                                                                       |
 | `--include <char...>`     | グラフに含めるファイルパスやその一部を指定します（tsconfig ディレクトリからの相対パスで、`./`は不要です）。                                                                                                                                                                |
@@ -505,15 +504,3 @@ tsg --watch-metrics
 | Maintainability Index | higher           |
 | Cyclomatic Complexity | lower            |
 | Cognitive Complexity  | lower            |
-
-## その他のオプション
-
-### --mermaid-link
-
-VSCode で開くために、Mermaid ノードにリンクを追加します。Mermaid は以下のようにクリックイベントを出力します。
-
-```
-    click src/createGraph.ts href "vscode://file//your/path/typescript-graph/src/createGraph.ts" _blank
-```
-
-しかし、これは動作しません。クリックイベントの定義は正しいし、URL も正しいのですが、VSCode のマーメイドプレビューでは動作しないのです。これは、いつか動作することを期待して実装した機能です 🤣
