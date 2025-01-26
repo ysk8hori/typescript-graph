@@ -16,6 +16,7 @@ export default [
     // eslint
     rules: {
       'import/order': 'error',
+      'import/no-unresolved': 'off',
     },
   },
   {
@@ -23,6 +24,10 @@ export default [
     rules: {
       '@typescript-eslint/no-invalid-void-type': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { args: 'all', argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
     },
   },
 ];
