@@ -1,9 +1,6 @@
 import { createWriteStream } from 'fs';
-import type {
-  measureInstability} from '../../feature/graph/instability';
-import {
-  writeCouplingData,
-} from '../../feature/graph/instability';
+import type { measureInstability } from '../../feature/graph/instability';
+import { writeCouplingData } from '../../feature/graph/instability';
 import type { Graph } from '../../feature/graph/models';
 import { writeGraph } from '../../feature/mermaid/mermaidify';
 import type { CodeMetrics } from '../../feature/metric/metricsModels';

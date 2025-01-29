@@ -73,5 +73,6 @@ if (opt.watchMetrics) {
   watchMetrics(opt);
 } else {
   const executedScript = `tsg ${process.argv.slice(2).join(' ')}`;
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   generateTsg({ ...opt, executedScript });
 }
