@@ -1,11 +1,5 @@
-import type {
-  Graph,
-  Node} from './models';
-import {
-  getUniqueNodes,
-  getUniqueRelations,
-  isSameNode,
-} from './models';
+import type { Graph, Node } from './models';
+import { getUniqueNodes, getUniqueRelations, isSameNode } from './models';
 import { extractUniqueNodes } from './utils';
 
 /** word に該当するか */

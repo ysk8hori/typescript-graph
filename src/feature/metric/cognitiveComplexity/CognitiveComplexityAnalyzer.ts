@@ -1,18 +1,15 @@
 import * as ts from 'typescript';
 import { allPass, anyPass, isNot } from 'remeda';
 import type { Leave } from '../../util/AstVisitor';
-import type {
-  TopLevelMatcher} from '../../util/astUtils';
+import type { TopLevelMatcher } from '../../util/astUtils';
 import {
   isTopLevelArrowFunction,
   isTopLevelClass,
   isTopLevelFunction,
   isTopLevelIIFE,
-  isTopLevelObjectLiteralExpression
+  isTopLevelObjectLiteralExpression,
 } from '../../util/astUtils';
-import type {
-  AnalyzeProps,
-} from '../HierarchicalMetricsAnalyzer';
+import type { AnalyzeProps } from '../HierarchicalMetricsAnalyzer';
 import HierarchicalMetricsAnalyzer from '../HierarchicalMetricsAnalyzer';
 import type { Score } from './CognitiveComplexityMetrics';
 

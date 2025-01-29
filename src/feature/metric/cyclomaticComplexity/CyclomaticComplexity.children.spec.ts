@@ -2,11 +2,8 @@ import { test, expect } from 'vitest';
 import * as ts from 'typescript';
 import AstLogger from '../../util/AstLogger';
 import AstTraverser from '../../util/AstTraverser';
-import type {
-  CyclomaticComplexityMetrics} from '.';
-import {
-  createCyclomaticComplexityAnalyzer,
-} from '.';
+import type { CyclomaticComplexityMetrics } from '.';
+import { createCyclomaticComplexityAnalyzer } from '.';
 
 interface OperatorTest {
   perspective: string;

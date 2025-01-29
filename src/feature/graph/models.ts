@@ -23,8 +23,13 @@ export interface RelationOfRenameTo {
   to: Node;
 }
 export type Relation = RelationOfDependsOn | RelationOfRenameTo;
-export interface Graph { nodes: Node[]; relations: Relation[] }
-export interface Meta { rootDir: string }
+export interface Graph {
+  nodes: Node[];
+  relations: Relation[];
+}
+export interface Meta {
+  rootDir: string;
+}
 
 export function isSameNode(a: Node, b: Node): boolean {
   return a.path === b.path;
