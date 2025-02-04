@@ -1,5 +1,6 @@
 import type { OptionValues } from '../../setting/model';
 import type ProjectTraverser from '../util/ProjectTraverser';
+import type { Tree } from '../../utils/Tree';
 import type { RawMetrics } from './functions/convertRawToCodeMetrics';
 import { convertRawToCodeMetrics } from './functions/convertRawToCodeMetrics';
 import type { CodeMetrics } from './metricsModels';
@@ -11,7 +12,7 @@ export function calculateCodeMetrics(
   commandOptions: Pick<OptionValues, 'metrics'>,
   traverser: ProjectTraverser,
   filter: (source: string) => boolean,
-): CodeMetrics[] {
+): Tree<CodeMetrics>[] {
   if (!commandOptions.metrics) return [];
   return traverser
     .traverse(
