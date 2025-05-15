@@ -74,7 +74,7 @@
     "eslint-plugin-import": "2.31.0",
     "globals": "16.0.0",
     "husky": "9.1.7",
-    "lint-staged": "15.4.0",
+    "lint-staged": "16.0.0",
     "prettier": "3.4.2",
     "semantic-release": "24.2.1",
     "tsx": "4.19.2",
