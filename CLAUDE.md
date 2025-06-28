@@ -1,107 +1,87 @@
-# AI向け構造化データ出力機能の実装 ✅ 完了
+# Claude Code 開発ガイドライン
 
-## 目的
-TypeScript Graphを AI により使いやすくするため、JSON 形式での構造化データ出力機能を追加する。
+このドキュメントは、Claude Code を使った効率的なソフトウェア開発のワークフローをまとめたものです。
 
-## 実装方針
+## 📋 開発フロー
 
-### 1. 出力方式 ✅
-- **コマンドライン出力（stdout）** を採用
-- ファイル出力ではなく、パイプライン処理やリアルタイム処理に適した方式
-- 既存の markdown ファイル出力と併用可能
+### 1. 準備・計画
+- [ ] 既存コードベースの理解（README.md、アーキテクチャ調査）
+- [ ] 要件の明確化と TodoWrite でタスクリスト作成
+- [ ] ブランチ作成（`feature/`, `fix/`, `chore/`等）
+- [ ] 実装方針の決定（技術選択、既存パターンとの整合性）
+- [ ] 実装箇所の特定と影響範囲の調査
 
-### 2. 新しいオプション ✅
-- `--json`: JSON 形式でグラフデータと メトリクス を stdout に出力
-- ~~`--yaml`: YAML 形式でグラフデータと メトリクス を stdout に出力~~ (削除：JSON のみに絞った)
+### 2. 実装
+- [ ] 型定義から開始
+- [ ] t-wada 流 TDD で段階的実装 (`npm run test:watch`)
+- [ ] 既存 conventions に従い、型安全性を重視
+- [ ] 保守容易性を30以上維持 (`tsg --json --metrics`)
+- [ ] ビルド・テスト確認を継続的に実行
 
-### 3. 使用例 ✅
-```bash
-# JSON出力
-tsg --json
+### 3. 完了
+- [ ] integration テスト追加・実行 (`npm run test:integration`)
+- [ ] 実際の動作確認
+- [ ] CLAUDE.md 更新
+- [ ] git commit（詳細なメッセージ）
+- [ ] プルリクエスト作成
 
-# メトリクス付きJSON出力
-tsg --json --metrics
+## 🛠️ 技術方針
 
-# AIツールとの連携
-tsg --json | claude-analysis
-tsg --json | jq '.graph.nodes | length'
+### コード品質
+- **TDD**: 小さなタスクリストを作成し RED-GREEN-REFACTOR を回す
+- **DRY原則**: 可読性と疎結合を優先した適度な抽象化
+- **既存パターン踏襲**: プロジェクトの conventions を維持
+- **Clean stdout**: パイプライン処理に配慮した出力設計
 
-# ファイル保存したい場合
-tsg --json > analysis.json
+### ツール活用
+- **TodoWrite/TodoRead**: タスク管理の徹底
+- **Task tool**: 複雑な検索・調査作業
+- **Multiple tool calls**: 並列処理による効率化
+- **Grep, Glob, Read**: 既存コード調査の戦略的活用
 
-# 既存機能との併用
-tsg --json --md graph.md  # JSON出力 + Markdownファイル生成
+## 📝 品質基準
+
+### 実装品質
+- [ ] TypeScript エラーなし
+- [ ] 既存テスト通過
+- [ ] 新機能テストカバー
+- [ ] パフォーマンス影響なし
+
+### ドキュメント品質
+- [ ] CLAUDE.md が最新
+- [ ] コミットメッセージが詳細
+- [ ] PR説明が包括的
+
+### コミットメッセージ形式
+```
+feat: 簡潔で明確なタイトル
+
+詳細な説明：
+- 何を実装したか
+- なぜその実装を選んだか
+- どのような影響があるか
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-### 4. 出力データ構造 ✅
-```typescript
-interface StructuredOutput {
-  metadata: {
-    command: string;
-    timestamp: string;
-    version: string;
-  };
-  graph: {
-    nodes: Node[];
-    relations: Relation[];
-  };
-  metrics?: CodeMetrics[];  // --metrics オプション時のみ
-  instability?: InstabilityData[];  // --measure-instability オプション時のみ
-}
-```
+---
 
-## 実装箇所
+## 今回の学び（2025-06-28）
 
-### 1. CLI オプション追加 ✅
-- **ファイル**: `src/cli/entry.ts`
-- **追加**: `--json` オプション
+### 実装: AI向けJSON出力機能
+- **要件**: TypeScript GraphにAI連携用JSON出力機能を追加
+- **成果**: `--json`オプションによる構造化データ出力
+- **学習ポイント**:
+  - stdout汚染防止の重要性（console.log削除）
+  - 既存パターンとの整合性（CLI設計、出力方式）
+  - 包括的テストの価値（integration test 4シナリオ）
+  - DRY原則適用（重複関数呼び出し解消）
 
-### 2. 型定義更新 ✅
-- **ファイル**: `src/setting/model.ts`
-- **追加**: `OptionValues` インターフェースに `json?` フィールド
+### プロセス改善
+- **TodoWrite活用**: 7タスクの段階的管理
+- **Tool並列実行**: 効率的な情報収集
+- **段階的実装**: 小さなステップでの確実な進歩
+- **継続的テスト**: 変更の度の動作確認
 
-### 3. 出力処理実装 ✅
-- **ファイル**: `src/usecase/generateTsg/writeStructuredData.ts` (新規作成)
-- **機能**: JSON 形式での stdout 出力
-
-### 4. メイン処理統合 ✅
-- **ファイル**: `src/usecase/generateTsg/index.ts`
-- **機能**: 既存の Markdown 出力処理と構造化データ出力の統合
-
-## 技術的詳細
-
-### JSON出力実装 ✅
-- `JSON.stringify()` を使用してデータをシリアライズ
-- `console.log()` で stdout に出力
-
-### データ変換 ✅
-- 既存の `Graph` データと `CodeMetrics` データを活用
-- AI が解析しやすい構造に調整
-
-## テスト結果 ✅
-1. ✅ 基本的な JSON 出力動作確認
-2. ✅ 既存機能（--md）との併用テスト
-3. ✅ メトリクス付きJSON出力テスト
-4. ✅ パイプライン処理テスト（jq との連携確認）
-
-## 最終的な実装内容
-- `--json` オプションによる構造化データのstdout出力
-- メタデータ（コマンド、タイムスタンプ、バージョン）の自動付与
-- メトリクスと不安定性データの条件付き出力
-- 既存のMarkdown出力との併用サポート
-- AIツールとのパイプライン処理対応
-
-## 使用可能なコマンド例
-```bash
-# 基本JSON出力
-node dist/src/cli/entry.js --json src/cli
-
-# メトリクス付きJSON出力
-node dist/src/cli/entry.js --json --metrics src/cli
-
-# JSON出力とMarkdownファイル生成の併用
-node dist/src/cli/entry.js --json --md analysis.md src/cli
-
-# AIツールとの連携例
-node dist/src/cli/entry.js --json src/cli | jq '.graph.nodes | length'
-```
+このワークフローを他プロジェクトでも適用し、継続的に改善していく。
