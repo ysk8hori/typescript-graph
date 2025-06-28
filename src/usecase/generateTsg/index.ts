@@ -13,6 +13,7 @@ import { bind_refineGraph } from '../../feature/graph/refineGraph';
 import { calculateCodeMetrics } from '../../feature/metric/calculateCodeMetrics';
 import { setupVueEnvironment } from '../../utils/vue-util';
 import { writeMarkdownFile } from './writeMarkdownFile';
+import { writeStructuredData } from './writeStructuredData';
 
 /** word に該当するか */
 const bindMatchFunc = (word: string) => (filePath: string) =>
@@ -76,23 +77,27 @@ export async function generateTsg(
     fullGraph,
   );
 
-  await writeMarkdownFile(
-    graph,
-    {
-      ...commandOptions,
-      rootDir: tsconfig.options.rootDir,
-    },
-    couplingData,
-    metrics,
-  );
+  const options = {
+    ...commandOptions,
+    rootDir: tsconfig.options.rootDir,
+  };
+
+  // Output structured data if requested
+  if (commandOptions.json) {
+    writeStructuredData(graph, options, couplingData, metrics);
+  }
+
+  // Write markdown file based on conditions
+  const shouldWriteMarkdown = !commandOptions.json || commandOptions.md;
+  if (shouldWriteMarkdown) {
+    await writeMarkdownFile(graph, options, couplingData, metrics);
+  }
 }
 
 function getCouplingData(commandOptions: OptionValues, fullGraph: Graph) {
   let couplingData: ReturnType<typeof measureInstability> = [];
   if (commandOptions.measureInstability) {
-    console.time('coupling');
     couplingData = measureInstability(fullGraph);
-    console.timeEnd('coupling');
   }
   return couplingData;
 }

@@ -61,7 +61,8 @@ program
     '--config-file',
     'Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.',
   )
-  .option('--vue', '(experimental) Enable Vue.js support');
+  .option('--vue', '(experimental) Enable Vue.js support')
+  .option('--json', 'Output structured data in JSON format to stdout');
 program.parse();
 
 const opt = program.opts<OptionValues>();
