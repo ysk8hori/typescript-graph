@@ -13,8 +13,6 @@ import { bind_refineGraph } from '../../feature/graph/refineGraph';
 import { calculateCodeMetrics } from '../../feature/metric/calculateCodeMetrics';
 import { setupVueEnvironment } from '../../utils/vue-util';
 import { writeMarkdownFile } from './writeMarkdownFile';
-import { writeStructuredData } from './writeStructuredData';
-import { writeMermaidData } from './writeMermaidData';
 import { writeForAiData } from './writeForAiData';
 
 /** word に該当するか */
@@ -91,11 +89,7 @@ export async function generateTsg(
   };
 
   // Output data based on format option
-  if (commandOptions.json) {
-    writeStructuredData(graph, options, couplingData, metrics);
-  } else if (commandOptions.mermaid) {
-    writeMermaidData(graph, options);
-  } else if (commandOptions.forAi) {
+  if (commandOptions.forAi) {
     writeForAiData(graph, options, metrics);
   } else {
     // Default: write markdown file
@@ -103,7 +97,7 @@ export async function generateTsg(
   }
 
   // Write markdown file when explicitly requested with --md option
-  if (commandOptions.md && (commandOptions.json || commandOptions.mermaid || commandOptions.forAi)) {
+  if (commandOptions.md && commandOptions.forAi) {
     await writeMarkdownFile(graph, options, couplingData, metrics);
   }
 }

@@ -14,7 +14,5 @@ export interface OptionValues {
   vue?: boolean;
   metrics?: boolean;
   watchMetrics: boolean | string[];
-  json?: boolean;
-  mermaid?: boolean;
   forAi?: boolean;
 }

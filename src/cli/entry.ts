@@ -62,8 +62,6 @@ program
     'Specify the relative path to the config file (from cwd or specified by -d, --dir). Default is .tsgrc.json.',
   )
   .option('--vue', '(experimental) Enable Vue.js support')
-  .option('--json', 'Output structured data in JSON format to stdout')
-  .option('--mermaid', 'Output Mermaid diagram syntax to stdout')
   .option('--for-ai', 'Output both dependency graph (Mermaid) and code metrics (JSON) for AI analysis');
 program.parse();
 
