@@ -89,6 +89,7 @@ npm install --global @ysk8hori/typescript-graph
 | `--vue` (experimental)    | `.vue` files are also included in the analysis. A temporary working directory is created using Node.js's `fs.mkdtempSync`, where all files targeted by `tsc` as well as `.vue` files are copied for processing. `.vue` files are renamed to `.vue.ts` unless a file with the same name already exists in the directory. |
 | `--json`                  | Output structured data in JSON format to stdout instead of generating a markdown file.                                                                                                                                                                                                                                   |
 | `--mermaid`               | Output Mermaid diagram syntax to stdout instead of generating a markdown file.                                                                                                                                                                                                                                           |
+| `--for-ai`                | Output both dependency graph (Mermaid) and code metrics (JSON) for AI analysis.                                                                                                                                                                                                                                        |
 | `-h, --help`              | Display help for the command.                                                                                                                                                                                                                                                                                           |
 
 ## usage
@@ -503,3 +504,59 @@ The values in `()` represent the difference from when monitoring started. Improv
 | Maintainability Index | Higher           |
 | Cyclomatic Complexity | Lower            |
 | Cognitive Complexity  | Lower            |
+
+## AI Integration: Machine-Optimized Code Analysis
+
+The `--for-ai` option helps AI agents understand your code architecture and detect complexity issues effectively.
+
+### `--for-ai` Option
+
+The `--for-ai` option combines the best of both worlds: visual dependency understanding and quantitative code analysis.
+
+```bash
+tsg --for-ai
+```
+
+This outputs two sections:
+
+1. **Dependency Graph (Mermaid)**: Visual representation for understanding architectural patterns and identifying circular dependencies
+2. **Code Metrics (JSON)**: Quantitative data focusing on the three most important metrics for AI analysis
+
+**Output format:**
+```
+=== DEPENDENCY GRAPH ===
+flowchart
+    [dependency relationships in Mermaid syntax]
+
+=== CODE METRICS ===
+{
+  "metadata": {...},
+  "metrics": [
+    {
+      "filePath": "src/utils.ts",
+      "maintainabilityIndex": 95.75,
+      "cyclomaticComplexity": 1,
+      "cognitiveComplexity": 0
+    }
+  ]
+}
+```
+
+### Why This Format?
+
+- **Mermaid for dependencies**: AI agents can quickly identify circular references, hub nodes, and architectural patterns visually
+- **JSON for metrics**: Machine-readable format perfect for automated analysis and threshold checking
+- **Focused metrics**: Only the three most relevant indicators (Maintainability Index, Cyclomatic Complexity, Cognitive Complexity)
+
+### Best Practices for AI Collaboration
+
+```bash
+# Analyze specific module for AI refactoring suggestions
+tsg src/components --for-ai --exclude test
+
+# Generate architectural overview for AI documentation
+tsg --for-ai --abstraction node_modules --exclude test stories
+
+# Focus on problematic areas
+tsg --for-ai --highlight problematic-file.ts --exclude utils
+```

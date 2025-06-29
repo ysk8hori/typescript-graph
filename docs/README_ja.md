@@ -89,6 +89,7 @@ npm install --global @ysk8hori/typescript-graph
 | `--vue` (experimental)    | `.vue` ファイルも対象とします。Node.js の `fs.mkdtempSync` によって作業ディレクトリを作成し、そこへ tsc 対象となるファイルと `.vue` ファイルをコピーして解析します。`.vue` ファイルは `.vue.ts` へとリネームしますが、すでにそのファイルが存在する場合はリネームしません。 |
 | `--json`                  | Markdownファイルの代わりに、構造化されたJSONデータを標準出力に出力します。                                                                                                                                                                                                 |
 | `--mermaid`               | Markdownファイルの代わりに、Mermaid図の構文を標準出力に出力します。                                                                                                                                                                                                        |
+| `--for-ai`                | AI分析用に依存関係グラフ（Mermaid）とコードメトリクス（JSON）の両方を出力します。                                                                                                                                                                                            |
 | `-h, --help`              | コマンドのヘルプを表示します。                                                                                                                                                                                                                                             |
 
 ## 使い方
@@ -506,3 +507,59 @@ tsg --watch-metrics
 | Maintainability Index | higher           |
 | Cyclomatic Complexity | lower            |
 | Cognitive Complexity  | lower            |
+
+## AI統合: 機械最適化されたコード分析
+
+`--for-ai` オプションは、AI エージェントがコードアーキテクチャを理解し、複雑性の問題を効果的に検出するのに役立ちます。
+
+### `--for-ai` オプション
+
+`--for-ai` オプションは視覚的な依存関係理解と定量的なコード分析の両方の利点を組み合わせます。
+
+```bash
+tsg --for-ai
+```
+
+このコマンドは2つのセクションを出力します：
+
+1. **依存関係グラフ（Mermaid）**: アーキテクチャパターンの理解と循環依存の特定のための視覚的表現
+2. **コードメトリクス（JSON）**: AI分析に最も重要な3つのメトリクスに焦点を当てた定量的データ
+
+**出力形式:**
+```
+=== DEPENDENCY GRAPH ===
+flowchart
+    [Mermaid構文による依存関係]
+
+=== CODE METRICS ===
+{
+  "metadata": {...},
+  "metrics": [
+    {
+      "filePath": "src/utils.ts",
+      "maintainabilityIndex": 95.75,
+      "cyclomaticComplexity": 1,
+      "cognitiveComplexity": 0
+    }
+  ]
+}
+```
+
+### この形式を選ぶ理由
+
+- **依存関係にはMermaid**: AIエージェントが循環参照、ハブノード、アーキテクチャパターンを視覚的に素早く特定可能
+- **メトリクスにはJSON**: 自動化された分析と閾値チェックに最適な機械可読形式
+- **重要メトリクスに特化**: 最も関連性の高い3つの指標のみ（保守性指数、サイクロマティック複雑度、認知的複雑度）
+
+### AI連携のベストプラクティス
+
+```bash
+# AIリファクタリング提案のための特定モジュール分析
+tsg src/components --for-ai --exclude test
+
+# AIドキュメント生成のためのアーキテクチャ概要
+tsg --for-ai --abstraction node_modules --exclude test stories
+
+# 問題領域への集中
+tsg --for-ai --highlight problematic-file.ts --exclude utils
+```

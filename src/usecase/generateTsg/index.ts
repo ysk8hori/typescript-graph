@@ -15,6 +15,7 @@ import { setupVueEnvironment } from '../../utils/vue-util';
 import { writeMarkdownFile } from './writeMarkdownFile';
 import { writeStructuredData } from './writeStructuredData';
 import { writeMermaidData } from './writeMermaidData';
+import { writeForAiData } from './writeForAiData';
 
 /** word に該当するか */
 const bindMatchFunc = (word: string) => (filePath: string) =>
@@ -67,8 +68,14 @@ export async function generateTsg(
   const graph = renameGraph
     ? renameGraph(refineGraph(fullGraph))
     : refineGraph(fullGraph);
+  
+  // Enable metrics automatically for --for-ai option
+  const effectiveOptions = commandOptions.forAi 
+    ? { ...commandOptions, metrics: true }
+    : commandOptions;
+    
   const metrics: CodeMetrics[] = calculateCodeMetrics(
-    commandOptions,
+    effectiveOptions,
     traverser,
     allPass([isMatchSomeIncludes, isNotMatchSomeExcludes]),
   );
@@ -88,13 +95,15 @@ export async function generateTsg(
     writeStructuredData(graph, options, couplingData, metrics);
   } else if (commandOptions.mermaid) {
     writeMermaidData(graph, options);
+  } else if (commandOptions.forAi) {
+    writeForAiData(graph, options, metrics);
   } else {
     // Default: write markdown file
     await writeMarkdownFile(graph, options, couplingData, metrics);
   }
 
   // Write markdown file when explicitly requested with --md option
-  if (commandOptions.md && (commandOptions.json || commandOptions.mermaid)) {
+  if (commandOptions.md && (commandOptions.json || commandOptions.mermaid || commandOptions.forAi)) {
     await writeMarkdownFile(graph, options, couplingData, metrics);
   }
 }

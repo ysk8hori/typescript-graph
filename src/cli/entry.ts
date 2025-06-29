@@ -63,7 +63,8 @@ program
   )
   .option('--vue', '(experimental) Enable Vue.js support')
   .option('--json', 'Output structured data in JSON format to stdout')
-  .option('--mermaid', 'Output Mermaid diagram syntax to stdout');
+  .option('--mermaid', 'Output Mermaid diagram syntax to stdout')
+  .option('--for-ai', 'Output both dependency graph (Mermaid) and code metrics (JSON) for AI analysis');
 program.parse();
 
 const opt = program.opts<OptionValues>();
