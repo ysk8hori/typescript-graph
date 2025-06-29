@@ -44,6 +44,24 @@
 - **Multiple tool calls**: 並列処理による効率化
 - **Grep, Glob, Read**: 既存コード調査の戦略的活用
 
+## 📖 ドキュメント構造
+
+### ドキュメント階層
+
+- **README.md**: ベースとなるドキュメント（英語）
+- **docs/README_en.md**: README.mdのコピー
+- **docs/README_ja.md**: README.mdの日本語訳
+
+### 更新手順
+
+1. README.mdを更新
+2. docs/README_en.mdに同期
+3. docs/README_ja.mdを日本語翻訳で更新
+
+### 留意点
+
+- **画像パス**: README.mdでは`docs/img/*`、docs内では`img/*`
+
 ## 📝 品質基準
 
 ### 実装品質
