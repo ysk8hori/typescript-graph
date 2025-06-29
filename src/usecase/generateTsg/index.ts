@@ -14,6 +14,7 @@ import { calculateCodeMetrics } from '../../feature/metric/calculateCodeMetrics'
 import { setupVueEnvironment } from '../../utils/vue-util';
 import { writeMarkdownFile } from './writeMarkdownFile';
 import { writeStructuredData } from './writeStructuredData';
+import { writeMermaidData } from './writeMermaidData';
 
 /** word に該当するか */
 const bindMatchFunc = (word: string) => (filePath: string) =>
@@ -82,14 +83,18 @@ export async function generateTsg(
     rootDir: tsconfig.options.rootDir,
   };
 
-  // Output structured data if requested
+  // Output data based on format option
   if (commandOptions.json) {
     writeStructuredData(graph, options, couplingData, metrics);
+  } else if (commandOptions.mermaid) {
+    writeMermaidData(graph, options);
+  } else {
+    // Default: write markdown file
+    await writeMarkdownFile(graph, options, couplingData, metrics);
   }
 
-  // Write markdown file based on conditions
-  const shouldWriteMarkdown = !commandOptions.json || commandOptions.md;
-  if (shouldWriteMarkdown) {
+  // Write markdown file when explicitly requested with --md option
+  if (commandOptions.md && (commandOptions.json || commandOptions.mermaid)) {
     await writeMarkdownFile(graph, options, couplingData, metrics);
   }
 }

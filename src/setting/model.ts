@@ -15,4 +15,5 @@ export interface OptionValues {
   metrics?: boolean;
   watchMetrics: boolean | string[];
   json?: boolean;
+  mermaid?: boolean;
 }

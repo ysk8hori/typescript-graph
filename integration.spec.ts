@@ -543,3 +543,25 @@ test('run:sample:json-with-instability', async () => {
     expect(firstInstability).toHaveProperty('efferentCoupling');
   }
 });
+
+test('run:sample:mermaid-output', async () => {
+  const result = await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --mermaid`;
+  
+  const mermaidOutput = result.stdout;
+  
+  // Test basic Mermaid structure
+  expect(mermaidOutput).toContain('flowchart');
+  expect(mermaidOutput).toContain('subgraph');
+  expect(mermaidOutput).toContain('-->');
+  
+  // Test that it contains expected nodes
+  expect(mermaidOutput).toContain('src/includeFiles/c.ts');
+  expect(mermaidOutput).toContain('src/config.ts');
+  
+  // Test that it contains expected relationships
+  expect(mermaidOutput).toContain('src/config.ts-->src/includeFiles/c.ts');
+  
+  // Ensure it doesn't contain markdown wrapper
+  expect(mermaidOutput).not.toContain('```mermaid');
+  expect(mermaidOutput).not.toContain('```');
+});
