@@ -461,3 +461,39 @@ test('run:sample:highlight', async () => {
     "
   `);
 });
+
+
+test('run:sample:stdout-output', async () => {
+  const result = await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --stdout`;
+  
+  const output = result.stdout;
+  
+  // Test section headers
+  expect(output).toContain('=== DEPENDENCY GRAPH ===');
+  expect(output).toContain('=== CODE METRICS ===');
+  
+  // Test dependency graph section contains Mermaid
+  expect(output).toContain('flowchart');
+  expect(output).toContain('subgraph');
+  expect(output).toContain('-->');
+  expect(output).toContain('src/includeFiles/c.ts');
+  expect(output).toContain('src/config.ts');
+  expect(output).toContain('src/config.ts-->src/includeFiles/c.ts');
+  
+  // Test metrics section contains JSON
+  expect(output).toContain('"metadata"');
+  expect(output).toContain('"metrics"');
+  expect(output).toContain('"filePath"');
+  expect(output).toContain('"maintainabilityIndex"');
+  expect(output).toContain('"cyclomaticComplexity"');
+  expect(output).toContain('"cognitiveComplexity"');
+  
+  // Test that metrics contains expected files
+  expect(output).toContain('"filePath": "src/config.ts"');
+  expect(output).toContain('"filePath": "src/includeFiles/c.ts"');
+  
+  // Ensure proper JSON structure (no markdown wrappers)
+  expect(output).not.toContain('```mermaid');
+  expect(output).not.toContain('```json');
+  expect(output).not.toContain('```');
+});

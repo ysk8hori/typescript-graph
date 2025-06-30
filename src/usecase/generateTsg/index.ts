@@ -13,6 +13,7 @@ import { bind_refineGraph } from '../../feature/graph/refineGraph';
 import { calculateCodeMetrics } from '../../feature/metric/calculateCodeMetrics';
 import { setupVueEnvironment } from '../../utils/vue-util';
 import { writeMarkdownFile } from './writeMarkdownFile';
+import { writeForAiData } from './writeForAiData';
 
 /** word に該当するか */
 const bindMatchFunc = (word: string) => (filePath: string) =>
@@ -65,8 +66,14 @@ export async function generateTsg(
   const graph = renameGraph
     ? renameGraph(refineGraph(fullGraph))
     : refineGraph(fullGraph);
+  
+  // Enable metrics automatically for --stdout option
+  const effectiveOptions = commandOptions.stdout 
+    ? { ...commandOptions, metrics: true }
+    : commandOptions;
+    
   const metrics: CodeMetrics[] = calculateCodeMetrics(
-    commandOptions,
+    effectiveOptions,
     traverser,
     allPass([isMatchSomeIncludes, isNotMatchSomeExcludes]),
   );
@@ -76,23 +83,29 @@ export async function generateTsg(
     fullGraph,
   );
 
-  await writeMarkdownFile(
-    graph,
-    {
-      ...commandOptions,
-      rootDir: tsconfig.options.rootDir,
-    },
-    couplingData,
-    metrics,
-  );
+  const options = {
+    ...commandOptions,
+    rootDir: tsconfig.options.rootDir,
+  };
+
+  // Output data based on format option
+  if (commandOptions.stdout) {
+    writeForAiData(graph, options, metrics);
+  } else {
+    // Default: write markdown file
+    await writeMarkdownFile(graph, options, couplingData, metrics);
+  }
+
+  // Write markdown file when explicitly requested with --md option
+  if (commandOptions.md && commandOptions.stdout) {
+    await writeMarkdownFile(graph, options, couplingData, metrics);
+  }
 }
 
 function getCouplingData(commandOptions: OptionValues, fullGraph: Graph) {
   let couplingData: ReturnType<typeof measureInstability> = [];
   if (commandOptions.measureInstability) {
-    console.time('coupling');
     couplingData = measureInstability(fullGraph);
-    console.timeEnd('coupling');
   }
   return couplingData;
 }

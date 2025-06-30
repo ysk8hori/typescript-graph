@@ -34,8 +34,6 @@ export function writeMarkdownFile(
     writeCouplingData(write, couplingData);
     writeMetrics(write, metrics);
     ws.end();
-
-    console.log(filename);
   });
 }
 
