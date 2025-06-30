@@ -463,8 +463,8 @@ test('run:sample:highlight', async () => {
 });
 
 
-test('run:sample:for-ai-output', async () => {
-  const result = await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --for-ai`;
+test('run:sample:stdout-output', async () => {
+  const result = await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --stdout`;
   
   const output = result.stdout;
   

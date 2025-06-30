@@ -87,7 +87,7 @@ npm install --global @ysk8hori/typescript-graph
 | `-w, --watch-metrics`     | Monitors file changes in real-time and displays metrics such as Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity whenever changes occur. Ideal for continuous quality monitoring.                                                                                                                 |
 | `--config-file`           | Specify the relative path to the config file (from the current directory or as specified by -d, --dir). The default is .tsgrc.json.                                                                                                                                                                                     |
 | `--vue` (experimental)    | `.vue` files are also included in the analysis. A temporary working directory is created using Node.js's `fs.mkdtempSync`, where all files targeted by `tsc` as well as `.vue` files are copied for processing. `.vue` files are renamed to `.vue.ts` unless a file with the same name already exists in the directory. |
-| `--for-ai`                | Output both dependency graph (Mermaid) and code metrics (JSON) for AI analysis.                                                                                                                                                                                                                                        |
+| `--stdout`                | Output both dependency graph (Mermaid) and code metrics (JSON) to stdout.                                                                                                                                                                                                                                               |
 | `-h, --help`              | Display help for the command.                                                                                                                                                                                                                                                                                           |
 
 ## usage
@@ -503,24 +503,27 @@ The values in `()` represent the difference from when monitoring started. Improv
 | Cyclomatic Complexity | Lower            |
 | Cognitive Complexity  | Lower            |
 
-## AI Integration: Machine-Optimized Code Analysis
+## stdout Output: Structured Format for Tool and AI Integration
 
-The `--for-ai` option helps AI agents understand your code architecture and detect complexity issues effectively.
+The `--stdout` option outputs a **machine-parsable format** that combines architectural structure and code complexity metrics.
+It’s designed for **AI agents like Claude Code or GitHub Copilot Agent**, as well as **humans who prefer structured command-line output**.
 
-### `--for-ai` Option
-
-The `--for-ai` option combines the best of both worlds: visual dependency understanding and quantitative code analysis.
+### `--stdout` Option
 
 ```bash
-tsg --for-ai
+tsg --stdout
 ```
 
-This outputs two sections:
+This produces two clearly separated sections:
 
-1. **Dependency Graph (Mermaid)**: Visual representation for understanding architectural patterns and identifying circular dependencies
-2. **Code Metrics (JSON)**: Quantitative data focusing on the three most important metrics for AI analysis
+1. **Dependency Graph (Mermaid)**
+   A visual graph of file dependencies, useful for detecting circular references and architectural patterns.
 
-**Output format:**
+2. **Code Metrics (JSON)**
+   A machine-readable summary of key maintainability indicators for each file.
+
+**Example output:**
+
 ```
 === DEPENDENCY GRAPH ===
 flowchart
@@ -542,19 +545,43 @@ flowchart
 
 ### Why This Format?
 
-- **Mermaid for dependencies**: AI agents can quickly identify circular references, hub nodes, and architectural patterns visually
-- **JSON for metrics**: Machine-readable format perfect for automated analysis and threshold checking
-- **Focused metrics**: Only the three most relevant indicators (Maintainability Index, Cyclomatic Complexity, Cognitive Complexity)
+- **Human-friendly + machine-friendly**
+  Easily piped into LLM agents, static analyzers, or documentation tools. Humans can read it too.
 
-### Best Practices for AI Collaboration
+- **Mermaid for structure**
+  Enables visual recognition of circular dependencies, hub files, and architectural boundaries.
+
+- **JSON for metrics**
+  Clean structure for parsing, threshold checking, or automated prioritization.
+
+- **Focused indicators**
+  Only the three most relevant metrics:
+
+  - Maintainability Index
+  - Cyclomatic Complexity
+  - Cognitive Complexity
+
+### Best Practices for External Integration
 
 ```bash
-# Analyze specific module for AI refactoring suggestions
-tsg src/components --for-ai --exclude test
+# Target specific modules for AI refactoring
+tsg src/components --stdout --exclude test
 
-# Generate architectural overview for AI documentation
-tsg --for-ai --abstraction node_modules --exclude test stories
+# Generate an architectural map (excluding noise)
+tsg --stdout --abstraction node_modules --exclude test stories
 
-# Focus on problematic areas
-tsg --for-ai --highlight problematic-file.ts --exclude utils
+# Highlight known complex areas for review
+tsg --stdout --highlight problematic-file.ts --exclude utils
+```
+
+You can redirect the output for post-processing:
+
+```bash
+tsg --stdout > graph-and-metrics.txt
+```
+
+Or feed it directly into tools:
+
+```bash
+tsg --stdout | some-ai-agent --analyze
 ```

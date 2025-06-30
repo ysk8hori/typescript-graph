@@ -67,8 +67,8 @@ export async function generateTsg(
     ? renameGraph(refineGraph(fullGraph))
     : refineGraph(fullGraph);
   
-  // Enable metrics automatically for --for-ai option
-  const effectiveOptions = commandOptions.forAi 
+  // Enable metrics automatically for --stdout option
+  const effectiveOptions = commandOptions.stdout 
     ? { ...commandOptions, metrics: true }
     : commandOptions;
     
@@ -89,7 +89,7 @@ export async function generateTsg(
   };
 
   // Output data based on format option
-  if (commandOptions.forAi) {
+  if (commandOptions.stdout) {
     writeForAiData(graph, options, metrics);
   } else {
     // Default: write markdown file
@@ -97,7 +97,7 @@ export async function generateTsg(
   }
 
   // Write markdown file when explicitly requested with --md option
-  if (commandOptions.md && commandOptions.forAi) {
+  if (commandOptions.md && commandOptions.stdout) {
     await writeMarkdownFile(graph, options, couplingData, metrics);
   }
 }

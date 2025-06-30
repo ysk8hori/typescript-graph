@@ -87,7 +87,7 @@ npm install --global @ysk8hori/typescript-graph
 | `-w, --watch-metrics`     | ファイルの変更をリアルタイムで監視し、変更が発生するたびに Maintainability Index、Cyclomatic Complexity、Cognitive Complexity などのメトリクスを表示します。継続的な品質チェックに利用可能です。                                                                           |
 | `--config-file`           | 設定ファイルへの相対パスを指定します（カレントディレクトリまたは -d, --dir で指定された場所から）。デフォルトは .tsgrc.json です。                                                                                                                                         |
 | `--vue` (experimental)    | `.vue` ファイルも対象とします。Node.js の `fs.mkdtempSync` によって作業ディレクトリを作成し、そこへ tsc 対象となるファイルと `.vue` ファイルをコピーして解析します。`.vue` ファイルは `.vue.ts` へとリネームしますが、すでにそのファイルが存在する場合はリネームしません。 |
-| `--for-ai`                | AI分析用に依存関係グラフ（Mermaid）とコードメトリクス（JSON）の両方を出力します。                                                                                                                                                                                            |
+| `--stdout`                | 依存関係グラフ（Mermaid）とコードメトリクス（JSON）の両方を標準出力に出力します。                                                                                                                                                                                                  |
 | `-h, --help`              | コマンドのヘルプを表示します。                                                                                                                                                                                                                                             |
 
 ## 使い方
@@ -506,24 +506,27 @@ tsg --watch-metrics
 | Cyclomatic Complexity | lower            |
 | Cognitive Complexity  | lower            |
 
-## AI統合: 機械最適化されたコード分析
+## stdout出力: ツールとAI統合のための構造化フォーマット
 
-`--for-ai` オプションは、AI エージェントがコードアーキテクチャを理解し、複雑性の問題を効果的に検出するのに役立ちます。
+`--stdout` オプションは、アーキテクチャ構造とコードの複雑性メトリクスを組み合わせた**機械解析可能な形式**を出力します。
+**Claude CodeやGitHub Copilot AgentなどのAIエージェント**、および**構造化されたコマンドライン出力を好む人間**向けに設計されています。
 
-### `--for-ai` オプション
-
-`--for-ai` オプションは視覚的な依存関係理解と定量的なコード分析の両方の利点を組み合わせます。
+### `--stdout` オプション
 
 ```bash
-tsg --for-ai
+tsg --stdout
 ```
 
-このコマンドは2つのセクションを出力します：
+このコマンドは明確に分離された2つのセクションを生成します：
 
-1. **依存関係グラフ（Mermaid）**: アーキテクチャパターンの理解と循環依存の特定のための視覚的表現
-2. **コードメトリクス（JSON）**: AI分析に最も重要な3つのメトリクスに焦点を当てた定量的データ
+1. **依存関係グラフ（Mermaid）**
+   ファイル依存関係の視覚的グラフ。循環参照とアーキテクチャパターンの検出に有用です。
 
-**出力形式:**
+2. **コードメトリクス（JSON）**
+   各ファイルの主要な保守性指標の機械可読サマリー。
+
+**出力例:**
+
 ```
 === DEPENDENCY GRAPH ===
 flowchart
@@ -543,21 +546,45 @@ flowchart
 }
 ```
 
-### この形式を選ぶ理由
+### なぜこの形式なのか？
 
-- **依存関係にはMermaid**: AIエージェントが循環参照、ハブノード、アーキテクチャパターンを視覚的に素早く特定可能
-- **メトリクスにはJSON**: 自動化された分析と閾値チェックに最適な機械可読形式
-- **重要メトリクスに特化**: 最も関連性の高い3つの指標のみ（保守性指数、サイクロマティック複雑度、認知的複雑度）
+- **人間にも機械にもフレンドリー**
+  LLMエージェント、静的解析ツール、ドキュメント生成ツールに簡単にパイプできます。人間も読むことができます。
 
-### AI連携のベストプラクティス
+- **構造のためのMermaid**
+  循環依存、ハブファイル、アーキテクチャ境界の視覚的認識を可能にします。
+
+- **メトリクスのためのJSON**
+  解析、閾値チェック、自動優先順位付けのためのクリーンな構造。
+
+- **焦点を絞った指標**
+  最も関連性の高い3つのメトリクスのみ：
+
+  - 保守性指数
+  - サイクロマティック複雑度
+  - 認知的複雑度
+
+### 外部統合のベストプラクティス
 
 ```bash
-# AIリファクタリング提案のための特定モジュール分析
-tsg src/components --for-ai --exclude test
+# AIリファクタリング用の特定モジュールをターゲット
+tsg src/components --stdout --exclude test
 
-# AIドキュメント生成のためのアーキテクチャ概要
-tsg --for-ai --abstraction node_modules --exclude test stories
+# アーキテクチャマップを生成（ノイズを除く）
+tsg --stdout --abstraction node_modules --exclude test stories
 
-# 問題領域への集中
-tsg --for-ai --highlight problematic-file.ts --exclude utils
+# レビュー用の既知の複雑な領域をハイライト
+tsg --stdout --highlight problematic-file.ts --exclude utils
+```
+
+後処理のために出力をリダイレクトできます：
+
+```bash
+tsg --stdout > graph-and-metrics.txt
+```
+
+またはツールに直接フィードできます：
+
+```bash
+tsg --stdout | some-ai-agent --analyze
 ```
