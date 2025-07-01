@@ -1,4 +1,4 @@
-import type { Graph, Node } from './models';
+import type { Graph, Node, Relation } from './models';
 import {
   getUniqueNodes,
   getUniqueRelations,
@@ -30,43 +30,49 @@ export function updateChangeStatusFromDiff(base: Graph, head: Graph): void {
   const { nodes: baseNodes, relations: baseRelations } = base;
   const { nodes: headNodes, relations: headRelations } = head;
 
-  headNodes.forEach(current => {
-    for (const baseNode of baseNodes) {
-      if (!isSameNode(baseNode, current)) {
-        baseNode.changeStatus = 'deleted';
-        break;
-      }
+  updateNodeChangeStatus(baseNodes, headNodes);
+  updateRelationChangeStatus(baseRelations, headRelations);
+}
+
+function updateNodeChangeStatus(baseNodes: Node[], headNodes: Node[]): void {
+  // Mark nodes as deleted if they exist in base but not in head
+  baseNodes.forEach(baseNode => {
+    const existsInHead = headNodes.some(headNode => isSameNode(baseNode, headNode));
+    if (!existsInHead) {
+      baseNode.changeStatus = 'deleted';
     }
   });
 
-  baseNodes.forEach(current => {
-    for (const headNode of headNodes) {
-      if (!isSameNode(headNode, current)) {
-        headNode.changeStatus = 'created';
-        break;
-      }
+  // Mark nodes as created if they exist in head but not in base
+  headNodes.forEach(headNode => {
+    const existsInBase = baseNodes.some(baseNode => isSameNode(headNode, baseNode));
+    if (!existsInBase) {
+      headNode.changeStatus = 'created';
     }
   });
+}
 
-  headRelations.forEach(current => {
-    for (const baseRelation of baseRelations) {
-      if (
-        !isSameRelation(baseRelation, current) &&
-        baseRelation.kind === 'depends_on'
-      ) {
+function updateRelationChangeStatus(baseRelations: Relation[], headRelations: Relation[]): void {
+  // Mark relations as deleted if they exist in base but not in head
+  baseRelations.forEach(baseRelation => {
+    if (baseRelation.kind === 'depends_on') {
+      const existsInHead = headRelations.some(headRelation => 
+        isSameRelation(baseRelation, headRelation)
+      );
+      if (!existsInHead) {
         baseRelation.changeStatus = 'deleted';
       }
     }
   });
 
-  baseRelations.forEach(current => {
-    for (const headRelation of headRelations) {
-      if (
-        !isSameRelation(headRelation, current) &&
-        headRelation.kind === 'depends_on'
-      ) {
+  // Mark relations as created if they exist in head but not in base
+  headRelations.forEach(headRelation => {
+    if (headRelation.kind === 'depends_on') {
+      const existsInBase = baseRelations.some(baseRelation => 
+        isSameRelation(headRelation, baseRelation)
+      );
+      if (!existsInBase) {
         headRelation.changeStatus = 'created';
-        break;
       }
     }
   });

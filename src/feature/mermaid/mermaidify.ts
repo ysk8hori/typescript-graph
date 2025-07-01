@@ -1,5 +1,5 @@
 import path from 'path';
-import type { Graph, Node } from '../graph/models';
+import type { Graph, Node, Relation } from '../graph/models';
 import { getConfig } from '../../setting/config';
 import type { OptionValues } from '../../setting/model';
 
@@ -36,40 +36,8 @@ export function mermaidify(
   graph: Graph,
   options: Pick<Options, 'LR' | 'TB' | 'abstraction' | 'highlight'>,
 ) {
-  // フローチャートの方向を指定
-  if (options.LR) {
-    write(`flowchart LR\n`);
-  } else if (options.TB) {
-    write(`flowchart TB\n`);
-  } else {
-    write(`flowchart\n`);
-  }
-
-  // 抽象化フラグが立っている場合は、クラス定義を追加
-  if (options.abstraction)
-    write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999\n`);
-
-  // ハイライトフラグが立っている場合は、クラス定義を追加
-  if (options.highlight)
-    write(`${indent}classDef ${CLASSNAME_HIGHLIGHT} fill:yellow,color:black\n`);
-
-  // created のノードがある場合は、クラス定義を追加
-  if (graph.nodes.some(node => node.changeStatus === 'created'))
-    write(
-      `${indent}classDef ${CLASSNAME_CREATED} fill:cyan,stroke:#999,color:black\n`,
-    );
-
-  // modified のノードがある場合は、クラス定義を追加
-  if (graph.nodes.some(node => node.changeStatus === 'modified'))
-    write(
-      `${indent}classDef ${CLASSNAME_MODIFIED} fill:yellow,stroke:#999,color:black\n`,
-    );
-
-  // deleted のノードがある場合は、クラス定義を追加
-  if (graph.nodes.some(node => node.changeStatus === 'deleted'))
-    write(
-      `${indent}classDef ${CLASSNAME_DELETED} fill:dimgray,stroke:#999,color:black,stroke-dasharray: 4 4,stroke-width:2px;\n`,
-    );
+  writeFlowchartDirection(write, options);
+  writeClassDefinitions(write, graph, options);
 
   const dirAndNodesTree = createDirAndNodesTree(graph);
   writeFileNodesWithSubgraph(write, dirAndNodesTree);
@@ -85,98 +53,145 @@ export function mermaidify(
  * Graph からディレクトリツリーを再現した DirAndNodesTree の配列を生成する
  */
 function createDirAndNodesTree(graph: Graph): DirAndNodesTree[] {
-  function getDirectoryPath(filePath: string) {
-    const array = filePath.split('/');
-    if (array.includes('node_modules')) {
-      // node_modules より深いディレクトリ階層の情報は捨てる
-      // node_modules 内の node の name はパッケージ名のようなものになっているのでそれで良い
-      return 'node_modules';
-    } else if (array.length === 1) {
-      // トップレベルのファイルの場合
-      return undefined;
-    } else {
-      // 末尾のファイル名は不要
-      return path.join(...array.slice(0, array.length - 1));
-    }
+  const uniqueDirectories = getUniqueDirectories(graph.nodes);
+  const dirAndNodes = createDirAndNodesMapping(uniqueDirectories, graph.nodes);
+
+  return buildDirectoryTree(dirAndNodes);
+}
+
+function getDirectoryPath(filePath: string): string | undefined {
+  const pathSegments = filePath.split('/');
+
+  if (pathSegments.includes('node_modules')) {
+    return 'node_modules';
   }
 
-  const allDir = graph.nodes
+  if (pathSegments.length === 1) {
+    return undefined;
+  }
+
+  return path.join(...pathSegments.slice(0, -1));
+}
+
+function getUniqueDirectories(nodes: Node[]): string[] {
+  const allDirectories = nodes
     .map(({ path }) => getDirectoryPath(path))
-    .map(dirPath => {
-      if (!dirPath) return undefined;
-      const dirArray = dirPath.split('/');
-      return dirArray.reduce((prev, current) => {
-        const prevValue = prev.at(-1);
-        if (prevValue) {
-          prev.push(path.join(prevValue, current));
-        } else {
-          prev.push(current);
-        }
-        return prev;
-      }, new Array<string>());
-    })
-    .flat()
-    .reduce((pre, current) => {
-      if (!current) return pre;
-      // 重複除去
-      if (pre.some(filePath => filePath === current)) return pre;
-      pre.push(current);
-      return pre;
-    }, new Array<string>());
+    .filter((dir): dir is string => dir !== undefined)
+    .flatMap(dirPath => {
+      const segments = dirPath.split('/');
+      return segments.reduce<string[]>((acc, _segment, index) => {
+        const currentPath = segments.slice(0, index + 1).join('/');
+        acc.push(currentPath);
+        return acc;
+      }, []);
+    });
 
-  interface DirAndNodes {
-    currentDir: string;
-    dirHierarchy: string[];
-    nodes: Node[];
-  }
+  return [...new Set(allDirectories)];
+}
 
-  const dirAndNodes: DirAndNodes[] = allDir.map(currentDir => ({
+interface DirAndNodes {
+  currentDir: string;
+  dirHierarchy: string[];
+  nodes: Node[];
+}
+
+function createDirAndNodesMapping(
+  directories: string[],
+  nodes: Node[],
+): DirAndNodes[] {
+  return directories.map(currentDir => ({
     currentDir,
     dirHierarchy: currentDir.split('/'),
-    nodes: graph.nodes.filter(
-      node => getDirectoryPath(node.path) === currentDir,
-    ),
+    nodes: nodes.filter(node => getDirectoryPath(node.path) === currentDir),
   }));
+}
 
-  function isChild(parentDirHierarchy: string[], candidate: string[]) {
-    if (parentDirHierarchy.length !== candidate.length - 1) return false;
-    return parentDirHierarchy.every(
-      (tmpdirname, i) => tmpdirname === candidate[i],
+function isDirectChild(
+  parentHierarchy: string[],
+  candidateHierarchy: string[],
+): boolean {
+  return (
+    parentHierarchy.length === candidateHierarchy.length - 1 &&
+    parentHierarchy.every((segment, i) => segment === candidateHierarchy[i])
+  );
+}
+
+function buildDirectoryTree(dirAndNodes: DirAndNodes[]): DirAndNodesTree[] {
+  function buildRecursive(dirAndNode: DirAndNodes): DirAndNodesTree[] {
+    const { currentDir, nodes, dirHierarchy } = dirAndNode;
+    const children = dirAndNodes.filter(item =>
+      isDirectChild(dirHierarchy, item.dirHierarchy),
     );
-  }
 
-  function createDirAndNodesRecursive({
-    currentDir,
-    nodes,
-    dirHierarchy,
-  }: DirAndNodes): DirAndNodesTree[] {
-    if (
-      nodes.length === 0 &&
-      dirAndNodes.filter(item => isChild(dirHierarchy, item.dirHierarchy))
-        .length <= 1
-    ) {
-      return dirAndNodes
-        .filter(item => isChild(dirHierarchy, item.dirHierarchy))
-        .map(createDirAndNodesRecursive)
-        .flat();
+    if (nodes.length === 0 && children.length <= 1) {
+      return children.flatMap(buildRecursive);
     }
+
     return [
       {
         currentDir,
         nodes,
-        children: dirAndNodes
-          .filter(item => isChild(dirHierarchy, item.dirHierarchy))
-          .map(createDirAndNodesRecursive)
-          .flat(),
+        children: children.flatMap(buildRecursive),
       },
     ];
   }
 
-  const dirAndNodesTree = dirAndNodes
-    .filter(dirAndNode => dirAndNode.dirHierarchy.length === 1)
-    .map(createDirAndNodesRecursive)
-    .flat();
-  return dirAndNodesTree;
+  const rootDirectories = dirAndNodes.filter(
+    item => item.dirHierarchy.length === 1,
+  );
+  return rootDirectories.flatMap(buildRecursive);
+}
+
+function writeFlowchartDirection(
+  write: (arg: string) => void,
+  options: Pick<Options, 'LR' | 'TB'>,
+) {
+  if (options.LR) {
+    write(`flowchart LR\n`);
+  } else if (options.TB) {
+    write(`flowchart TB\n`);
+  } else {
+    write(`flowchart\n`);
+  }
+}
+
+function writeClassDefinitions(
+  write: (arg: string) => void,
+  graph: Graph,
+  options: Pick<Options, 'abstraction' | 'highlight'>,
+) {
+  if (options.abstraction) {
+    write(`${indent}classDef ${CLASSNAME_DIR} fill:#0000,stroke:#999\n`);
+  }
+
+  if (options.highlight) {
+    write(`${indent}classDef ${CLASSNAME_HIGHLIGHT} fill:yellow,color:black\n`);
+  }
+
+  const changeStatusClassDefs = [
+    {
+      status: 'created' as const,
+      className: CLASSNAME_CREATED,
+      style: 'fill:cyan,stroke:#999,color:black',
+    },
+    {
+      status: 'modified' as const,
+      className: CLASSNAME_MODIFIED,
+      style: 'fill:yellow,stroke:#999,color:black',
+    },
+    {
+      status: 'deleted' as const,
+      className: CLASSNAME_DELETED,
+      style:
+        'fill:dimgray,stroke:#999,color:black,stroke-dasharray: 4 4,stroke-width:2px;',
+    },
+  ];
+
+  changeStatusClassDefs.forEach(({ status, className, style }) => {
+    if (graph.nodes.some(node => node.changeStatus === status)) {
+      write(`${indent}classDef ${className} ${style}\n`);
+    }
+  });
 }
 
 function writeRelations(write: (arg: string) => void, graph: Graph) {
@@ -193,17 +208,22 @@ function writeRelations(write: (arg: string) => void, graph: Graph) {
       },
     }))
     .forEach(relation => {
-      if (relation.kind === 'rename_to') {
-        write(
-          `    ${relation.from.mermaidId}-.->|"rename to"|${relation.to.mermaidId}`,
-        );
-      } else if (relation.changeStatus === 'deleted') {
-        write(`    ${relation.from.mermaidId}-.->${relation.to.mermaidId}`);
-      } else {
-        write(`    ${relation.from.mermaidId}-->${relation.to.mermaidId}`);
-      }
+      const connectionStyle = getConnectionStyle(relation);
+      write(
+        `    ${relation.from.mermaidId}${connectionStyle}${relation.to.mermaidId}`,
+      );
       write('\n');
     });
+}
+
+function getConnectionStyle(relation: Relation): string {
+  if (relation.kind === 'rename_to') {
+    return `-.->|"rename to"|`;
+  } else if (relation.changeStatus === 'deleted') {
+    return `-.->`;
+  } else {
+    return `-->`;
+  }
 }
 
 export function fileNameToMermaidId(fileName: string): string {
@@ -230,77 +250,73 @@ function addGraph(
   indentNumber = 0,
   parent?: string,
 ) {
-  let _indent = indent;
-  for (let i = 0; i < indentNumber; i++) {
-    _indent = _indent + indent;
-  }
+  const currentIndent = indent.repeat(indentNumber + 1);
+  const displayName = parent
+    ? tree.currentDir.replace(parent, '')
+    : tree.currentDir;
+
+  writeSubgraphStart(write, currentIndent, tree.currentDir, displayName);
+  writeNodes(write, currentIndent, tree.nodes);
+  writeChildGraphs(write, tree, indentNumber);
+  writeSubgraphEnd(write, currentIndent);
+}
+
+function writeSubgraphStart(
+  write: (arg: string) => void,
+  currentIndent: string,
+  currentDir: string,
+  displayName: string,
+) {
   write(
-    `${_indent}subgraph ${fileNameToMermaidId(
-      tree.currentDir,
-    )}["${fileNameToMermaidName(
-      parent ? tree.currentDir.replace(parent, '') : tree.currentDir,
-    )}"]`,
+    `${currentIndent}subgraph ${fileNameToMermaidId(currentDir)}["${fileNameToMermaidName(displayName)}"]\n`,
   );
-  write('\n');
-  tree.nodes
+}
+
+function writeNodes(
+  write: (arg: string) => void,
+  currentIndent: string,
+  nodes: Node[],
+) {
+  nodes
     .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
     .forEach(node => {
-      const classString = (function () {
-        if (node.highlight) {
-          return `:::${CLASSNAME_HIGHLIGHT}`;
-        } else if (node.isDirectory) {
-          return `:::${CLASSNAME_DIR}`;
-        }
-        switch (node.changeStatus) {
-          case 'created':
-            return `:::${CLASSNAME_CREATED}`;
-          case 'modified':
-            return `:::${CLASSNAME_MODIFIED}`;
-          case 'deleted':
-            return `:::${CLASSNAME_DELETED}`;
-          default:
-            return '';
-        }
-      })();
+      const classString = getNodeClassString(node);
       write(
-        `${_indent}${indent}${node.mermaidId}["${fileNameToMermaidName(
-          node.name,
-        )}"]${classString}`,
+        `${currentIndent}${indent}${node.mermaidId}["${fileNameToMermaidName(node.name)}"]${classString}\n`,
       );
-      write('\n');
     });
+}
+
+function getNodeClassString(node: Node & { mermaidId: string }): string {
+  if (node.highlight) {
+    return `:::${CLASSNAME_HIGHLIGHT}`;
+  }
+
+  if (node.isDirectory) {
+    return `:::${CLASSNAME_DIR}`;
+  }
+
+  const statusClassMap = {
+    created: CLASSNAME_CREATED,
+    modified: CLASSNAME_MODIFIED,
+    deleted: CLASSNAME_DELETED,
+    not_modified: undefined,
+  } as const;
+
+  const className = statusClassMap[node.changeStatus];
+  return className ? `:::${className}` : '';
+}
+
+function writeChildGraphs(
+  write: (arg: string) => void,
+  tree: DirAndNodesTree,
+  indentNumber: number,
+) {
   tree.children.forEach(child =>
     addGraph(write, child, indentNumber + 1, tree.currentDir),
   );
-  write(`${_indent}end`);
-  write('\n');
 }
 
-// TODO: いつか復活させる
-// function writeFileLink(
-//   write: (arg: string) => void,
-//   trees: DirAndNodesTree[],
-//   rootDir: string,
-// ) {
-//   trees.forEach(tree => addLink(write, tree, rootDir));
-// }
-
-// TODO: いつか復活させる
-// function addLink(
-//   write: (arg: string) => void,
-//   tree: DirAndNodesTree,
-//   rootDir: string,
-// ): void {
-//   tree.nodes
-//     .map(node => ({ ...node, mermaidId: fileNameToMermaidId(node.path) }))
-//     .forEach(node => {
-//       write(
-//         `${indent}click ${node.mermaidId} href "vscode://file/${path.join(
-//           rootDir,
-//           node.path,
-//         )}" _blank`,
-//       );
-//       write('\n');
-//     });
-//   tree.children.forEach(child => addLink(write, child, rootDir));
-// }
+function writeSubgraphEnd(write: (arg: string) => void, currentIndent: string) {
+  write(`${currentIndent}end\n`);
+}
