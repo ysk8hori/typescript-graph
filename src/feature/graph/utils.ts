@@ -37,7 +37,9 @@ export function updateChangeStatusFromDiff(base: Graph, head: Graph): void {
 function updateNodeChangeStatus(baseNodes: Node[], headNodes: Node[]): void {
   // Mark nodes as deleted if they exist in base but not in head
   baseNodes.forEach(baseNode => {
-    const existsInHead = headNodes.some(headNode => isSameNode(baseNode, headNode));
+    const existsInHead = headNodes.some(headNode =>
+      isSameNode(baseNode, headNode),
+    );
     if (!existsInHead) {
       baseNode.changeStatus = 'deleted';
     }
@@ -45,19 +47,24 @@ function updateNodeChangeStatus(baseNodes: Node[], headNodes: Node[]): void {
 
   // Mark nodes as created if they exist in head but not in base
   headNodes.forEach(headNode => {
-    const existsInBase = baseNodes.some(baseNode => isSameNode(headNode, baseNode));
+    const existsInBase = baseNodes.some(baseNode =>
+      isSameNode(headNode, baseNode),
+    );
     if (!existsInBase) {
       headNode.changeStatus = 'created';
     }
   });
 }
 
-function updateRelationChangeStatus(baseRelations: Relation[], headRelations: Relation[]): void {
+function updateRelationChangeStatus(
+  baseRelations: Relation[],
+  headRelations: Relation[],
+): void {
   // Mark relations as deleted if they exist in base but not in head
   baseRelations.forEach(baseRelation => {
     if (baseRelation.kind === 'depends_on') {
-      const existsInHead = headRelations.some(headRelation => 
-        isSameRelation(baseRelation, headRelation)
+      const existsInHead = headRelations.some(headRelation =>
+        isSameRelation(baseRelation, headRelation),
       );
       if (!existsInHead) {
         baseRelation.changeStatus = 'deleted';
@@ -68,8 +75,8 @@ function updateRelationChangeStatus(baseRelations: Relation[], headRelations: Re
   // Mark relations as created if they exist in head but not in base
   headRelations.forEach(headRelation => {
     if (headRelation.kind === 'depends_on') {
-      const existsInBase = baseRelations.some(baseRelation => 
-        isSameRelation(headRelation, baseRelation)
+      const existsInBase = baseRelations.some(baseRelation =>
+        isSameRelation(headRelation, baseRelation),
       );
       if (!existsInBase) {
         headRelation.changeStatus = 'created';

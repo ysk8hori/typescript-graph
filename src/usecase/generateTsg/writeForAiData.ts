@@ -26,24 +26,22 @@ export function writeForAiData(
 ): void {
   // Dependency Graph section
   process.stdout.write('=== DEPENDENCY GRAPH ===\n');
-  mermaidify(
-    (str: string) => process.stdout.write(str),
-    graph,
-    options,
-  );
-  
+  mermaidify((str: string) => process.stdout.write(str), graph, options);
+
   // Code Metrics section
   process.stdout.write('\n=== CODE METRICS ===\n');
-  
+
   // Convert metrics to AI-friendly format
   const aiMetrics: AiMetrics[] = metrics.map(metric => ({
     filePath: metric.filePath,
-    maintainabilityIndex: Math.round(
-      (metric.scores.find(s => s.name === 'Maintainability Index')?.value ?? 0) * 100
-    ) / 100,
-    cyclomaticComplexity: 
+    maintainabilityIndex:
+      Math.round(
+        (metric.scores.find(s => s.name === 'Maintainability Index')?.value ??
+          0) * 100,
+      ) / 100,
+    cyclomaticComplexity:
       metric.scores.find(s => s.name === 'Cyclomatic Complexity')?.value ?? 0,
-    cognitiveComplexity: 
+    cognitiveComplexity:
       metric.scores.find(s => s.name === 'Cognitive Complexity')?.value ?? 0,
   }));
 
