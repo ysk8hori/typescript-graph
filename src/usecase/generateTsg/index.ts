@@ -66,12 +66,12 @@ export async function generateTsg(
   const graph = renameGraph
     ? renameGraph(refineGraph(fullGraph))
     : refineGraph(fullGraph);
-  
+
   // Enable metrics automatically for --stdout option
-  const effectiveOptions = commandOptions.stdout 
+  const effectiveOptions = commandOptions.stdout
     ? { ...commandOptions, metrics: true }
     : commandOptions;
-    
+
   const metrics: CodeMetrics[] = calculateCodeMetrics(
     effectiveOptions,
     traverser,
