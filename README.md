@@ -181,49 +181,6 @@ Also, for large repositories, Mermaid may exceed the maximum amount of data that
 
 In that case, you need to narrow down the directories to include in the graph.
 
-### For AI Agents
-
-When using TypeScript Graph with AI agents, the `--stdout` option provides structured output that's easy to parse and analyze:
-
-```bash
-# Analyze codebase architecture and get both dependency graph and metrics
-tsg --stdout
-
-# Get only code metrics for quality assessment
-tsg --stdout metrics
-
-# Get only dependency relationships for architecture analysis
-tsg --stdout deps
-```
-
-**Example prompts for AI agents:**
-
-```
-Analyze this TypeScript codebase architecture:
-$(tsg --stdout deps)
-
-Identify circular dependencies and suggest refactoring strategies.
-```
-
-```
-Review code quality metrics:
-$(tsg --stdout metrics)
-
-Identify files with low maintainability index and high complexity that need refactoring.
-```
-
-```
-Full codebase analysis:
-$(tsg --stdout)
-
-Provide architectural insights and code quality recommendations.
-```
-
-```
-Review code quality for changes in the current branch:
-$(tsg --stdout --include $(git diff --name-only main | tr '\n' ' '))
-```
-
 ### Arguments or `--include`
 
 To narrow down the directories or files included in the graph, specify the paths or parts of the paths using either the argument or the `--include` option.
@@ -434,6 +391,49 @@ flowchart LR
 
 It makes it easier to share problems within the team. 👍
 
+### For AI Agents
+
+When using TypeScript Graph with AI agents, the `--stdout` option provides structured output that's easy to parse and analyze:
+
+```bash
+# Analyze codebase architecture and get both dependency graph and metrics
+tsg --stdout
+
+# Get only code metrics for quality assessment
+tsg --stdout metrics
+
+# Get only dependency relationships for architecture analysis
+tsg --stdout deps
+```
+
+**Example prompts for AI agents:**
+
+```
+Analyze this TypeScript codebase architecture:
+$(tsg --stdout deps)
+
+Identify circular dependencies and suggest refactoring strategies.
+```
+
+```
+Review code quality metrics:
+$(tsg --stdout metrics)
+
+Identify files with low maintainability index and high complexity that need refactoring.
+```
+
+```
+Full codebase analysis:
+$(tsg --stdout)
+
+Provide architectural insights and code quality recommendations.
+```
+
+```
+Review code quality for changes in the current branch:
+$(tsg --stdout --include $(git diff --name-only main | tr '\n' ' '))
+```
+
 ## Code Metrics Measurement
 
 This is a beta feature for measuring code metrics such as the Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity. While these metrics are widely recognized, their reliability in TypeScript-specific contexts is not guaranteed. Nonetheless, they can serve as helpful indicators for evaluating code quality.
@@ -560,7 +560,7 @@ tsg --stdout
 # Output only metrics
 tsg --stdout metrics
 
-# Output only dependency graph  
+# Output only dependency graph
 tsg --stdout deps
 
 # Output both (explicit)
@@ -629,4 +629,3 @@ flowchart
   - Maintainability Index
   - Cyclomatic Complexity
   - Cognitive Complexity
-

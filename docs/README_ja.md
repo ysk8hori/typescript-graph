@@ -87,7 +87,7 @@ npm install --global @ysk8hori/typescript-graph
 | `-w, --watch-metrics`     | ファイルの変更をリアルタイムで監視し、変更が発生するたびに Maintainability Index、Cyclomatic Complexity、Cognitive Complexity などのメトリクスを表示します。継続的な品質チェックに利用可能です。                                                                           |
 | `--config-file`           | 設定ファイルへの相対パスを指定します（カレントディレクトリまたは -d, --dir で指定された場所から）。デフォルトは .tsgrc.json です。                                                                                                                                         |
 | `--vue` (experimental)    | `.vue` ファイルも対象とします。Node.js の `fs.mkdtempSync` によって作業ディレクトリを作成し、そこへ tsc 対象となるファイルと `.vue` ファイルをコピーして解析します。`.vue` ファイルは `.vue.ts` へとリネームしますが、すでにそのファイルが存在する場合はリネームしません。 |
-| `--stdout [types...]`     | 構造化データを標準出力に出力します。types: `metrics`, `deps`, または省略で全て（デフォルト: 全て）。例: `--stdout` (全て), `--stdout metrics` (メトリクスのみ), `--stdout deps` (依存グラフのみ), `--stdout metrics deps` (両方) |
+| `--stdout [types...]`     | 構造化データを標準出力に出力します。types: `metrics`, `deps`, または省略で全て（デフォルト: 全て）。例: `--stdout` (全て), `--stdout metrics` (メトリクスのみ), `--stdout deps` (依存グラフのみ), `--stdout metrics deps` (両方)                                           |
 | `-h, --help`              | コマンドのヘルプを表示します。                                                                                                                                                                                                                                             |
 
 ## 使い方
@@ -180,49 +180,6 @@ flowchart
 また、大規模なリポジトリの場合、マーメイドは表示可能なデータの最大量を超えてしまうことがあります。
 
 その場合、グラフに含めるディレクトリを絞り込む必要があります。
-
-### AI エージェント向け
-
-AI エージェントと TypeScript Graph を使用する場合、`--stdout` オプションで構造化された出力を提供し、解析しやすい形式でデータを得ることができます：
-
-```bash
-# コードベースアーキテクチャを分析し、依存関係グラフとメトリクスの両方を取得
-tsg --stdout
-
-# 品質評価のためのコードメトリクスのみを取得
-tsg --stdout metrics
-
-# アーキテクチャ分析のための依存関係のみを取得
-tsg --stdout deps
-```
-
-**AI エージェントのためのプロンプト例:**
-
-```
-このTypeScriptコードベースのアーキテクチャを分析してください：
-$(tsg --stdout deps)
-
-循環依存を特定し、リファクタリング戦略を提案してください。
-```
-
-```
-コード品質メトリクスをレビューしてください：
-$(tsg --stdout metrics)
-
-保守性指数が低く、複雑度が高いファイルを特定し、リファクタリングが必要なファイルを見つけてください。
-```
-
-```
-完全なコードベース分析：
-$(tsg --stdout)
-
-アーキテクチャの洞察とコード品質の推奨事項を提供してください。
-```
-
-```
-現在のブランチでの変更のコード品質をレビューしてください：
-$(tsg --stdout --include $(git diff --name-only main | tr '\n' ' '))
-```
 
 ### 引数または `--include` オプション
 
@@ -437,6 +394,49 @@ flowchart LR
 
 さらにチームと問題の共有がしやすくなりました 👍
 
+### AI エージェント向け
+
+AI エージェントと TypeScript Graph を使用する場合、`--stdout` オプションで構造化された出力を提供し、解析しやすい形式でデータを得ることができます：
+
+```bash
+# コードベースアーキテクチャを分析し、依存関係グラフとメトリクスの両方を取得
+tsg --stdout
+
+# 品質評価のためのコードメトリクスのみを取得
+tsg --stdout metrics
+
+# アーキテクチャ分析のための依存関係のみを取得
+tsg --stdout deps
+```
+
+**AI エージェントのためのプロンプト例:**
+
+```
+このTypeScriptコードベースのアーキテクチャを分析してください：
+$(tsg --stdout deps)
+
+循環依存を特定し、リファクタリング戦略を提案してください。
+```
+
+```
+コード品質メトリクスをレビューしてください：
+$(tsg --stdout metrics)
+
+保守性指数が低く、複雑度が高いファイルを特定し、リファクタリングが必要なファイルを見つけてください。
+```
+
+```
+完全なコードベース分析：
+$(tsg --stdout)
+
+アーキテクチャの洞察とコード品質の推奨事項を提供してください。
+```
+
+```
+現在のブランチでの変更のコード品質をレビューしてください：
+$(tsg --stdout --include $(git diff --name-only main | tr '\n' ' '))
+```
+
 ## コードメトリクスの測定
 
 保守性指数（Maintainability Index）、サイクロマティック複雑度（Cyclomatic Complexity）、認知的複雑度（Cognitive Complexity）などのコード・メトリクスを測定するベータ機能です。これらのメトリクスは一般的に知られていますが、TypeScript に当てはめた場合には信頼性が高いものではありません。それでも、コードの品質について考える際の指標にはなりうると考えています。
@@ -539,7 +539,7 @@ function volume(): number {
 tsg --watch-metrics
 ```
 
-![tsg --watch-metrics result](img/watch-metrics.png)
+![tsg --watch-metrics result](/docs/img/watch-metrics.png)
 
 `()` 内の値は、監視開始時からの差分です。より良い値へと変わった場合は緑で、より悪い値へ変わった場合は赤で表示します。値の増減の良し悪しはメトリクスによって異なります。以下に対応表を記載します。
 
@@ -618,4 +618,3 @@ flowchart
   - 保守性指数
   - サイクロマティック複雑度
   - 認知的複雑度
-
