@@ -481,7 +481,6 @@ test('run:sample:stdout-output', async () => {
   expect(output).toContain('src/config.ts-->src/includeFiles/c.ts');
   
   // Test metrics section contains JSON
-  expect(output).toContain('"metadata"');
   expect(output).toContain('"metrics"');
   expect(output).toContain('"filePath"');
   expect(output).toContain('"maintainabilityIndex"');
@@ -496,4 +495,72 @@ test('run:sample:stdout-output', async () => {
   expect(output).not.toContain('```mermaid');
   expect(output).not.toContain('```json');
   expect(output).not.toContain('```');
+});
+
+test('run:sample:stdout-metrics-only', async () => {
+  const result = await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --stdout metrics`;
+
+  const output = result.stdout;
+
+  // Should only contain metrics section
+  expect(output).not.toContain('=== DEPENDENCY GRAPH ===');
+  expect(output).toContain('=== CODE METRICS ===');
+
+  // Should not contain dependency graph content
+  expect(output).not.toContain('flowchart');
+  expect(output).not.toContain('subgraph');
+  expect(output).not.toContain('-->');
+
+  // Should contain metrics JSON
+  expect(output).toContain('"metrics"');
+  expect(output).toContain('"filePath"');
+  expect(output).toContain('"maintainabilityIndex"');
+  expect(output).toContain('"cyclomaticComplexity"');
+  expect(output).toContain('"cognitiveComplexity"');
+
+  // Test that metrics contains expected files
+  expect(output).toContain('"filePath": "src/config.ts"');
+  expect(output).toContain('"filePath": "src/includeFiles/c.ts"');
+});
+
+test('run:sample:stdout-deps-only', async () => {
+  const result = await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --stdout deps`;
+
+  const output = result.stdout;
+
+  // Should only contain dependency graph section
+  expect(output).toContain('=== DEPENDENCY GRAPH ===');
+  expect(output).not.toContain('=== CODE METRICS ===');
+
+  // Should contain dependency graph content
+  expect(output).toContain('flowchart');
+  expect(output).toContain('subgraph');
+  expect(output).toContain('-->');
+  expect(output).toContain('src/includeFiles/c.ts');
+  expect(output).toContain('src/config.ts');
+  expect(output).toContain('src/config.ts-->src/includeFiles/c.ts');
+
+  // Should not contain metrics JSON
+  expect(output).not.toContain('"metrics"');
+  expect(output).not.toContain('"filePath"');
+  expect(output).not.toContain('"maintainabilityIndex"');
+});
+
+test('run:sample:stdout-multiple-types', async () => {
+  const result = await $`node ./bin/tsg.js --tsconfig './dummy_project/tsconfig.json' --include includeFiles config --exclude excludeFiles utils --stdout metrics deps`;
+
+  const output = result.stdout;
+
+  // Should contain both sections
+  expect(output).toContain('=== DEPENDENCY GRAPH ===');
+  expect(output).toContain('=== CODE METRICS ===');
+
+  // Should contain dependency graph content
+  expect(output).toContain('flowchart');
+  expect(output).toContain('subgraph');
+  expect(output).toContain('-->');
+
+  // Should contain metrics JSON
+  expect(output).toContain('"metrics"');
+  expect(output).toContain('"filePath"');
 });

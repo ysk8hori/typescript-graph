@@ -14,5 +14,5 @@ export interface OptionValues {
   vue?: boolean;
   metrics?: boolean;
   watchMetrics: boolean | string[];
-  stdout?: boolean;
+  stdout?: boolean | string[];
 }

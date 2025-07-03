@@ -87,7 +87,7 @@ npm install --global @ysk8hori/typescript-graph
 | `-w, --watch-metrics`     | Monitors file changes in real-time and displays metrics such as Maintainability Index, Cyclomatic Complexity, and Cognitive Complexity whenever changes occur. Ideal for continuous quality monitoring.                                                                                                                 |
 | `--config-file`           | Specify the relative path to the config file (from the current directory or as specified by -d, --dir). The default is .tsgrc.json.                                                                                                                                                                                     |
 | `--vue` (experimental)    | `.vue` files are also included in the analysis. A temporary working directory is created using Node.js's `fs.mkdtempSync`, where all files targeted by `tsc` as well as `.vue` files are copied for processing. `.vue` files are renamed to `.vue.ts` unless a file with the same name already exists in the directory. |
-| `--stdout`                | Output both dependency graph (Mermaid) and code metrics (JSON) to stdout.                                                                                                                                                                                                                                              |
+| `--stdout [types...]`     | Output structured data to stdout. Types: `metrics`, `deps`, or omit for all (default: all). Examples: `--stdout` (all), `--stdout metrics` (metrics only), `--stdout deps` (dependency graph only), `--stdout metrics deps` (both)                                                                                      |
 | `-h, --help`              | Display help for the command.                                                                                                                                                                                                                                                                                           |
 
 ## usage
@@ -180,6 +180,49 @@ It is cluttered and confusing.
 Also, for large repositories, Mermaid may exceed the maximum amount of data that can be displayed.
 
 In that case, you need to narrow down the directories to include in the graph.
+
+### For AI Agents
+
+When using TypeScript Graph with AI agents, the `--stdout` option provides structured output that's easy to parse and analyze:
+
+```bash
+# Analyze codebase architecture and get both dependency graph and metrics
+tsg --stdout
+
+# Get only code metrics for quality assessment
+tsg --stdout metrics
+
+# Get only dependency relationships for architecture analysis
+tsg --stdout deps
+```
+
+**Example prompts for AI agents:**
+
+```
+Analyze this TypeScript codebase architecture:
+$(tsg --stdout deps)
+
+Identify circular dependencies and suggest refactoring strategies.
+```
+
+```
+Review code quality metrics:
+$(tsg --stdout metrics)
+
+Identify files with low maintainability index and high complexity that need refactoring.
+```
+
+```
+Full codebase analysis:
+$(tsg --stdout)
+
+Provide architectural insights and code quality recommendations.
+```
+
+```
+Review code quality for changes in the current branch:
+$(tsg --stdout --include $(git diff --name-only main | tr '\n' ' '))
+```
 
 ### Arguments or `--include`
 
@@ -493,7 +536,7 @@ You can monitor file changes in real time and display metrics such as the Mainta
 tsg --watch-metrics
 ```
 
-![tsg --watch-metrics result](img/watch-metrics.png)
+![tsg --watch-metrics result](docs/img/watch-metrics.png)
 
 The values in `()` represent the difference from when monitoring started. Improvements are displayed in green, while regressions are shown in red. Whether an increase or decrease is better depends on the metric. The following table outlines the preferred directions for each metric:
 
@@ -503,26 +546,36 @@ The values in `()` represent the difference from when monitoring started. Improv
 | Cyclomatic Complexity | Lower            |
 | Cognitive Complexity  | Lower            |
 
-## stdout Output: Structured Format for Tool and AI Integration
+## stdout Output
 
-The `--stdout` option outputs a **machine-parsable format** that combines architectural structure and code complexity metrics.
-It's designed for **AI agents like Claude Code or GitHub Copilot Agent**, as well as **humans who prefer structured command-line output**.
+The `--stdout` option outputs a **machine-parsable format** that can include architectural structure and/or code complexity metrics.
+It’s designed for **AI agents like Claude Code or GitHub Copilot Agent**, as well as **humans who prefer structured command-line output**.
 
 ### `--stdout` Option
 
 ```bash
+# Output both dependency graph and metrics (default)
 tsg --stdout
+
+# Output only metrics
+tsg --stdout metrics
+
+# Output only dependency graph  
+tsg --stdout deps
+
+# Output both (explicit)
+tsg --stdout metrics deps
 ```
 
-This produces two clearly separated sections:
+This can produce one or both of these clearly separated sections:
 
-1. **Dependency Graph (Mermaid)**
+1. **Dependency Graph (Mermaid)** - Available with `deps`
    A visual graph of file dependencies, useful for detecting circular references and architectural patterns.
 
-2. **Code Metrics (JSON)**
+2. **Code Metrics (JSON)** - Available with `metrics`
    A machine-readable summary of key maintainability indicators for each file.
 
-**Example output:**
+**Example output with `--stdout` (both sections):**
 
 ```
 === DEPENDENCY GRAPH ===
@@ -531,7 +584,6 @@ flowchart
 
 === CODE METRICS ===
 {
-  "metadata": {...},
   "metrics": [
     {
       "filePath": "src/utils.ts",
@@ -541,6 +593,23 @@ flowchart
     }
   ]
 }
+```
+
+**Example output with `--stdout metrics` (metrics only):**
+
+```
+=== CODE METRICS ===
+{
+  "metrics": [...]
+}
+```
+
+**Example output with `--stdout deps` (dependency graph only):**
+
+```
+=== DEPENDENCY GRAPH ===
+flowchart
+    [dependency relationships in Mermaid syntax]
 ```
 
 ### Why This Format?
@@ -561,27 +630,3 @@ flowchart
   - Cyclomatic Complexity
   - Cognitive Complexity
 
-### Best Practices for External Integration
-
-```bash
-# Target specific modules for AI refactoring
-tsg src/components --stdout --exclude test
-
-# Generate an architectural map (excluding noise)
-tsg --stdout --abstraction node_modules --exclude test stories
-
-# Highlight known complex areas for review
-tsg --stdout --highlight problematic-file.ts --exclude utils
-```
-
-You can redirect the output for post-processing:
-
-```bash
-tsg --stdout > graph-and-metrics.txt
-```
-
-Or feed it directly into tools:
-
-```bash
-tsg --stdout | some-ai-agent --analyze
-```
