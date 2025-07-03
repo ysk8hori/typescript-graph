@@ -19,7 +19,7 @@ export function writeMarkdownFile(
   metrics: CodeMetrics[],
 ) {
   const markdownTitle = options.md ?? 'typescript-graph';
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const filename = markdownTitle.endsWith('.md')
       ? markdownTitle
       : `./${markdownTitle}.md`;
