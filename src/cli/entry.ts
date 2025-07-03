@@ -63,8 +63,8 @@ program
   )
   .option('--vue', '(experimental) Enable Vue.js support')
   .option(
-    '--stdout',
-    'Output both dependency graph (Mermaid) and code metrics (JSON) to stdout',
+    '--stdout [types...]',
+    'Output structured data to stdout. Types: metrics, deps, or omit for all (default: all)',
   );
 program.parse();
 
