@@ -11,11 +11,6 @@ interface AiMetrics {
 }
 
 interface AiOutput {
-  metadata: {
-    command: string;
-    timestamp: string;
-    version: string;
-  };
   metrics: AiMetrics[];
 }
 
@@ -65,11 +60,6 @@ export function writeForAiData(
     }));
 
     const aiOutput: AiOutput = {
-      metadata: {
-        command: options.executedScript ?? 'tsg --for-ai',
-        timestamp: new Date().toISOString(),
-        version: process.env.npm_package_version ?? 'unknown',
-      },
       metrics: aiMetrics,
     };
 

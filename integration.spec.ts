@@ -481,7 +481,6 @@ test('run:sample:stdout-output', async () => {
   expect(output).toContain('src/config.ts-->src/includeFiles/c.ts');
   
   // Test metrics section contains JSON
-  expect(output).toContain('"metadata"');
   expect(output).toContain('"metrics"');
   expect(output).toContain('"filePath"');
   expect(output).toContain('"maintainabilityIndex"');
@@ -513,7 +512,6 @@ test('run:sample:stdout-metrics-only', async () => {
   expect(output).not.toContain('-->');
 
   // Should contain metrics JSON
-  expect(output).toContain('"metadata"');
   expect(output).toContain('"metrics"');
   expect(output).toContain('"filePath"');
   expect(output).toContain('"maintainabilityIndex"');
@@ -543,7 +541,6 @@ test('run:sample:stdout-deps-only', async () => {
   expect(output).toContain('src/config.ts-->src/includeFiles/c.ts');
 
   // Should not contain metrics JSON
-  expect(output).not.toContain('"metadata"');
   expect(output).not.toContain('"metrics"');
   expect(output).not.toContain('"filePath"');
   expect(output).not.toContain('"maintainabilityIndex"');
@@ -564,7 +561,6 @@ test('run:sample:stdout-multiple-types', async () => {
   expect(output).toContain('-->');
 
   // Should contain metrics JSON
-  expect(output).toContain('"metadata"');
   expect(output).toContain('"metrics"');
   expect(output).toContain('"filePath"');
 });

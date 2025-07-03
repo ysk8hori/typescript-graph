@@ -541,7 +541,6 @@ flowchart
 
 === CODE METRICS ===
 {
-  "metadata": {...},
   "metrics": [
     {
       "filePath": "src/utils.ts",
@@ -558,7 +557,6 @@ flowchart
 ```
 === CODE METRICS ===
 {
-  "metadata": {...},
   "metrics": [...]
 }
 ```
