@@ -60,13 +60,13 @@
     "chokidar": "4.0.3",
     "commander": "14.0.0",
     "console-table-printer": "2.14.6",
-    "remeda": "2.26.0",
+    "remeda": "2.26.1",
     "zod": "3.25.76"
   },
   "devDependencies": {
     "@eslint/js": "9.31.0",
     "@total-typescript/ts-reset": "0.6.1",
-    "@types/node": "22.16.4",
+    "@types/node": "22.16.5",
     "commitizen": "4.3.1",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "9.31.0",
@@ -79,7 +79,7 @@
     "semantic-release": "24.2.7",
     "tsx": "4.20.3",
     "typescript": "5.8.3",
-    "typescript-eslint": "8.37.0",
+    "typescript-eslint": "8.38.0",
     "vitest": "3.2.4",
     "zx": "8.7.1"
   },
