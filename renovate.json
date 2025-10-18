@@ -13,6 +13,12 @@
       "groupName": "TypeScript"
     },
     {
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["packageManager"],
+      "labels": ["packageManager"],
+      "groupName": "Package Manager"
+    },
+    {
       "groupName": "ESLint related packages",
       "packageNames": ["eslint", "eslint-config-prettier"],
       "packagePatterns": ["^@typescript-eslint/", "^eslint-plugin"]
@@ -23,6 +29,11 @@
       "labels": ["UPDATE-MINOR&PATCH"],
       "excludePackageNames": ["typescript", "eslint", "eslint-config-prettier"],
       "excludePackagePatterns": ["^@typescript-eslint/", "^eslint-plugin"]
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "pinDigests": true,
+      "minimumReleaseAge": "1 week"
     }
   ],
   "automerge": true,
