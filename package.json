@@ -17,6 +17,7 @@
   "bin": {
     "tsg": "./bin/tsg.js"
   },
+  "packageManager": "pnpm@10.18.2",
   "files": [
     "bin",
     "dist"
@@ -39,7 +40,7 @@
     "run:sample:dir": "tsx ./src/cli/entry.ts --tsconfig './dummy_project/tsconfig.json' --LR",
     "run:instability": "tsx ./src/cli/entry.ts --measure-instability",
     "build": "tsc -p tsconfig.build.json",
-    "build:re": "rm -r ./dist && npm run build",
+    "build:re": "rm -r ./dist && pnpm run build",
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg",
     "lint:fix": "eslint --fix src",
@@ -49,7 +50,7 @@
     "test:watch": "vitest src",
     "test:integration": "vitest run ./integration",
     "test:integration:update": "vitest run -u ./integration",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "pnpm run build",
     "prepare": "husky install"
   },
   "author": "ysk8hori",
@@ -89,8 +90,13 @@
   "lint-staged": {
     "*.@(ts|tsx)": [
       "eslint --fix",
-      "npm run prettier --",
+      "pnpm run prettier --",
       "git add"
+    ]
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
     ]
   }
 }
