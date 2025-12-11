@@ -75,10 +75,10 @@
     "globals": "16.5.0",
     "husky": "9.1.7",
     "lint-staged": "16.2.7",
-    "prettier": "3.7.1",
-    "tsx": "4.20.6",
+    "prettier": "3.7.4",
+    "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.48.0",
+    "typescript-eslint": "8.48.1",
     "vitest": "3.2.4",
     "zx": "8.8.5"
   },
