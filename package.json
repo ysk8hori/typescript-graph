@@ -17,7 +17,7 @@
   "bin": {
     "tsg": "./bin/tsg.js"
   },
-  "packageManager": "pnpm@10.24.0",
+  "packageManager": "pnpm@10.25.0",
   "files": [
     "bin",
     "dist"
@@ -66,7 +66,7 @@
   "devDependencies": {
     "@eslint/js": "9.39.1",
     "@total-typescript/ts-reset": "0.6.1",
-    "@types/node": "24.10.1",
+    "@types/node": "24.10.3",
     "commitizen": "4.3.1",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "9.39.1",
@@ -78,7 +78,7 @@
     "prettier": "3.7.4",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.48.1",
+    "typescript-eslint": "8.49.0",
     "vitest": "3.2.4",
     "zx": "8.8.5"
   },
