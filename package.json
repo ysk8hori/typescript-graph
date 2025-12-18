@@ -57,7 +57,7 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "4.1.2",
-    "chokidar": "4.0.3",
+    "chokidar": "5.0.0",
     "commander": "14.0.2",
     "console-table-printer": "2.15.0",
     "remeda": "2.32.0",
