@@ -17,7 +17,7 @@
   "bin": {
     "tsg": "./bin/tsg.js"
   },
-  "packageManager": "pnpm@10.26.2",
+  "packageManager": "pnpm@10.27.0",
   "files": [
     "bin",
     "dist"
@@ -60,7 +60,7 @@
     "chokidar": "5.0.0",
     "commander": "14.0.2",
     "console-table-printer": "2.15.0",
-    "remeda": "2.32.0",
+    "remeda": "2.33.0",
     "zod": "3.25.76"
   },
   "devDependencies": {
@@ -78,7 +78,7 @@
     "prettier": "3.7.4",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.50.1",
+    "typescript-eslint": "8.51.0",
     "vitest": "4.0.16",
     "zx": "8.8.5"
   },
