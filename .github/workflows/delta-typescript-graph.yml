@@ -10,7 +10,7 @@ jobs:
     name: Delta TypeScript Graph
     steps:
       - name: Checkout
-        uses: actions/checkout@71cf2267d89c5cb81562390fa70a37fa40b1305e # specify latest version
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # specify latest version
       - uses: ysk8hori/delta-typescript-graph-action@7abea70623af0422e16d374720e8dbf73e6ac674 # v1.2.4 # specify latest version
         with:
           max-size: 100
