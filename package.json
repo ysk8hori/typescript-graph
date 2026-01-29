@@ -17,7 +17,7 @@
   "bin": {
     "tsg": "./bin/tsg.js"
   },
-  "packageManager": "pnpm@10.27.0",
+  "packageManager": "pnpm@10.28.1",
   "files": [
     "bin",
     "dist"
@@ -60,13 +60,13 @@
     "chokidar": "5.0.0",
     "commander": "14.0.2",
     "console-table-printer": "2.15.0",
-    "remeda": "2.33.1",
+    "remeda": "2.33.4",
     "zod": "3.25.76"
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",
     "@total-typescript/ts-reset": "0.6.1",
-    "@types/node": "24.10.4",
+    "@types/node": "24.10.9",
     "commitizen": "4.3.1",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "9.39.2",
@@ -75,11 +75,11 @@
     "globals": "17.0.0",
     "husky": "9.1.7",
     "lint-staged": "16.2.7",
-    "prettier": "3.7.4",
+    "prettier": "3.8.1",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.52.0",
-    "vitest": "4.0.16",
+    "typescript-eslint": "8.53.1",
+    "vitest": "4.0.17",
     "zx": "8.8.5"
   },
   "config": {
