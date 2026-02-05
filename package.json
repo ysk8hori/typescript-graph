@@ -17,7 +17,7 @@
   "bin": {
     "tsg": "./bin/tsg.js"
   },
-  "packageManager": "pnpm@10.28.1",
+  "packageManager": "pnpm@10.28.2",
   "files": [
     "bin",
     "dist"
@@ -72,14 +72,14 @@
     "eslint": "9.39.2",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "2.32.0",
-    "globals": "17.0.0",
+    "globals": "17.2.0",
     "husky": "9.1.7",
     "lint-staged": "16.2.7",
     "prettier": "3.8.1",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.53.1",
-    "vitest": "4.0.17",
+    "typescript-eslint": "8.54.0",
+    "vitest": "4.0.18",
     "zx": "8.8.5"
   },
   "config": {
