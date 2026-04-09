@@ -60,7 +60,7 @@
     "chokidar": "5.0.0",
     "commander": "14.0.3",
     "console-table-printer": "2.15.0",
-    "remeda": "2.33.6",
+    "remeda": "2.33.7",
     "zod": "3.25.76"
   },
   "devDependencies": {
@@ -78,8 +78,8 @@
     "prettier": "3.8.1",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.57.2",
-    "vitest": "4.1.1",
+    "typescript-eslint": "8.58.0",
+    "vitest": "4.1.2",
     "zx": "8.8.5"
   },
   "config": {
