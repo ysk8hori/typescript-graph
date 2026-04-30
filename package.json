@@ -17,7 +17,7 @@
   "bin": {
     "tsg": "./bin/tsg.js"
   },
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@10.33.2",
   "files": [
     "bin",
     "dist"
@@ -79,7 +79,7 @@
     "tsx": "4.21.0",
     "typescript": "5.9.3",
     "typescript-eslint": "8.59.0",
-    "vitest": "4.1.4",
+    "vitest": "4.1.5",
     "zx": "8.8.5"
   },
   "config": {
